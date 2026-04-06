@@ -1,0 +1,27 @@
+{
+  "expo": {
+    "name": "PetDiary",
+    "slug": "petdiary",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "backgroundColor": "#4A90D9"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.petdiary.mobile"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#4A90D9"
+      },
+      "package": "com.petdiary.mobile"
+    },
+    "plugins": [
+      "expo-image-picker"
+    ]
+  }
+}
