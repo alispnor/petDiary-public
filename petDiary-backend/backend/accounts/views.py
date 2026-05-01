@@ -207,9 +207,8 @@ class ForgotPasswordView(APIView):
         email = serializer.validated_data["email"].strip().lower()
 
         from datetime import timedelta
-        from django.conf import settings
         from django.utils import timezone
-        from .services.email import build_password_reset_email, get_email_service
+        from .tasks import send_password_reset_email_task
 
         user = User.objects.filter(email__iexact=email, is_active=True).first()
 
@@ -224,14 +223,9 @@ class ForgotPasswordView(APIView):
                 expires_at=timezone.now() + timedelta(minutes=30),
                 ip_address=ip,
             )
-            base_url = getattr(settings, "FRONTEND_BASE_URL", "http://localhost:5173")
-            reset_url = f"{base_url.rstrip('/')}/reset-password/{reset.token}"
-            subject, body = build_password_reset_email(user, reset_url)
-            try:
-                get_email_service().send(to=user.email, subject=subject, body=body)
-            except Exception:
-                # Email transacional não pode quebrar o fluxo (mock console nunca falha)
-                pass
+            # Envio em background (Celery) — não bloqueia a request.
+            # Em CELERY_TASK_ALWAYS_EAGER, executa síncrono (testes/CI).
+            send_password_reset_email_task.delay(str(user.id), str(reset.id))
 
         return Response(
             {"detail": "Se este email estiver cadastrado, você receberá um link em instantes."},

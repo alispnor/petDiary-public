@@ -25,6 +25,23 @@ services:
       start_period: 15s
 
   # ============================================
+  # Redis — broker & backend de Celery
+  # ============================================
+  redis:
+    image: redis:7-alpine
+    container_name: petdiary_redis
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - rede
+
+  # ============================================
   # API — Django REST
   # ============================================
   api:
@@ -40,6 +57,50 @@ services:
     volumes:
       - ${API_VOLUMES:-./petDiary-backend/backend:/app}
     depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - rede
+
+  # ============================================
+  # Celery worker — processa tasks (envio de emails, IA, limpeza, etc.)
+  # ============================================
+  celery_worker:
+    build:
+      context: ./petDiary-backend/backend
+      dockerfile: Dockerfile
+    container_name: petdiary_celery_worker
+    restart: unless-stopped
+    env_file: ${PATH_ENV_FILE:-.env.local}
+    command: celery -A petdiary worker -l info --concurrency=2
+    volumes:
+      - ${API_VOLUMES:-./petDiary-backend/backend:/app}
+    depends_on:
+      redis:
+        condition: service_healthy
+      db:
+        condition: service_healthy
+    networks:
+      - rede
+
+  # ============================================
+  # Celery beat — agenda tarefas periódicas (DatabaseScheduler)
+  # ============================================
+  celery_beat:
+    build:
+      context: ./petDiary-backend/backend
+      dockerfile: Dockerfile
+    container_name: petdiary_celery_beat
+    restart: unless-stopped
+    env_file: ${PATH_ENV_FILE:-.env.local}
+    command: celery -A petdiary beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    volumes:
+      - ${API_VOLUMES:-./petDiary-backend/backend:/app}
+    depends_on:
+      redis:
+        condition: service_healthy
       db:
         condition: service_healthy
     networks:

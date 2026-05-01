@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     "audit",
     "billing",
     "admin_panel",
+    "django_celery_beat",
 ]
 
 MIDDLEWARE = [
@@ -139,6 +140,30 @@ OPENAI_MODEL_AUDIO = config("OPENAI_MODEL_AUDIO", default="whisper-1")
 EMAIL_PROVIDER = config("EMAIL_PROVIDER", default="console")
 EMAIL_FROM = config("EMAIL_FROM", default="noreply@petdiary.com.br")
 FRONTEND_BASE_URL = config("FRONTEND_BASE_URL", default="http://localhost:5173")
+
+# === Celery (broker + backend = Redis) ===
+# `redis://redis:6379/0` no docker-compose; CELERY_TASK_ALWAYS_EAGER=True
+# em testes/CI roda tudo síncrono sem precisar de worker.
+REDIS_URL = config("REDIS_URL", default="redis://redis:6379/0")
+CELERY_BROKER_URL = config("CELERY_BROKER_URL", default=REDIS_URL)
+CELERY_RESULT_BACKEND = config("CELERY_RESULT_BACKEND", default=REDIS_URL)
+CELERY_TASK_ALWAYS_EAGER = config("CELERY_TASK_ALWAYS_EAGER", default=False, cast=bool)
+CELERY_TASK_EAGER_PROPAGATES = True
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TIMEZONE = TIME_ZONE
+CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
+
+# Schedule default — registrado em código (não-DB) como bootstrap.
+# DatabaseScheduler também aceita entries no settings; se admin editar
+# pelo painel /admin/django_celery_beat/, prevalece o do DB.
+CELERY_BEAT_SCHEDULE = {
+    "cleanup-expired-password-reset-tokens": {
+        "task": "accounts.tasks.cleanup_expired_password_reset_tokens_task",
+        "schedule": 3600.0,  # a cada 1h
+    },
+}
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
