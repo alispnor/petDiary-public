@@ -9,7 +9,10 @@
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#4A90D9"
+      "backgroundColor": "#F3F5F8"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -21,7 +24,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#4A90D9"
+        "backgroundColor": "#F3F5F8"
       },
       "package": "com.petdiary.mobile"
     },
