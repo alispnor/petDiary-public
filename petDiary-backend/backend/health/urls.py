@@ -2,6 +2,7 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
 from .attachment_views import (
+    AttachmentProcessAIView,
     AttachmentDetailView,
     AttachmentServeView,
     RecordAttachmentListCreateView,
@@ -19,6 +20,7 @@ urlpatterns = [
     # Detail/serve não precisam do pet_pk — id do attachment é UUID único
     path("attachments/<uuid:attachment_id>/",
          AttachmentDetailView.as_view(), name="attachment-detail"),
+    path("attachments/<uuid:attachment_id>/process-ai/", AttachmentProcessAIView.as_view(), name="attachment-process-ai"),
     path("attachments/<uuid:attachment_id>/<str:mode>/",
          AttachmentServeView.as_view(), name="attachment-serve"),
 ]

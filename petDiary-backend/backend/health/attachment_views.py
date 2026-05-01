@@ -165,3 +165,50 @@ class AttachmentServeView(APIView):
             filename=att.file_name,
         )
         return response
+
+
+# ─────────── Processamento IA (Spec 04 — gated PRO) ───────────
+
+class AttachmentProcessAIView(APIView):
+    """POST /attachments/<id>/process-ai/ — dispara OCR/Whisper/sumarização.
+
+    Aplica IsActivePro: caretaker herda o PRO do owner do pet (decisão
+    durável Ali). Em modo mock, retorna texto fictício realista; em
+    produção (AI_PROVIDER=openai), chama OpenAI.
+    """
+    from billing.permissions import IsActivePro
+
+    permission_classes = [permissions.IsAuthenticated, IsActivePro]
+
+    def post(self, request, attachment_id):
+        from health.services.ai import get_ai_service
+        from health.services.storage import get_storage
+
+        att = get_object_or_404(HealthRecordAttachment, pk=attachment_id)
+        if not _user_can_access_pet(request.user, att.record.pet):
+            return Response({"detail": "Sem permissão."}, status=status.HTTP_403_FORBIDDEN)
+
+        # Resolve path local (mock só lê do storage local; OpenAI usaria URL)
+        ai = get_ai_service()
+        if att.mime_type.startswith("image/"):
+            text = ai.extract_text_from_image(att.storage_key, att.mime_type)
+        elif att.mime_type.startswith("audio/"):
+            text = ai.transcribe_audio(att.storage_key)
+        else:
+            return Response(
+                {"detail": "Apenas imagens e áudios são processados."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        summary = ai.summarize(text)
+
+        # Salva no record (raw_extracted_text)
+        att.record.raw_extracted_text = text
+        att.record.save(update_fields=["raw_extracted_text", "updated_at"])
+
+        return Response({
+            "extracted_text": text,
+            "suggested_title": summary["title"],
+            "suggested_summary": summary["summary"],
+            "ai_provider": getattr(__import__("django.conf", fromlist=["settings"]).settings, "AI_PROVIDER", "mock"),
+        })
