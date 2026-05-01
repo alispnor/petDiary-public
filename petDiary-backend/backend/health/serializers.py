@@ -18,11 +18,8 @@ class HealthRecordSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         )
-        read_only_fields = ("id", "author", "created_at", "updated_at")
-
-    def create(self, validated_data):
-        validated_data["author"] = self.context["request"].user
-        return super().create(validated_data)
+        # pet vem da URL aninhada (/pets/<pet_pk>/health-records/), não do body
+        read_only_fields = ("id", "pet", "author", "created_at", "updated_at")
 
 
 class UploadURLSerializer(serializers.Serializer):

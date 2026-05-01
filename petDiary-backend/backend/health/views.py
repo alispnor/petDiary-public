@@ -20,7 +20,9 @@ class HealthRecordViewSet(viewsets.ModelViewSet):
         ).select_related("pet", "author")
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+        from pets.models import Pet
+        pet = Pet.objects.get(pk=self.kwargs["pet_pk"])
+        serializer.save(author=self.request.user, pet=pet)
 
     def get_object(self):
         obj = super().get_object()

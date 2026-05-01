@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from rest_framework import generics, permissions, status
@@ -10,13 +12,13 @@ from .models import VetAccessToken
 from .serializers import ClaimAccessSerializer, VetAccessTokenSerializer
 
 
+DEFAULT_PIN_LIFETIME = timedelta(hours=1)
+
+
 class GeneratePinView(generics.CreateAPIView):
     """Tutor gera um PIN de acesso para um pet."""
 
     serializer_class = VetAccessTokenSerializer
-
-    def perform_create(self, serializer):
-        serializer.save()
 
     def create(self, request, *args, **kwargs):
         if request.user.role != User.Role.TUTOR:
@@ -32,7 +34,16 @@ class GeneratePinView(generics.CreateAPIView):
                 status=status.HTTP_403_FORBIDDEN,
             )
 
-        return super().create(request, *args, **kwargs)
+        # Default expires_at = agora + 1h se cliente não enviar
+        data = request.data.copy() if hasattr(request.data, "copy") else dict(request.data)
+        if not data.get("expires_at"):
+            data["expires_at"] = (timezone.now() + DEFAULT_PIN_LIFETIME).isoformat()
+
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
 class ClaimAccessView(APIView):

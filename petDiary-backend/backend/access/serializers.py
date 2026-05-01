@@ -4,6 +4,8 @@ from .models import VetAccessToken
 
 
 class VetAccessTokenSerializer(serializers.ModelSerializer):
+    expires_at = serializers.DateTimeField(required=False)
+
     class Meta:
         model = VetAccessToken
         fields = (
