@@ -10,11 +10,13 @@ import {
   Image,
 } from "react-native";
 import axios from "axios";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import api from "../services/api";
 import { LanguageSwitcher } from "../components/LanguageSwitcher";
 import { colors, radii, spacing, fontSize, fontWeight } from "../theme";
 
 export function ForgotPasswordScreen({ navigation }: any) {
+  const insets = useSafeAreaInsets();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
@@ -38,7 +40,12 @@ export function ForgotPasswordScreen({ navigation }: any) {
       style={styles.container}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
-      <View style={styles.langWrap}>
+      <View
+        style={[
+          styles.langWrap,
+          { top: insets.top + spacing[2], right: insets.right + spacing[4] },
+        ]}
+      >
         <LanguageSwitcher />
       </View>
       <View style={styles.card}>
@@ -118,8 +125,7 @@ const styles = StyleSheet.create({
   },
   langWrap: {
     position: "absolute",
-    top: spacing[6],
-    right: spacing[4],
+    zIndex: 10,
   },
   logo: {
     width: 64,

@@ -10,6 +10,7 @@ import {
   Platform,
   Image,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import axios from "axios";
 import api from "../services/api";
 import { useAppStore } from "../store/useAppStore";
@@ -18,6 +19,7 @@ import type { User } from "../types";
 import { colors, radii, spacing, fontSize, fontWeight } from "../theme";
 
 export function LoginScreen({ navigation }: any) {
+  const insets = useSafeAreaInsets();
   const setAuth = useAppStore((s) => s.setAuth);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -58,7 +60,12 @@ export function LoginScreen({ navigation }: any) {
       style={styles.container}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
-      <View style={styles.langWrap}>
+      <View
+        style={[
+          styles.langWrap,
+          { top: insets.top + spacing[2], right: insets.right + spacing[4] },
+        ]}
+      >
         <LanguageSwitcher />
       </View>
 
@@ -138,8 +145,7 @@ const styles = StyleSheet.create({
   },
   langWrap: {
     position: "absolute",
-    top: spacing[6],
-    right: spacing[4],
+    zIndex: 10,
   },
   card: {
     backgroundColor: colors.bg.surface,
