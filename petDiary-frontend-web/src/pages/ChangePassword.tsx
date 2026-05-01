@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import axios from "axios";
 import api from "../services/api";
 import { useAuthStore } from "../store/authStore";
@@ -12,6 +13,7 @@ import PasswordInput from "../components/PasswordInput";
  *    é opcional; após troca, sessão é derrubada e ele loga com a senha nova.
  */
 export default function ChangePassword() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
   const logout = useAuthStore((s) => s.logout);
@@ -33,7 +35,7 @@ export default function ChangePassword() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!valid) {
-      setError("Confira os campos: senha nova precisa ter mín. 8 caracteres e bater com a confirmação.");
+      setError(t("change_password.error_generic"));
       return;
     }
     setLoading(true);
@@ -44,13 +46,11 @@ export default function ChangePassword() {
       await api.post("/auth/change-password/", payload);
 
       setSuccess(true);
-      // backend já blacklistou todos os refresh tokens — fazemos logout local
-      // e jogamos pra /login com mensagem
       setTimeout(() => {
         logout();
         navigate("/login", {
           replace: true,
-          state: { notice: "Senha alterada com sucesso. Faça login novamente." },
+          state: { notice: t("change_password.login_notice") },
         });
       }, 1500);
     } catch (err) {
@@ -65,7 +65,7 @@ export default function ChangePassword() {
           setError(String(d));
         }
       } else {
-        setError("Erro ao trocar a senha. Tente novamente.");
+        setError(t("change_password.error_generic"));
       }
     } finally {
       setLoading(false);
@@ -78,12 +78,11 @@ export default function ChangePassword() {
         <div className="mb-6 text-center">
           <img src="/logo-192.png" alt="PetDiary" className="mx-auto h-16 w-16" />
           <h1 className="mt-3 text-2xl font-extrabold text-gradient">
-            {forced ? "Defina sua senha" : "Trocar senha"}
+            {forced ? t("change_password.title_forced") : t("change_password.title_normal")}
           </h1>
           {forced && (
             <p className="mt-2 text-sm text-gray-500">
-              Olá, <b>{user?.full_name}</b>! Você foi convidado(a) por um familiar.
-              Crie uma senha pessoal para continuar.
+              {t("change_password.subtitle_forced", { name: user?.full_name })}
             </p>
           )}
         </div>
@@ -91,7 +90,7 @@ export default function ChangePassword() {
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           {!forced && (
             <PasswordInput
-              placeholder="Senha atual"
+              placeholder={t("change_password.current")}
               autoComplete="current-password"
               value={currentPwd}
               onChange={(e) => setCurrentPwd(e.target.value)}
@@ -99,7 +98,7 @@ export default function ChangePassword() {
             />
           )}
           <PasswordInput
-            placeholder="Nova senha (mín. 8 caracteres)"
+            placeholder={t("change_password.new")}
             autoComplete="new-password"
             minLength={8}
             value={newPwd}
@@ -107,7 +106,7 @@ export default function ChangePassword() {
             required
           />
           <PasswordInput
-            placeholder="Confirme a nova senha"
+            placeholder={t("change_password.confirm")}
             autoComplete="new-password"
             minLength={8}
             value={confirmPwd}
@@ -116,7 +115,7 @@ export default function ChangePassword() {
           />
 
           {newPwd && confirmPwd && newPwd !== confirmPwd && (
-            <p className="text-xs text-red-600">As senhas não coincidem.</p>
+            <p className="text-xs text-red-600">{t("change_password.mismatch")}</p>
           )}
 
           {error && (
@@ -127,7 +126,7 @@ export default function ChangePassword() {
 
           {success && (
             <p className="rounded-md bg-green-50 px-4 py-2 text-sm text-green-700">
-              ✓ Senha alterada! Redirecionando para o login…
+              {t("change_password.success")}
             </p>
           )}
 
@@ -136,7 +135,11 @@ export default function ChangePassword() {
             disabled={loading || !valid || success}
             className="btn-primary mt-2"
           >
-            {loading ? "Salvando…" : forced ? "Definir senha" : "Trocar senha"}
+            {loading
+              ? t("change_password.submitting")
+              : forced
+              ? t("change_password.submit_forced")
+              : t("change_password.submit_normal")}
           </button>
 
           {!forced && (
@@ -145,7 +148,7 @@ export default function ChangePassword() {
               onClick={() => navigate(-1)}
               className="text-center text-sm text-gray-500 hover:text-brand-teal"
             >
-              Cancelar
+              {t("common.cancel")}
             </button>
           )}
         </form>
