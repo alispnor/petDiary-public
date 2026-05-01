@@ -4,6 +4,7 @@ import api from "../services/api";
 import { useAuthStore } from "../store/authStore";
 import type { ActiveAccess, Pet, Species, VetAccessToken } from "../types";
 import VetAccessSection from "../components/VetAccessSection";
+import MembersSection from "../components/MembersSection";
 
 const SPECIES_OPTIONS: { value: Species; label: string; emoji: string }[] = [
   { value: "DOG", label: "Cachorro", emoji: "🐕" },
@@ -237,6 +238,12 @@ export default function TutorDashboard() {
                   petId={pet.id}
                   accesses={accesses}
                   onRevoked={refetchAccesses}
+                />
+
+                <MembersSection
+                  petId={pet.id}
+                  petName={pet.name}
+                  currentUserId={user?.id ?? ""}
                 />
               </div>
             ))}

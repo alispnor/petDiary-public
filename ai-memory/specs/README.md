@@ -13,6 +13,12 @@ Pasta com **specs/prompts versionadas** para módulos grandes que serão impleme
 | 05 | [Captura de mídia (drag-drop, webcam, câmera, áudio, vídeo)](./05-captura-midia-web-mobile.md) | Web + Mobile | Fase 7 (infra de upload) — pode rodar junto |
 | 06 | [Fila de jobs assíncronos (Celery + Redis ou BullMQ)](./06-fila-jobs-bullmq-celery.md) | Backend + Infra | Pré-requisito para Specs 01 (webhook) e 04 (IA) em produção |
 | 07 | [WebSocket realtime (atualizações ao vivo)](./07-websocket-realtime.md) | Backend + Web + Mobile | Pode rodar junto com Spec 06 (compartilha Redis) |
+| 08 | [Documento de instalação MacBook Air](./08-instalacao-macbook-air.md) | Doc | Estável após Fase 5/6 |
+| 09 | [Publicação Apple Store + Google Play](./09-publicacao-app-store-google-play.md) | Doc + Mobile | Etapa final |
+| 10 | [i18n web + mobile (6 idiomas + RTL para árabe)](./10-i18n-multilingua-frontend.md) | Web + Mobile | Backend pronto; pode rodar a qualquer momento |
+| 11 | [Logs estruturados (auditoria + erros técnicos)](./11-logs-historicos-e-erros.md) | Backend + Web + Mobile | Tipo 1 = Fase 6; Tipo 2 antes da produção |
+| 12 | [Sistema de Cupons de Desconto](./12-sistema-cupons-desconto.md) | Backend + Mobile + Web | Depende da Spec 01 (billing) |
+| 13 | [Admin Dashboard SaaS (Painel Super Admin)](./13-admin-dashboard-saas.md) | Web + Backend | Depende de Specs 01, 12 + role ADMIN |
 
 ## Ordem de execução recomendada
 

@@ -49,6 +49,44 @@ export interface NotePayload {
 }
 
 // =========================================
+// Membros do pet (PetMember)
+// =========================================
+
+export type MemberRole = "OWNER" | "CARETAKER";
+
+export interface MemberUser {
+  id: string;
+  username: string;
+  full_name: string;
+  email: string;
+  phone: string;
+}
+
+export interface PetMember {
+  id: string;
+  user: MemberUser;
+  role: MemberRole;
+  added_at: string;
+}
+
+export interface InviteMemberPayload {
+  full_name: string;
+  username: string;
+  email: string;
+  phone: string;
+  whatsapp?: boolean;
+  document?: string;
+  temporary_password: string;
+  address_zip?: string;
+  address_street?: string;
+  address_number?: string;
+  address_complement?: string;
+  address_district?: string;
+  address_city?: string;
+  address_state?: string;
+}
+
+// =========================================
 // Resumos retornados por /access/active e /access/history
 // =========================================
 
