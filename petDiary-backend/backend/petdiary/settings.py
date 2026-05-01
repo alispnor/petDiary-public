@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     "audit",
     "billing",
     "admin_panel",
+    "notifications",
     "django_celery_beat",
 ]
 
@@ -163,7 +164,14 @@ CELERY_BEAT_SCHEDULE = {
         "task": "accounts.tasks.cleanup_expired_password_reset_tokens_task",
         "schedule": 3600.0,  # a cada 1h
     },
+    "check-payment-due-daily": {
+        "task": "notifications.tasks.check_payment_due_task",
+        "schedule": 86400.0,  # 1x/dia
+    },
 }
+
+# Push notifications — mock-first toggleable
+PUSH_SERVICE_MODE = config("PUSH_SERVICE_MODE", default="mock")
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 

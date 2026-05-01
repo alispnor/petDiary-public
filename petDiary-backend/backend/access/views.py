@@ -110,6 +110,30 @@ class ClaimAccessView(APIView):
         token.claimed_at = now
         token.save(update_fields=["vet", "is_used", "claimed_at"])
 
+        # Avisa o tutor (OWNER) que um vet acessou o prontuário
+        try:
+            from notifications.helpers import notify
+            from pets.models import PetMember
+
+            owners = PetMember.objects.filter(
+                pet=token.pet, role=PetMember.Role.OWNER,
+            ).select_related("user")
+            vet_label = request.user.full_name or request.user.username
+            clinic = getattr(request.user, "clinic_name", "") or ""
+            for m in owners:
+                notify(
+                    m.user,
+                    "VET_ACCESS_CLAIMED",
+                    f"{vet_label} acessou {token.pet.name}",
+                    f"{vet_label}{f' ({clinic})' if clinic else ''} usou o PIN para abrir o prontuário.",
+                    data={
+                        "screen": "PetDashboard",
+                        "petId": str(token.pet.id),
+                    },
+                )
+        except Exception:  # nunca derrubar a request principal
+            pass
+
         return Response(
             VetAccessTokenSerializer(token).data,
             status=status.HTTP_200_OK,
