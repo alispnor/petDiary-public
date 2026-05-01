@@ -37,6 +37,9 @@ totalmente i18n-ready (`t("landing.*")`) nos 6 idiomas oficiais.
 - Selo discreto: "Disponível também no app mobile" com ícones
   iOS/Android (links pra App Store / Play Store quando publicado;
   por enquanto pode ser texto + emoji)
+- **Espaço de imagem hero**: à direita (desktop) ou abaixo (mobile),
+  mockup do app + foto de um pet feliz (composição). Asset:
+  `/landing/hero.webp` — placeholder até Ali subir o real.
 
 ### 2. Como funciona (3 passos)
 Seção com cards lado a lado (responsivo):
@@ -45,7 +48,11 @@ Seção com cards lado a lado (responsivo):
    anexos
 3. **Compartilhe com o veterinário** — gere PIN temporário, ele acessa
    o prontuário direto pelo navegador
-Cada card: ícone + título + 2 linhas
+Cada card: ícone + título + 2 linhas + **screenshot pequeno** do app
+fazendo aquela ação. Assets:
+- `/landing/step-1-add-pet.webp`
+- `/landing/step-2-record.webp`
+- `/landing/step-3-share-pin.webp`
 
 ### 3. Para tutores e veterinários
 Lado a lado:
@@ -90,6 +97,73 @@ Lista visual (ícones grandes):
 - 🌐 Disponível em 6 idiomas
 - 🔒 LGPD/GDPR — você controla seus dados
 - ⚡ Sincronização web + mobile em tempo real
+
+### 6.5. Antes vs Depois (pain points → solução)
+Seção comparativa em 2 colunas mostrando o impacto na vida do tutor:
+
+**Sem o PetDiary** (coluna esquerda, tom problema):
+- 📁 "Onde está aquele cartão de vacina?" — folha amassada na gaveta
+- ⏰ "Quando foi a última vermifugação?" — você não lembra
+- 🏥 Vet pede o histórico — você manda foto borrada do que achou
+- 👫 Quem mora com você não sabe quando o pet tomou remédio
+- 📞 Liga pro vet pra perguntar a dose que ele te receitou semana passada
+- ✈️ Viaja e o cuidador não tem ideia das alergias do pet
+
+**Com o PetDiary** (coluna direita, tom solução):
+- 📱 Tudo em um lugar, organizado por data e tipo
+- 🔔 Lembrete automático de vacina, retorno, antiparasitário
+- 🩺 Vet acessa o prontuário completo com um PIN temporário
+- 👨‍👩‍👧 Familiares compartilham o cuidado com login próprio
+- 💊 Foto da receita virou texto pesquisável (IA do PRO)
+- 🌍 Acesso de qualquer lugar, web ou app
+
+Cada linha tem **ícone + texto curto**. Visual emocional: a coluna
+esquerda em tons cinzas, direita em verde/teal da marca.
+
+### 6.6. Histórias reais (testimonials)
+3 cards (com foto + nome + cidade) — começam com depoimentos fictícios
+realistas, viram reais conforme o produto cresce. Exemplos para copy
+inicial:
+
+> **Ana, tutora da Mel (gata, 4 anos) — São Paulo**
+> "Antes eu vivia procurando carteirinha de vacina. Agora abro o app e
+> mostro tudo pro vet em 5 segundos. A IA leu uma receita que eu nem
+> conseguia decifrar."
+
+> **Dr. Pedro, veterinário — Belo Horizonte**
+> "Atendo 30 pets por dia. Quando o tutor chega com o PIN, eu já vejo
+> tudo: vacinas, alergias, exames antigos. Economiza 10 minutos de
+> consulta e evita repetir exame caro."
+
+> **Carla, dividida entre 2 cidades**
+> "Meu pai cuida do Thor durante a semana. Como ele tem login de
+> familiar, eu vejo no domingo o que aconteceu sem ligar perguntando.
+> Plano PRO da minha conta cobre os dois."
+
+Layout: 3 cards lado a lado (desktop) ou carrossel (mobile). Cada um:
+- Foto do tutor + pet (asset `/landing/testimonial-{1,2,3}.webp`)
+- Nome em negrito + papel/cidade
+- Citação em itálico
+- Estrela ⭐⭐⭐⭐⭐ discreta no canto
+
+> Ali decide depois se vai pegar fotos reais com clientes (com
+> autorização) ou usar ilustrações estilizadas. Por enquanto:
+> placeholder com avatar + iniciais.
+
+### 6.7. Galeria de screenshots / fotos
+Carrossel ou grid responsivo com prints reais do app + fotos
+contextuais. Sugestões:
+- App tutor mostrando timeline cheia
+- Modal "PIN gerado!" com 6 dígitos
+- Tela do veterinário acessando prontuário
+- Pet sendo fotografado (mão segurando celular tirando foto da receita)
+- Família reunida olhando o app
+- Lembrete de vacina chegando como notificação push
+
+Assets em `petDiary-frontend-web/public/landing/gallery/` com
+nomes `01.webp`, `02.webp`, etc. Placeholder até Ali subir reais
+(ai-memory `IMAGENS-DO-PROJETO.md` será atualizado com a lista
+final).
 
 ### 7. FAQ pública
 4-6 perguntas mais frequentes (subset do HelpCenter mobile, mesmas
