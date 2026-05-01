@@ -1,0 +1,69 @@
+# =================================================
+# Caddy — reverse proxy + TLS automático para petDiary
+# =================================================
+#
+# Variáveis de ambiente (lidas do .env.homolog ou .env.prod via docker-compose):
+#   API_DOMAIN  → domínio público da API (ex.: api.petdiary.com.br)
+#   WEB_DOMAIN  → domínio público do app web (ex.: app.petdiary.com.br)
+#
+# Caddy emite certificados Let's Encrypt automaticamente para cada domínio.
+# Pré-requisitos: DNS A/AAAA dos dois domínios apontando para o IP do servidor
+# e portas 80 e 443 abertas.
+#
+# Header de segurança aplicado em todos os respostas:
+#   - HSTS (1 ano, includeSubDomains)
+#   - X-Content-Type-Options: nosniff
+#   - X-Frame-Options: DENY
+#   - Referrer-Policy: strict-origin-when-cross-origin
+#   - CSP relaxada o suficiente para Vite/React + Stripe-like (revisar em prod
+#     com gateway real)
+
+(security_headers) {
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Permissions-Policy "geolocation=(), microphone=(self), camera=(self)"
+		# Remove headers que vazam tecnologia/versão
+		-Server
+		-X-Powered-By
+	}
+}
+
+# ===== API (Django) =====
+{$API_DOMAIN} {
+	import security_headers
+
+	# Healthchecks ficam públicos (orquestrador externo bate aqui).
+	# Demais rotas vão pro container api.
+	reverse_proxy api:8000
+
+	log {
+		output file /var/log/caddy/api.log {
+			roll_size 10mb
+			roll_keep 7
+			roll_keep_for 72h
+		}
+		format json
+	}
+}
+
+# ===== Web (React/Vite SPA) =====
+{$WEB_DOMAIN} {
+	import security_headers
+
+	# CSP do app web — ajusta connect-src para apontar pra API
+	header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://{$API_DOMAIN}; frame-ancestors 'none';"
+
+	reverse_proxy web:5173
+
+	log {
+		output file /var/log/caddy/web.log {
+			roll_size 10mb
+			roll_keep 7
+			roll_keep_for 72h
+		}
+		format json
+	}
+}
