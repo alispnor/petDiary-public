@@ -1,0 +1,227 @@
+{
+  "common": {
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "delete": "Excluir",
+    "edit": "Editar",
+    "back": "Voltar",
+    "loading": "Carregando…",
+    "search": "Buscar",
+    "logout": "Sair",
+    "yes": "Sim",
+    "no": "Não",
+    "confirm": "Confirmar",
+    "close": "Fechar",
+    "copy": "Copiar"
+  },
+  "auth": {
+    "login": {
+      "title": "PetDiary",
+      "subtitle": "Acesse sua conta de tutor ou veterinário",
+      "username": "Usuário",
+      "password": "Senha",
+      "submit": "Entrar",
+      "submitting": "Entrando…",
+      "keep_logged": "Manter-me conectado neste dispositivo",
+      "session_warning": "ⓘ Sua sessão será encerrada ao fechar o navegador",
+      "no_account": "Não tem conta?",
+      "register_link": "Cadastre-se"
+    },
+    "register": {
+      "title": "Crie sua conta",
+      "subtitle": "Tutor ou veterinário — escolha abaixo.",
+      "as_tutor": "🐾 Sou Tutor",
+      "as_vet": "🩺 Sou Veterinário",
+      "identity": "Identidade",
+      "contact": "Contato",
+      "address": "Endereço (opcional)",
+      "submit": "Criar conta",
+      "submitting": "Cadastrando…",
+      "already_have": "Já tem conta?",
+      "login_link": "Entrar"
+    },
+    "errors": {
+      "invalid_credentials": "Usuário ou senha inválidos.",
+      "generic": "Erro ao fazer login. Tente novamente.",
+      "register_generic": "Erro ao cadastrar. Verifique os dados.",
+      "fields_required": "Preencha os campos obrigatórios corretamente."
+    }
+  },
+  "fields": {
+    "full_name": "Nome completo",
+    "username": "Nome de usuário",
+    "email": "E-mail",
+    "phone": "Telefone/celular",
+    "document_optional": "CPF (opcional)",
+    "crmv": "CRMV (ex: SP-12345)",
+    "clinic_name": "Nome do consultório/clínica",
+    "password_min": "Senha (mín. 8 caracteres)",
+    "whatsapp_label": "Este número aceita mensagens via WhatsApp",
+    "zip": "CEP",
+    "search_zip": "Buscar",
+    "searching": "buscando…",
+    "street": "Rua/Logradouro",
+    "number": "Número",
+    "complement": "Complemento",
+    "district": "Bairro",
+    "city": "Cidade",
+    "uf": "UF"
+  },
+  "username_check": {
+    "checking": "verificando…",
+    "available": "✓ disponível",
+    "taken": "✗ já em uso",
+    "too_short": "mínimo 3 caracteres"
+  },
+  "tutor": {
+    "header_role": "Tutor",
+    "greeting": "Olá",
+    "my_pets": "Meus Pets",
+    "new_pet": "+ Novo Pet",
+    "register_pet": "Cadastrar pet",
+    "pet_name": "Nome do pet",
+    "breed": "Raça",
+    "weight_kg": "Peso (kg)",
+    "saving": "Salvando…",
+    "register_btn": "Cadastrar",
+    "no_pets": "Você ainda não cadastrou nenhum pet. Clique em + Novo Pet.",
+    "view_records": "📋 Ver prontuário",
+    "generate_pin": "🔑 Gerar PIN para vet",
+    "generating": "Gerando…",
+    "errors": {
+      "load": "Não foi possível carregar seus dados.",
+      "create_pet": "Erro ao criar pet.",
+      "generate_pin": "Erro ao gerar PIN."
+    }
+  },
+  "pin_modal": {
+    "title": "PIN gerado",
+    "subtitle": "Compartilhe este código com o veterinário. Vale por 1 hora.",
+    "copy": "Copiar"
+  },
+  "vet_section": {
+    "with_access_one": "{{count}} veterinário com acesso",
+    "with_access_other": "{{count}} veterinários com acesso",
+    "none": "🩺 Nenhum veterinário com acesso ativo",
+    "last_visit": "Última visita: {{date}}",
+    "revoke": "🚫 Revogar",
+    "confirm_title": "Revogar acesso?",
+    "confirm_text": "{{name}} não vai mais conseguir ver o prontuário do seu pet.",
+    "confirm_note": "✓ Os registros que ele já adicionou continuam no histórico.",
+    "revoking": "Revogando…",
+    "confirm_btn": "Confirmar revogação"
+  },
+  "members_section": {
+    "with_access_one": "{{count}} familiar com acesso",
+    "with_access_other": "{{count}} familiares com acesso",
+    "no_caretakers": "Nenhum familiar adicionado. Convide alguém pra ajudar a cuidar do {{petName}}.",
+    "added_at": "Adicionado em {{date}}",
+    "remove": "🚫 Remover",
+    "invite_btn": "+ Convidar familiar",
+    "confirm_title": "Remover familiar?",
+    "confirm_text": "{{name}} não vai mais conseguir acessar o prontuário do {{petName}}.",
+    "confirm_note": "✓ Os registros que essa pessoa adicionou continuam no histórico.",
+    "removing": "Removendo…",
+    "confirm_btn": "Confirmar remoção"
+  },
+  "vet": {
+    "header_role": "Veterinário",
+    "title": "Insira o PIN do paciente",
+    "subtitle": "O tutor gerou um PIN de 6 dígitos no aplicativo. Digite abaixo para acessar o prontuário.",
+    "validate": "Verificando…",
+    "submit": "Acessar Prontuário",
+    "errors": {
+      "invalid_pin": "PIN inválido ou expirado.",
+      "generic": "Erro ao validar PIN. Tente novamente."
+    },
+    "history": {
+      "title": "Pets visitados",
+      "subtitle": "Histórico dos PINs que você usou",
+      "empty": "Nenhum pet visitado ainda. Use um PIN ao lado para começar.",
+      "tutor_label": "Tutor: {{name}}",
+      "status_active": "Ativo",
+      "status_expired": "Expirado",
+      "status_revoked": "Revogado",
+      "alert_revoked": "O tutor revogou o seu acesso a este pet.",
+      "alert_expired": "Seu acesso a este pet expirou. Peça um novo PIN ao tutor."
+    }
+  },
+  "clinical": {
+    "title": "Prontuário",
+    "tab_clinical": "📋 Histórico Clínico",
+    "tab_audit": "📜 Histórico de alterações",
+    "loading": "Carregando prontuário…",
+    "load_error": "Não foi possível carregar o prontuário.",
+    "no_records": "Nenhum registro ainda. Adicione o primeiro à direita.",
+    "add_record_title": "Adicionar registro",
+    "fields": {
+      "title": "Título",
+      "description": "Descrição (opcional)"
+    },
+    "submit": "Adicionar",
+    "submitting": "Salvando…",
+    "submit_error": "Erro ao adicionar registro."
+  },
+  "record_types": {
+    "VACCINE": "💉 Vacina",
+    "EXAM": "🔬 Exame",
+    "PRESCRIPTION": "💊 Receita",
+    "SURGERY": "🏥 Cirurgia",
+    "NOTE": "📝 Nota"
+  },
+  "attachments": {
+    "count_one": "{{count}} anexo",
+    "count_other": "{{count}} anexos",
+    "upload": "+ Anexar arquivo",
+    "uploading": "Enviando…",
+    "view_title": "Visualizar",
+    "download_title": "Baixar",
+    "print_title": "Imprimir",
+    "delete_title": "Remover",
+    "confirm_delete": "Remover \"{{name}}\"?",
+    "errors": {
+      "load": "Não foi possível carregar anexos.",
+      "upload": "Erro ao enviar arquivo.",
+      "open": "Erro ao abrir arquivo.",
+      "delete": "Erro ao remover."
+    }
+  },
+  "audit": {
+    "loading": "Carregando histórico…",
+    "load_error": "Não foi possível carregar o histórico.",
+    "empty": "Nenhuma alteração registrada ainda.",
+    "actions": {
+      "CREATE": "Criou",
+      "UPDATE": "Atualizou",
+      "DELETE": "Excluiu",
+      "REVOKE": "Revogou",
+      "CLAIM": "Acessou"
+    },
+    "roles": {
+      "TUTOR": "Tutor",
+      "VET": "Veterinário",
+      "SYSTEM": "Sistema"
+    },
+    "relative": {
+      "now": "agora",
+      "minutes": "há {{count}} min",
+      "hours": "há {{count}} h",
+      "days": "há {{count}} dias"
+    }
+  },
+  "change_password": {
+    "title_forced": "Defina sua senha",
+    "title_normal": "Trocar senha",
+    "subtitle_forced": "Olá, {{name}}! Você foi convidado(a) por um familiar. Crie uma senha pessoal para continuar.",
+    "current": "Senha atual",
+    "new": "Nova senha (mín. 8 caracteres)",
+    "confirm": "Confirme a nova senha",
+    "mismatch": "As senhas não coincidem.",
+    "submit_forced": "Definir senha",
+    "submit_normal": "Trocar senha",
+    "submitting": "Salvando…",
+    "success": "✓ Senha alterada! Redirecionando para o login…",
+    "error_generic": "Erro ao trocar a senha. Tente novamente.",
+    "login_notice": "Senha alterada com sucesso. Faça login novamente."
+  }
+}

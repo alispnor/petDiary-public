@@ -1,11 +1,14 @@
 import { useState, type FormEvent } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import axios from "axios";
 import api from "../services/api";
 import { useAuthStore, type AuthUser } from "../store/authStore";
 import PasswordInput from "../components/PasswordInput";
+import LanguageSwitcher from "../components/LanguageSwitcher";
 
 export default function Login() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const setAuth = useAuthStore((s) => s.setAuth);
@@ -51,9 +54,9 @@ export default function Login() {
       navigate(user.role === "TUTOR" ? "/tutor" : "/vet", { replace: true });
     } catch (err) {
       if (axios.isAxiosError(err) && err.response?.status === 401) {
-        setError("Usuário ou senha inválidos.");
+        setError(t("auth.errors.invalid_credentials"));
       } else {
-        setError("Erro ao fazer login. Tente novamente.");
+        setError(t("auth.errors.generic"));
       }
     } finally {
       setLoading(false);
@@ -62,12 +65,15 @@ export default function Login() {
 
   return (
     <div className="flex min-h-screen items-center justify-center px-4">
+      <div className="absolute right-4 top-4">
+        <LanguageSwitcher />
+      </div>
       <div className="w-full max-w-md card">
         <div className="mb-8 text-center">
           <img src="/logo-192.png" alt="PetDiary" className="mx-auto h-20 w-20" />
-          <h1 className="mt-4 text-3xl font-extrabold text-gradient">PetDiary</h1>
+          <h1 className="mt-4 text-3xl font-extrabold text-gradient">{t("auth.login.title")}</h1>
           <p className="mt-2 text-sm text-gray-500">
-            Acesse sua conta de tutor ou veterinário
+            {t("auth.login.subtitle")}
           </p>
         </div>
 
@@ -80,7 +86,7 @@ export default function Login() {
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <input
             type="text"
-            placeholder="Usuário"
+            placeholder={t("auth.login.username")}
             autoComplete="username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
@@ -88,7 +94,7 @@ export default function Login() {
             className="rounded-lg border border-gray-300 px-4 py-3 text-sm focus:border-brand-teal focus:outline-none"
           />
           <PasswordInput
-            placeholder="Senha"
+            placeholder={t("auth.login.password")}
             autoComplete="current-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -102,7 +108,7 @@ export default function Login() {
               onChange={(e) => setKeepLoggedLocal(e.target.checked)}
               className="h-4 w-4 cursor-pointer accent-brand-teal"
             />
-            Manter-me conectado neste dispositivo
+            {t("auth.login.keep_logged")}
           </label>
 
           {error && (
@@ -116,19 +122,19 @@ export default function Login() {
             disabled={loading || !username || !password}
             className="btn-primary"
           >
-            {loading ? "Entrando…" : "Entrar"}
+            {loading ? t("auth.login.submitting") : t("auth.login.submit")}
           </button>
 
           {!keepLogged && (
             <p className="text-center text-xs text-gray-400">
-              ⓘ Sua sessão será encerrada ao fechar o navegador
+              {t("auth.login.session_warning")}
             </p>
           )}
 
           <p className="mt-2 text-center text-sm text-gray-500">
-            Não tem conta?{" "}
+            {t("auth.login.no_account")}{" "}
             <Link to="/register" className="font-semibold text-brand-teal hover:underline">
-              Cadastre-se
+              {t("auth.login.register_link")}
             </Link>
           </p>
         </form>
