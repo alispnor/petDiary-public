@@ -46,8 +46,17 @@ docker compose logs -f mobile
 docker compose logs -f celery_worker
 docker compose logs -f celery_beat
 
-# Rodar testes (quando existirem)
-docker compose exec api python manage.py test
+# Rodar smoke tests E2E (Spec 16 — 5 fluxos críticos)
+docker compose exec api pytest -m smoke -v
+
+# Rodar tudo
+docker compose exec api pytest
+
+# Rodar arquivo específico
+docker compose exec api pytest tests/test_smoke_core.py -v
+
+# Rodar com cobertura (precisa pytest-cov no requirements)
+docker compose exec api pytest --cov=. --cov-report=term-missing
 ```
 
 ## Celery (worker + beat)
