@@ -66,3 +66,5 @@ db.sqlite3
 
 # Pickup automático local (não compartilhar entre devs)
 .ai-pickup.md
+CLAUDE.md
+frontend-guidelines.md
