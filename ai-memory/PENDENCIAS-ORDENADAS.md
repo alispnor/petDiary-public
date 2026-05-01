@@ -157,6 +157,26 @@ manuais (`ml-*`/`mr-*` → `ms-*`/`me-*`) que precisará pontual.
 **Inclui:** decisão durável de "login admin é o mesmo /login universal"
 (não criar URL dedicada). Troca de senha já funciona em /conta.
 
+### C7. Spec 19 — Landing Page Pública (`/`) (pedido Ali 2026-05-01)
+- [ ] `pages/Landing.tsx` web — one-pager com hero, "como funciona",
+      planos FREE vs PRO, banner app mobile, benefícios, FAQ, footer
+- [ ] Roteamento: `/` mostra Landing para anônimos, redireciona
+      autenticados (substituir `HomeRedirect` atual)
+- [ ] **Multi-idioma desde o dia 1** (regra durável Ali):
+  - Detecção automática via `navigator.language` (já configurado em
+    `i18n-browser-languagedetector`)
+  - LanguageSwitcher manual no header sticky + footer
+  - Tradução real (não Google Translate) nos 6 idiomas: pt-BR, pt-PT,
+    en, es, fr, ar (com RTL via `applyDir()`)
+  - Namespace novo `landing.*` no `pt-BR.json` (~80 chaves) replicado
+    nos 5 outros locales
+- [ ] SEO: title, meta description, Open Graph, canonical
+- [ ] Lighthouse Performance ≥ 90 mobile/desktop
+- [ ] Lazy load com React.lazy + Suspense (não custa pra autenticado)
+
+**Spec:** `ai-memory/specs/19-landing-page-publica.md`
+**Não bloqueia nada** — pode rodar em qualquer momento.
+
 ---
 
 ## 🟡 PRIORIDADE D — Qualidade & Testes
