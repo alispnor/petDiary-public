@@ -161,14 +161,18 @@
 
 ## 15. Internacionalização (Spec 10 — parcial)
 
-| Funcionalidade | Web | Mobile | Backend | Notas |
-|---|---|---|---|---|
-| pt-BR | ✅ | 🟡 | ✅ | Mobile UI hardcoded; Accept-Language OK |
-| en | ✅ | ❌ | ✅ | |
-| es | ✅ | ❌ | ✅ | |
-| pt-PT | ❌ | ❌ | ✅ | Backend tem LANGUAGES configurado |
-| fr | ❌ | ❌ | ✅ | |
-| ar (RTL) | ❌ | ❌ | ✅ | |
+> **Decisão durável (Ali, 2026-05-01):** 6 idiomas oficiais.
+> Ver memory `project_idiomas_petdiary.md` para diretrizes.
+> Pendências detalhadas em `PENDENCIAS-ORDENADAS.md` seção B.
+
+| Idioma | Código | Web | Mobile | Backend | Notas |
+|---|---|---|---|---|---|
+| Português (Brasil) | `pt-BR` | ✅ | 🟡 | ✅ | Mobile UI hardcoded; só Accept-Language muda |
+| Português (Portugal) | `pt-PT` | ❌ | ❌ | ✅ | Pendência B1 |
+| English (US) | `en` | ✅ | ❌ | ✅ | Web pronto; mobile pendência B3+B4 |
+| Español | `es` | ✅ | ❌ | ✅ | Web pronto; mobile pendência B3+B4 |
+| Français | `fr` | ❌ | ❌ | ✅ | Pendência B1 |
+| العربية (Árabe) | `ar` | ❌ | ❌ | ✅ | **RTL** — pendência B2 (web) + B4 (mobile). Exige inverter layout |
 
 ---
 
