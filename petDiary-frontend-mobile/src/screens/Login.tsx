@@ -8,6 +8,7 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
+  Image,
 } from "react-native";
 import axios from "axios";
 import api from "../services/api";
@@ -62,6 +63,11 @@ export function LoginScreen({ navigation }: any) {
       </View>
 
       <View style={styles.card}>
+        <Image
+          source={require("../../assets/icon.png")}
+          style={styles.logo}
+          resizeMode="contain"
+        />
         <Text style={styles.title}>PetDiary</Text>
         <Text style={styles.subtitle}>
           Acesse sua conta para gerenciar a saúde do seu pet
@@ -144,6 +150,12 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
     shadowRadius: 8,
+  },
+  logo: {
+    width: 80,
+    height: 80,
+    alignSelf: "center",
+    marginBottom: spacing[3],
   },
   title: {
     fontSize: fontSize["3xl"],

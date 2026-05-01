@@ -9,6 +9,7 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  Image,
 } from "react-native";
 import axios from "axios";
 import api from "../services/api";
@@ -107,6 +108,11 @@ export function RegisterScreen({ navigation }: any) {
           <LanguageSwitcher />
         </View>
         <View style={styles.card}>
+          <Image
+            source={require("../../assets/icon.png")}
+            style={styles.logo}
+            resizeMode="contain"
+          />
           <Text style={styles.title}>Criar conta</Text>
           <Text style={styles.subtitle}>
             Cadastro de tutor — gerencie a saúde do seu pet
@@ -195,6 +201,12 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.bg.app },
   scroll: { flexGrow: 1, justifyContent: "center", padding: spacing[4] },
   langWrap: { marginBottom: spacing[3], alignItems: "flex-end" },
+  logo: {
+    width: 64,
+    height: 64,
+    alignSelf: "center",
+    marginBottom: spacing[2],
+  },
   card: {
     backgroundColor: colors.bg.surface,
     borderRadius: radii.lg,

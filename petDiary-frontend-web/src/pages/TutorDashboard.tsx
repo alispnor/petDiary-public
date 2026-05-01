@@ -6,6 +6,7 @@ import { useAuthStore } from "../store/authStore";
 import type { ActiveAccess, Pet, Species, VetAccessToken } from "../types";
 import VetAccessSection from "../components/VetAccessSection";
 import MembersSection from "../components/MembersSection";
+import LanguageSwitcher from "../components/LanguageSwitcher";
 
 // Lista usada apenas como fonte de keys; labels traduzidos via t() na render
 const SPECIES_OPTIONS: { value: Species; emoji: string }[] = [
@@ -135,6 +136,7 @@ export default function TutorDashboard() {
         </div>
         <div className="flex items-center gap-3">
           <span className="text-sm text-gray-600">{t("tutor.greeting")}, {user?.full_name}</span>
+          <LanguageSwitcher />
           <Link
             to="/conta"
             className="rounded-md bg-gray-100 px-4 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-200"

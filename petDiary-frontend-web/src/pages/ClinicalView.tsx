@@ -6,6 +6,7 @@ import type { HealthRecord, Pet, RecordType } from "../types";
 import RevokedModal from "../components/RevokedModal";
 import AuditTimeline from "../components/AuditTimeline";
 import AttachmentsList from "../components/AttachmentsList";
+import LanguageSwitcher from "../components/LanguageSwitcher";
 
 const SPECIES_LABEL: Record<string, string> = {
   DOG: "Cachorro",
@@ -118,12 +119,15 @@ export default function ClinicalView() {
             PetDiary <span className="text-gray-400 font-normal">Prontuário</span>
           </h1>
         </div>
-        <button
-          onClick={handleLogout}
-          className="rounded-md bg-gray-100 px-4 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-200"
-        >
-          Sair
-        </button>
+        <div className="flex items-center gap-3">
+          <LanguageSwitcher />
+          <button
+            onClick={handleLogout}
+            className="rounded-md bg-gray-100 px-4 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-200"
+          >
+            Sair
+          </button>
+        </div>
       </header>
 
       {error && (

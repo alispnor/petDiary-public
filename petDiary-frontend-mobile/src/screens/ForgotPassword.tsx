@@ -7,6 +7,7 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
+  Image,
 } from "react-native";
 import axios from "axios";
 import api from "../services/api";
@@ -41,6 +42,11 @@ export function ForgotPasswordScreen({ navigation }: any) {
         <LanguageSwitcher />
       </View>
       <View style={styles.card}>
+        <Image
+          source={require("../../assets/icon.png")}
+          style={styles.logo}
+          resizeMode="contain"
+        />
         <Text style={styles.title}>Recuperar senha</Text>
 
         {sent ? (
@@ -114,6 +120,12 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: spacing[6],
     right: spacing[4],
+  },
+  logo: {
+    width: 64,
+    height: 64,
+    alignSelf: "center",
+    marginBottom: spacing[3],
   },
   card: {
     backgroundColor: colors.bg.surface,
