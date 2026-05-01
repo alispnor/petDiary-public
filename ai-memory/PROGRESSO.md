@@ -1,7 +1,7 @@
 # 📊 PROGRESSO — petDiary
 
 > **Arquivo vivo.** Atualize a cada sessão de trabalho.
-> Última atualização: **2026-05-01 (sessão 5 — paridade mobile↔web entregue: cadastro/forgot/idiomas/registros/anexos/membros/vets no mobile + matriz de paridade)**
+> Última atualização: **2026-05-01 (sessão 6 — Spec 17 backend + mobile: app notifications, push mockado, hook automático, telas mobile com excluir/limpar)**
 
 ---
 
@@ -623,6 +623,68 @@ Total commits nesta hora: ~6 commits separados, todos com push.
 🎯 **Marco da sessão 5:** mobile agora tem paridade essencial com o web.
 Pendências restantes catalogadas em PARIDADE-MOBILE-WEB.md +
 Spec 17 (notificações).
+
+### 2026-05-01 — Sessão 6 (Spec 17 — notificações)
+> Ali pediu sistema completo de notificações com push, preferências
+> on/off por tipo, e disponível em web e mobile (paridade total). Plano
+> dividido em 4 fases (Spec 17). Entregue Fase 5a (backend) e 5c (mobile).
+
+**Fase 5a — Backend** (commit `926c836`):
+- App `notifications/` com 3 modelos: Notification (in-app),
+  NotificationPreference (toggles), DevicePushToken (suporta Expo
+  iOS/Android e Web Push VAPID)
+- 8 endpoints sob `/api/v1/notifications/`
+- PushService abstrato + MockPushService (default DEV) + MultiPushService
+  (produção — Expo HTTP API + pywebpush, lazy import)
+- helpers.notify(user, type, title, body, data) — falha silenciosa
+- Tasks Celery: send_push_async (fanout) + check_payment_due_task (beat
+  diário)
+- Hook automático em ClaimAccessView: vet usa PIN → tutor recebe notif
+  "VET_ACCESS_CLAIMED" com deep-link
+- Settings: PUSH_SERVICE_MODE=mock (toggle p/ multi em prod)
+- Validado E2E via curl: list/prefs/register-device/vapid-key OK; hook
+  automático funcionou (Dra. Camila usou PIN → Ana recebeu notif)
+
+**Fase 5c — Mobile** (commit `c950e9a`):
+- expo-notifications + expo-device instalados
+- services/notifications.ts: registerForPushNotificationsAsync (pede
+  permissão, registra token via API) + setupNotificationTapHandler
+  (deep link)
+- Tela `Notifications.tsx`: lista paginada, mark-read no tap, deep
+  link, long-press para excluir, botões "Marcar todas lidas" + "Limpar
+  tudo"
+- Tela `NotificationPreferences.tsx`: 7 toggles Switch por tipo, salva
+  no toggle, botão "Ativar no dispositivo" para re-pedir permissão
+- HomeTutor: badge 🔔 com contador unread; tap navega
+- AccountSettings: atalho "🔔 Notificações"
+- AppNavigator: dispara registerForPushNotificationsAsync pós-login
+
+**Backend extension** (no commit 5c): DELETE individual + clear-all
+adicionados aos endpoints (Ali pediu durante a Fase 5c).
+
+**Documentos atualizados:**
+- `ai-memory/PARIDADE-MOBILE-WEB.md` — seção 12 (Notificações)
+  atualizada com 11 novas linhas (lista, push expo, prefs, excluir,
+  limpar, badge, etc.) marcando ✅ no mobile
+- `IMAGENS-DO-PROJETO.md` (NOVO commit `0839052`) — mapa de todas as
+  imagens do projeto (24 arquivos) com caminho/dimensão atual/ideal/
+  uso para Ali substituir manualmente
+
+**Falta para fechar Spec 17:**
+- Fase 5b — modelo Reminder + tasks Celery (vacina/retorno-vet
+  automáticos por data)
+- Fase 5d — Web: sw.js + subscribe VAPID + telas Notifications/
+  NotificationPreferences + badge no header
+- VAPID keys (já em PENDENCIAS-HUMANAS item 14)
+
+**Commits desta sessão (em ordem):**
+1. `926c836` feat(backend): Spec 17 Fase 5a — app notifications
+2. `0839052` docs: IMAGENS-DO-PROJETO.md
+3. `c950e9a` feat: Spec 17 Fase 5c — mobile + delete/clear-all
+
+🎯 **Marco da sessão 6:** mobile já recebe e gerencia notificações
+in-app + preferências. Falta web (Fase 5d) e lembretes automáticos
+(Fase 5b).
 
 ### Próxima sessão — TODO
 **Roadmap principal + Fases A-G → 100% completo!** ✨

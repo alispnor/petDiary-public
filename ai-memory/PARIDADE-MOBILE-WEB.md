@@ -129,14 +129,21 @@
 | Cupons CRUD + relatório | ✅ | ❌ | ✅ | |
 | Tickets stub | ✅ | ❌ | 🟡 | |
 
-## 12. Notificações (Spec 17 — pendente)
+## 12. Notificações (Spec 17 — em progresso)
 
 | Funcionalidade | Web | Mobile | Backend | Notas |
 |---|---|---|---|---|
-| Lista de notificações in-app | ❌ | ❌ | ❌ | |
-| Push (Expo / Web Push VAPID) | ❌ | ❌ | ❌ | |
-| Preferências por tipo (toggle) | ❌ | ❌ | ❌ | |
-| Tipos: vacina/retorno-vet/pagamento/PIN/sistema | ❌ | ❌ | ❌ | |
+| Lista de notificações in-app | ❌ | ✅ | ✅ | Web pendente Fase 5d |
+| Push Expo (iOS/Android) | ➖ | ✅ | ✅ | Mock ativo; real exige EAS Build |
+| Push Web (VAPID) | ❌ | ➖ | 🟡 | Service criado; Falta sw.js + subscribe + VAPID keys |
+| Preferências por tipo (toggle) | ❌ | ✅ | ✅ | Tela `NotificationPreferences` no mobile |
+| Tipos: vacina/retorno-vet/pagamento/PIN/sistema | ❌ | ✅ | ✅ | 7 tipos, hook automático em ClaimAccess |
+| Excluir notificação individual | ❌ | ✅ | ✅ | DELETE /notifications/&lt;id&gt;/ |
+| Limpar todas | ❌ | ✅ | ✅ | DELETE /notifications/clear-all/ |
+| Marcar como lida | ❌ | ✅ | ✅ | |
+| Marcar todas como lidas | ❌ | ✅ | ✅ | |
+| Badge de unread no header | ❌ | ✅ | ✅ | `/notifications/unread-count/` |
+| Lembretes (vacina/retorno) automáticos | ➖ | ➖ | ❌ | Spec 17 Fase 5b — modelo Reminder + tasks |
 
 ## 13. IA aplicada (Spec 04 — gated PRO)
 
