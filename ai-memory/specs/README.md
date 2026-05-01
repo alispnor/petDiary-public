@@ -9,6 +9,7 @@ Pasta com **specs/prompts versionadas** para módulos grandes que serão impleme
 | 01 | [Backend — Assinaturas + Webhook + Deleção LGPD + Suporte](./01-backend-assinaturas-suporte-conta.md) | Django REST | Fases 1-2 (cadastro pronto) |
 | 02 | [Mobile — Cobrança + Gestão de Conta](./02-mobile-cobranca-conta.md) | Expo / RN | Spec 01 implementada |
 | 03 | [Mobile — Central de Ajuda](./03-mobile-central-ajuda.md) | Expo / RN | Endpoint `/support/tickets/` da Spec 01 |
+| 04 | [Integrações OpenAI + AWS S3](./04-integracoes-openai-aws-s3.md) | Backend + Mobile + Web | Fase 7 (uploads) implementada |
 
 ## Ordem de execução recomendada
 
