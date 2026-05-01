@@ -159,6 +159,18 @@
 |---|---|---|---|---|
 | WebSocket para atualizações ao vivo | ❌ | ❌ | ❌ | |
 
+## 14.5. Resiliência (Spec 15 — D3 ✅)
+
+| Funcionalidade | Web | Mobile | Backend | Notas |
+|---|---|---|---|---|
+| ErrorBoundary global (tela amigável em crash) | ✅ | ✅ | — | components/ErrorBoundary.tsx (D3, commit `01a9adc`) |
+| Interceptor 401 → logout | ✅ | ✅ | — | api.ts |
+| Interceptor 403 → revoke (web) / silencioso (mobile) | ✅ | 🟡 | — | Mobile só loga; cada caller mostra Alert |
+| Network error handling | ✅ | ✅ | — | console.warn nas duas |
+| Zustand selectors específicos | ✅ | ✅ | — | Auditoria confirmou padrão correto |
+| FlatList virtualizada (mobile) | — | ✅ | — | keyExtractor presente em todas |
+| Upload validation (MIME + magic bytes + size) | — | — | ✅ | D2, commit `ee652ef` |
+
 ## 15. Internacionalização (Spec 10 — parcial)
 
 > **Decisão durável (Ali, 2026-05-01):** 6 idiomas oficiais.

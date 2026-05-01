@@ -195,13 +195,28 @@ manuais (`ml-*`/`mr-*` → `ms-*`/`me-*`) que precisará pontual.
 
 ---
 
-### D3. Spec 15 — Audit performance frontend
-Já salva em `ai-memory/specs/15-auditoria-performance-frontend.md`.
+### D3. Spec 15 — Audit performance frontend ✅ (commit `01a9adc`)
+- [x] Auditoria por subagente Explore (4 áreas: Zustand selectors,
+      virtualização, ErrorBoundary, interceptor)
+- [x] **Pontos OK encontrados:** Zustand selectors corretos nas duas
+      plataformas; FlatList mobile já com keyExtractor; interceptor 401
+      web funciona
+- [x] **HIGH** — `components/ErrorBoundary.tsx` (web + mobile) com UI
+      amigável + botão reset; plugado em App.tsx
+- [x] **MEDIUM** — Mobile `services/api.ts` ganhou handler de network
+      error (console.warn sem derrubar UI)
+- [x] Smoke tests pós-mudanças: 5/5 verdes (4.84s)
 
-- [ ] Lighthouse no web (TutorDashboard, ClinicalView)
-- [ ] Bundle size analysis Vite
-- [ ] React Native: lista virtualizada (FlatList já OK), evitar re-render
-      do header
+### D3.5 — Pendências server-side abertas (próxima sessão)
+- [ ] **HIGH** Web `pages/admin/AdminUsers.tsx` + `AdminCoupons.tsx`:
+      sem paginação. Backend precisa expor `?page` + tela usar
+      paginação client (ou tabela virtualizada como TanStack Table)
+- [ ] **HIGH** Web `components/AuditTimeline.tsx`: carrega
+      `?page_size=100` e renderiza tudo. Mudar para scroll infinito
+      ou reduzir page_size para 20 com botão "Ver mais"
+- [ ] **LOW** Web `components/AttachmentsList.tsx`: blob URL revoke
+      via setTimeout 60s. Funciona mas pode trackear setTimeout IDs
+      e cancelar no cleanup do componente
 
 ---
 

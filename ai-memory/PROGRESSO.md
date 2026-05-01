@@ -1,7 +1,7 @@
 # 📊 PROGRESSO — petDiary
 
 > **Arquivo vivo.** Atualize a cada sessão de trabalho.
-> Última atualização: **2026-05-01 (sessão 14 — D2 Spec 14: upload validation crítico + N+1 + 7 índices novos)**
+> Última atualização: **2026-05-01 (sessão 15 — D3 Spec 15: ErrorBoundary nas duas plataformas + interceptor mobile)**
 
 ---
 
@@ -966,6 +966,48 @@ fix do warning de deprecação Node 20)
 🎯 **Marco da sessão 14:** backend auditado em segurança (JWT/upload/
 IDOR) e performance (N+1/índices). Próximo: D3 (Spec 15 — frontend
 audit) ou C1-C5 (paridade restante mobile).
+
+### 2026-05-01 — Sessão 15 (D3 — audit Spec 15 frontend)
+> Auditoria frontend executada por subagente Explore (4 áreas).
+> Boa notícia: Zustand selectors estão bem aplicados nas duas plataformas,
+> FlatList mobile já tem keyExtractor. Issues relevantes corrigidos:
+
+**Entregue (commit `01a9adc`):**
+
+HIGH — ErrorBoundary global ausente em web + mobile
+- Web `components/ErrorBoundary.tsx`: classe React com
+  getDerivedStateFromError + UI amigável (😿 + erro + botões "Tentar
+  novamente"/"Recarregar app"). Plugado em App.tsx envolvendo o
+  BrowserRouter.
+- Mobile `components/ErrorBoundary.tsx`: equivalente RN com tokens do
+  design system. Plugado em App.tsx envolvendo SafeAreaProvider.
+- Limitação intrínseca: não captura erros assíncronos — esses já são
+  tratados por interceptors do axios e Alert.alert dos services.
+
+MEDIUM — Mobile API sem handler de network error
+- `services/api.ts` ganhou log explícito (`console.warn`) para erros
+  sem `response` (timeout/offline/DNS). Não derruba UI; cada caller
+  decide se mostra Alert.
+
+**Pendências abertas (D3.5 — server-side, próxima sessão):**
+- HIGH AdminUsers/AdminCoupons sem paginação server-side
+- HIGH AuditTimeline carrega 100 records de uma vez
+- LOW AttachmentsList web revoga blob URL via setTimeout (funciona,
+  mas poderia trackear ID + cancelar no cleanup)
+
+**Validação:**
+- TS web + mobile: limpo
+- pytest -m smoke: 5/5 verdes (4.84s, sem regressão)
+
+**Documentos:**
+- PENDENCIAS-ORDENADAS.md: D3 marcado completo. D3.5 aberto com
+  3 sub-itens server-side
+- PROGRESSO.md: entry da sessão 15
+
+🎯 **Marco da sessão 15:** auditorias D2 (backend) + D3 (frontend)
+fechadas. App protegido contra crashes brancos, uploads validados,
+queries indexadas. Pendências server-side de paginação ficam para
+próxima sessão.
 
 ### Próxima sessão — TODO
 **Roadmap principal + Fases A-G → 100% completo!** ✨
