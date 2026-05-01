@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useMemo } from 'react';
+import React, { useEffect, useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -6,299 +6,312 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
-} from 'react-native';
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
-import { useAppStore } from '../store/useAppStore';
-import { handleDocumentCapture } from '../utils/handleDocumentCapture';
-import type { RootStackParamList } from '../navigation/AppNavigator';
-import type { TimelineRecord } from '../types';
+  ActivityIndicator,
+  Modal,
+  Clipboard,
+  Platform,
+} from "react-native";
+import type { NativeStackScreenProps } from "@react-navigation/native-stack";
+import api from "../services/api";
+import type { RootStackParamList } from "../navigation/AppNavigator";
+import type { HealthRecord, RecordType, VetAccessToken } from "../types";
+import { colors, radii, spacing, fontSize, fontWeight } from "../theme";
 
-type Props = NativeStackScreenProps<RootStackParamList, 'PetDashboard'>;
+type Props = NativeStackScreenProps<RootStackParamList, "PetDashboard">;
 
-// Timeline simulada
-const MOCK_TIMELINE: TimelineRecord[] = [
-  {
-    id: 'rec-1',
-    petId: '1',
-    type: 'vaccine',
-    title: 'V10 - Dose 3',
-    description: 'Vacina polivalente aplicada na CliniVet',
-    date: '2024-11-20',
-  },
-  {
-    id: 'rec-2',
-    petId: '1',
-    type: 'consultation',
-    title: 'Check-up anual',
-    description: 'Exames de sangue e ultrassom - tudo normal',
-    date: '2024-10-05',
-  },
-  {
-    id: 'rec-3',
-    petId: '1',
-    type: 'medication',
-    title: 'Vermifugo',
-    description: 'Drontal Plus administrado',
-    date: '2024-09-15',
-  },
-  {
-    id: 'rec-4',
-    petId: '1',
-    type: 'exam',
-    title: 'Hemograma completo',
-    description: 'Resultados dentro da normalidade',
-    date: '2024-08-01',
-  },
-];
+const TYPE_ICONS: Record<RecordType, string> = {
+  VACCINE: "💉",
+  EXAM: "🔬",
+  PRESCRIPTION: "💊",
+  SURGERY: "🏥",
+  NOTE: "📝",
+};
 
-const TYPE_ICONS: Record<TimelineRecord['type'], string> = {
-  vaccine: '💉',
-  consultation: '🩺',
-  exam: '🔬',
-  medication: '💊',
-  note: '📝',
+const TYPE_LABELS: Record<RecordType, string> = {
+  VACCINE: "Vacina",
+  EXAM: "Exame",
+  PRESCRIPTION: "Receita",
+  SURGERY: "Cirurgia",
+  NOTE: "Nota",
 };
 
 export function PetDashboard({ route }: Props) {
   const { pet } = route.params;
-  const activePet = useAppStore((s) => s.activePet);
-  const bottomSheetRef = useRef<BottomSheet>(null);
-  const snapPoints = useMemo(() => ['40%', '70%'], []);
 
-  const handleGeneratePin = useCallback(() => {
-    const pin = Math.random().toString(36).substring(2, 8).toUpperCase();
-    Alert.alert('PIN Gerado', `Compartilhe este PIN com o veterinário:\n\n${pin}`, [
-      { text: 'Copiar', onPress: () => {} },
-      { text: 'OK' },
-    ]);
-  }, []);
+  const [records, setRecords] = useState<HealthRecord[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const handleOpenSheet = useCallback(() => {
-    bottomSheetRef.current?.expand();
-  }, []);
+  const [generatingPin, setGeneratingPin] = useState(false);
+  const [pinResult, setPinResult] = useState<VetAccessToken | null>(null);
 
-  const handleCapture = useCallback(async () => {
+  const loadRecords = useCallback(async () => {
+    setLoading(true);
+    setError("");
     try {
-      const result = await handleDocumentCapture(pet.id);
-      Alert.alert('Sucesso', `Documento processado: ${result.id}`);
-      bottomSheetRef.current?.close();
-    } catch (error) {
-      Alert.alert('Erro', 'Falha ao processar documento. Tente novamente.');
+      const { data } = await api.get<HealthRecord[]>(
+        `/pets/${pet.id}/health-records/`
+      );
+      setRecords(data);
+    } catch {
+      setError("Não foi possível carregar os registros.");
+    } finally {
+      setLoading(false);
     }
   }, [pet.id]);
 
-  const renderTimelineItem = ({ item }: { item: TimelineRecord }) => (
+  useEffect(() => {
+    loadRecords();
+  }, [loadRecords]);
+
+  const handleGeneratePin = async () => {
+    setGeneratingPin(true);
+    try {
+      const { data } = await api.post<VetAccessToken>("/access/generate-pin/", {
+        pet: pet.id,
+      });
+      setPinResult(data);
+    } catch {
+      Alert.alert("Erro", "Não foi possível gerar o PIN.");
+    } finally {
+      setGeneratingPin(false);
+    }
+  };
+
+  const handleCopyPin = () => {
+    if (pinResult) {
+      Clipboard.setString(pinResult.access_code);
+      Alert.alert("Copiado!", "PIN copiado para a área de transferência.");
+    }
+  };
+
+  const renderRecord = ({ item }: { item: HealthRecord }) => (
     <View style={styles.timelineItem}>
       <View style={styles.timelineDot}>
-        <Text style={styles.timelineIcon}>{TYPE_ICONS[item.type]}</Text>
+        <Text style={styles.timelineIcon}>{TYPE_ICONS[item.record_type]}</Text>
       </View>
       <View style={styles.timelineContent}>
-        <Text style={styles.timelineDate}>{item.date}</Text>
-        <Text style={styles.timelineTitle}>{item.title}</Text>
-        {item.description && (
+        <Text style={styles.timelineDate}>{item.date_occurred}</Text>
+        <Text style={styles.timelineTitle}>
+          {TYPE_LABELS[item.record_type]} · {item.title}
+        </Text>
+        {item.description ? (
           <Text style={styles.timelineDesc}>{item.description}</Text>
-        )}
+        ) : null}
       </View>
     </View>
   );
 
   return (
     <View style={styles.container}>
-      {/* Pet Info Card */}
       <View style={styles.petCard}>
-        <Text style={styles.petName}>{activePet?.name ?? pet.name}</Text>
+        <Text style={styles.petName}>{pet.name}</Text>
         <Text style={styles.petDetail}>
-          {pet.breed} | {pet.species}
+          {pet.breed || "—"}
+          {pet.weight_kg ? ` · ${pet.weight_kg} kg` : ""}
         </Text>
-        {pet.birthDate && (
-          <Text style={styles.petDetail}>Nascimento: {pet.birthDate}</Text>
-        )}
       </View>
 
-      {/* Action Buttons */}
       <View style={styles.actions}>
-        <TouchableOpacity style={styles.btnPin} onPress={handleGeneratePin}>
-          <Text style={styles.btnText}>🔑 Gerar PIN</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.btnAdd} onPress={handleOpenSheet}>
-          <Text style={styles.btnText}>+ Adicionar Registro</Text>
+        <TouchableOpacity
+          style={styles.btnPin}
+          onPress={handleGeneratePin}
+          disabled={generatingPin}
+        >
+          <Text style={styles.btnText}>
+            {generatingPin ? "Gerando…" : "🔑 Gerar PIN"}
+          </Text>
         </TouchableOpacity>
       </View>
 
-      {/* Timeline */}
-      <Text style={styles.sectionTitle}>Timeline</Text>
-      <FlatList
-        data={MOCK_TIMELINE}
-        keyExtractor={(item) => item.id}
-        renderItem={renderTimelineItem}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.timeline}
-      />
+      <Text style={styles.sectionTitle}>Histórico Clínico</Text>
 
-      {/* Bottom Sheet - Adicionar Registro */}
-      <BottomSheet
-        ref={bottomSheetRef}
-        index={-1}
-        snapPoints={snapPoints}
-        enablePanDownToClose
+      {loading ? (
+        <ActivityIndicator size="large" color={colors.brand.teal} style={{ marginTop: 32 }} />
+      ) : error ? (
+        <View style={styles.center}>
+          <Text style={styles.errorText}>{error}</Text>
+          <TouchableOpacity onPress={loadRecords} style={styles.retryBtn}>
+            <Text style={styles.btnText}>Tentar novamente</Text>
+          </TouchableOpacity>
+        </View>
+      ) : records.length === 0 ? (
+        <View style={styles.center}>
+          <Text style={styles.emptyText}>
+            Nenhum registro ainda.{"\n"}Adicione pelo portal web.
+          </Text>
+        </View>
+      ) : (
+        <FlatList
+          data={records}
+          keyExtractor={(item) => item.id}
+          renderItem={renderRecord}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.timeline}
+        />
+      )}
+
+      {/* PIN Modal */}
+      <Modal
+        visible={!!pinResult}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setPinResult(null)}
       >
-        <BottomSheetView style={styles.sheetContent}>
-          <Text style={styles.sheetTitle}>Adicionar Registro</Text>
-
-          <TouchableOpacity style={styles.sheetOption} onPress={handleCapture}>
-            <Text style={styles.sheetOptionIcon}>📄</Text>
-            <View>
-              <Text style={styles.sheetOptionTitle}>Capturar Documento</Text>
-              <Text style={styles.sheetOptionDesc}>
-                Tire uma foto de um exame, receita ou atestado
-              </Text>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalCard}>
+            <Text style={styles.modalEmoji}>🔑</Text>
+            <Text style={styles.modalTitle}>PIN gerado!</Text>
+            <Text style={styles.modalSubtitle}>
+              Compartilhe com o veterinário. Vale por 1 hora.
+            </Text>
+            <View style={styles.pinBox}>
+              <Text style={styles.pinCode}>{pinResult?.access_code}</Text>
             </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.sheetOption}>
-            <Text style={styles.sheetOptionIcon}>✏️</Text>
-            <View>
-              <Text style={styles.sheetOptionTitle}>Nota Manual</Text>
-              <Text style={styles.sheetOptionDesc}>
-                Registre observações ou sintomas
-              </Text>
+            <View style={styles.modalActions}>
+              <TouchableOpacity style={styles.btnCopy} onPress={handleCopyPin}>
+                <Text style={styles.btnCopyText}>Copiar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.btnClose}
+                onPress={() => setPinResult(null)}
+              >
+                <Text style={styles.btnText}>Fechar</Text>
+              </TouchableOpacity>
             </View>
-          </TouchableOpacity>
-        </BottomSheetView>
-      </BottomSheet>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F5F7FA',
-  },
+  container: { flex: 1, backgroundColor: colors.bg.app },
   petCard: {
-    backgroundColor: '#4A90D9',
-    margin: 16,
-    borderRadius: 16,
-    padding: 20,
+    backgroundColor: colors.brand.teal,
+    margin: spacing[4],
+    borderRadius: radii.lg,
+    padding: spacing[5],
   },
-  petName: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#fff',
-  },
-  petDetail: {
-    fontSize: 14,
-    color: '#D6E4F0',
-    marginTop: 4,
-  },
-  actions: {
-    flexDirection: 'row',
-    paddingHorizontal: 16,
-    gap: 12,
-  },
+  petName: { fontSize: fontSize["2xl"], fontWeight: fontWeight.bold, color: "#fff" },
+  petDetail: { fontSize: fontSize.sm, color: "rgba(255,255,255,0.85)", marginTop: 4 },
+  actions: { flexDirection: "row", paddingHorizontal: spacing[4], gap: spacing[3] },
   btnPin: {
     flex: 1,
-    backgroundColor: '#F0AD4E',
-    paddingVertical: 12,
-    borderRadius: 10,
-    alignItems: 'center',
+    backgroundColor: colors.brand.orange,
+    paddingVertical: spacing[3],
+    borderRadius: radii.pill,
+    alignItems: "center",
   },
-  btnAdd: {
-    flex: 1,
-    backgroundColor: '#5CB85C',
-    paddingVertical: 12,
-    borderRadius: 10,
-    alignItems: 'center',
-  },
-  btnText: {
-    color: '#fff',
-    fontWeight: '600',
-    fontSize: 14,
-  },
+  btnText: { color: "#fff", fontWeight: fontWeight.semibold, fontSize: fontSize.base },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#1A1A2E',
-    marginHorizontal: 16,
-    marginTop: 24,
-    marginBottom: 12,
+    fontSize: fontSize.lg,
+    fontWeight: fontWeight.bold,
+    color: colors.text.primary,
+    marginHorizontal: spacing[4],
+    marginTop: spacing[6],
+    marginBottom: spacing[3],
   },
-  timeline: {
-    paddingHorizontal: 16,
-    paddingBottom: 100,
-  },
-  timelineItem: {
-    flexDirection: 'row',
-    marginBottom: 16,
-  },
+  timeline: { paddingHorizontal: spacing[4], paddingBottom: spacing[10] },
+  timelineItem: { flexDirection: "row", marginBottom: spacing[4] },
   timelineDot: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#E8F0FE',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 12,
+    backgroundColor: "#E0F2F4",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: spacing[3],
   },
-  timelineIcon: {
-    fontSize: 18,
-  },
+  timelineIcon: { fontSize: 18 },
   timelineContent: {
     flex: 1,
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    padding: 12,
+    backgroundColor: colors.bg.surface,
+    borderRadius: radii.md,
+    padding: spacing[3],
     elevation: 1,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 2,
   },
-  timelineDate: {
-    fontSize: 12,
-    color: '#999',
-  },
+  timelineDate: { fontSize: fontSize.xs, color: colors.text.secondary },
   timelineTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#1A1A2E',
+    fontSize: fontSize.base,
+    fontWeight: fontWeight.semibold,
+    color: colors.text.primary,
     marginTop: 2,
   },
-  timelineDesc: {
-    fontSize: 13,
-    color: '#666',
-    marginTop: 4,
+  timelineDesc: { fontSize: fontSize.sm, color: colors.text.secondary, marginTop: 4 },
+  center: { padding: spacing[8], alignItems: "center" },
+  emptyText: { color: colors.text.secondary, textAlign: "center" },
+  errorText: { color: "#c00", textAlign: "center", marginBottom: spacing[3] },
+  retryBtn: {
+    backgroundColor: colors.brand.teal,
+    paddingHorizontal: spacing[6],
+    paddingVertical: spacing[3],
+    borderRadius: radii.pill,
   },
-  sheetContent: {
-    padding: 24,
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.6)",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: spacing[4],
   },
-  sheetTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#1A1A2E',
-    marginBottom: 20,
+  modalCard: {
+    width: "100%",
+    maxWidth: 400,
+    backgroundColor: "#fff",
+    borderRadius: radii.lg,
+    padding: spacing[6],
+    alignItems: "center",
   },
-  sheetOption: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#F5F7FA',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
-    gap: 12,
+  modalEmoji: { fontSize: 48 },
+  modalTitle: {
+    fontSize: fontSize.xl,
+    fontWeight: fontWeight.bold,
+    color: colors.text.primary,
+    marginTop: spacing[2],
   },
-  sheetOptionIcon: {
-    fontSize: 28,
+  modalSubtitle: {
+    fontSize: fontSize.sm,
+    color: colors.text.secondary,
+    textAlign: "center",
+    marginTop: spacing[2],
+    marginBottom: spacing[4],
   },
-  sheetOptionTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#1A1A2E',
+  pinBox: {
+    width: "100%",
+    backgroundColor: "#f4f4f4",
+    borderRadius: radii.md,
+    paddingVertical: spacing[6],
+    alignItems: "center",
+    marginBottom: spacing[5],
   },
-  sheetOptionDesc: {
-    fontSize: 13,
-    color: '#666',
-    marginTop: 2,
+  pinCode: {
+    fontSize: 40,
+    fontWeight: fontWeight.extraBold,
+    letterSpacing: 8,
+    color: colors.brand.teal,
+    fontFamily: Platform.select({ ios: "Courier", android: "monospace" }) as any,
+  },
+  modalActions: { flexDirection: "row", gap: spacing[3], width: "100%" },
+  btnCopy: {
+    flex: 1,
+    borderWidth: 2,
+    borderColor: colors.brand.teal,
+    paddingVertical: spacing[3],
+    borderRadius: radii.pill,
+    alignItems: "center",
+  },
+  btnCopyText: { color: colors.brand.teal, fontWeight: fontWeight.semibold },
+  btnClose: {
+    flex: 1,
+    backgroundColor: colors.brand.teal,
+    paddingVertical: spacing[3],
+    borderRadius: radii.pill,
+    alignItems: "center",
   },
 });

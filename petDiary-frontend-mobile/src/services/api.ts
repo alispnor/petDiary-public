@@ -1,30 +1,29 @@
-import axios from 'axios';
-import { useAppStore } from '../store/useAppStore';
+import axios from "axios";
+import { useAppStore } from "../store/useAppStore";
 
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://api:8000';
+const API_BASE_URL =
+  process.env.EXPO_PUBLIC_API_URL || "http://192.168.10.203:8000/api/v1";
 
 const api = axios.create({
   baseURL: API_BASE_URL,
   timeout: 30000,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
-// Interceptor de request: injeta token e idioma
 api.interceptors.request.use((config) => {
-  const { user, language } = useAppStore.getState();
+  const { token, language } = useAppStore.getState();
 
-  if (user?.token) {
-    config.headers.Authorization = `Bearer ${user.token}`;
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
   }
 
-  config.headers['Accept-Language'] = language;
+  config.headers["Accept-Language"] = language;
 
   return config;
 });
 
-// Interceptor de response: trata 401
 api.interceptors.response.use(
   (response) => response,
   (error) => {
