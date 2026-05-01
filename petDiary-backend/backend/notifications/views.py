@@ -61,6 +61,23 @@ class MarkAllReadView(APIView):
         return Response({"updated": updated})
 
 
+class DeleteOneView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def delete(self, request, pk):
+        notif = get_object_or_404(Notification, pk=pk, user=request.user)
+        notif.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class ClearAllView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def delete(self, request):
+        deleted, _ = Notification.objects.filter(user=request.user).delete()
+        return Response({"deleted": deleted})
+
+
 class PreferencesView(generics.RetrieveUpdateAPIView):
     serializer_class = NotificationPreferenceSerializer
     permission_classes = [permissions.IsAuthenticated]

@@ -1,6 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { View, ActivityIndicator, StyleSheet } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
+import {
+  NavigationContainer,
+  createNavigationContainerRef,
+} from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useAppStore } from "../store/useAppStore";
 import { LoginScreen } from "../screens/Login";
@@ -11,6 +14,12 @@ import { PetDashboard } from "../screens/PetDashboard";
 import { AccountSettings } from "../screens/AccountSettings";
 import { SubscriptionDashboard } from "../screens/SubscriptionDashboard";
 import { HelpCenter } from "../screens/HelpCenter";
+import { NotificationsScreen } from "../screens/Notifications";
+import { NotificationPreferencesScreen } from "../screens/NotificationPreferences";
+import {
+  registerForPushNotificationsAsync,
+  setupNotificationTapHandler,
+} from "../services/notifications";
 import { colors } from "../theme";
 import type { Pet } from "../types";
 
@@ -23,9 +32,12 @@ export type RootStackParamList = {
   AccountSettings: undefined;
   SubscriptionDashboard: undefined;
   HelpCenter: undefined;
+  Notifications: undefined;
+  NotificationPreferences: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
+const navigationRef = createNavigationContainerRef<RootStackParamList>();
 
 export function AppNavigator() {
   const token = useAppStore((s) => s.token);
@@ -33,6 +45,7 @@ export function AppNavigator() {
   const [hydrated, setHydrated] = useState(
     useAppStore.persist.hasHydrated()
   );
+  const pushRegistered = useRef(false);
 
   useEffect(() => {
     if (hydrated) return;
@@ -40,6 +53,27 @@ export function AppNavigator() {
     if (useAppStore.persist.hasHydrated()) setHydrated(true);
     return unsub;
   }, [hydrated]);
+
+  const isAuthenticated = !!token && !!user;
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      pushRegistered.current = false;
+      return;
+    }
+    if (pushRegistered.current) return;
+    pushRegistered.current = true;
+    registerForPushNotificationsAsync().catch(() => {
+      pushRegistered.current = false;
+    });
+
+    const sub = setupNotificationTapHandler((screen) => {
+      if (navigationRef.isReady()) {
+        navigationRef.navigate(screen as any);
+      }
+    });
+    return () => sub.remove();
+  }, [isAuthenticated]);
 
   if (!hydrated) {
     return (
@@ -49,10 +83,8 @@ export function AppNavigator() {
     );
   }
 
-  const isAuthenticated = !!token && !!user;
-
   return (
-    <NavigationContainer>
+    <NavigationContainer ref={navigationRef}>
       <Stack.Navigator
         screenOptions={{
           headerStyle: { backgroundColor: "#24b6d4" },
@@ -104,6 +136,16 @@ export function AppNavigator() {
               name="HelpCenter"
               component={HelpCenter}
               options={{ title: "Ajuda" }}
+            />
+            <Stack.Screen
+              name="Notifications"
+              component={NotificationsScreen}
+              options={{ title: "Notificações" }}
+            />
+            <Stack.Screen
+              name="NotificationPreferences"
+              component={NotificationPreferencesScreen}
+              options={{ title: "Notificações" }}
             />
           </>
         )}

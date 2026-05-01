@@ -208,6 +208,15 @@ export function AccountSettings({ navigation }: Props) {
 
         <TouchableOpacity
           style={styles.row}
+          onPress={() => navigation.navigate("NotificationPreferences")}
+        >
+          <Text style={styles.rowEmoji}>🔔</Text>
+          <Text style={styles.rowLabel}>Notificações</Text>
+          <Text style={styles.rowChevron}>›</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.row}
           onPress={() => setPasswordModal(true)}
         >
           <Text style={styles.rowEmoji}>🔒</Text>

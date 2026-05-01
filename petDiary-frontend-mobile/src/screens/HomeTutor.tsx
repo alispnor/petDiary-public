@@ -34,6 +34,18 @@ export function HomeTutor({ navigation }: Props) {
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState("");
   const [petModal, setPetModal] = useState(false);
+  const [unread, setUnread] = useState(0);
+
+  const loadUnread = useCallback(async () => {
+    try {
+      const { data } = await api.get<{ count: number }>(
+        "/notifications/unread-count/"
+      );
+      setUnread(data.count);
+    } catch {
+      // silencioso
+    }
+  }, []);
 
   const load = useCallback(async (isRefresh = false) => {
     if (isRefresh) setRefreshing(true);
@@ -52,7 +64,8 @@ export function HomeTutor({ navigation }: Props) {
 
   useEffect(() => {
     load();
-  }, [load]);
+    loadUnread();
+  }, [load, loadUnread]);
 
   const handleSelectPet = (pet: Pet) => {
     setActivePet(pet);
@@ -92,6 +105,25 @@ export function HomeTutor({ navigation }: Props) {
           accessibilityLabel="Adicionar pet"
         >
           <Text style={styles.headerBtnAccentText}>+ Pet</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate("Notifications");
+            // refresh ao voltar é pull-to-refresh do user; reset badge
+            // localmente para feedback imediato
+            setUnread(0);
+          }}
+          style={styles.bellBtn}
+          accessibilityLabel="Notificações"
+        >
+          <Text style={styles.bellIcon}>🔔</Text>
+          {unread > 0 && (
+            <View style={styles.bellBadge}>
+              <Text style={styles.bellBadgeText}>
+                {unread > 9 ? "9+" : String(unread)}
+              </Text>
+            </View>
+          )}
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => navigation.navigate("AccountSettings")}
@@ -189,6 +221,30 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: fontWeight.semibold,
     fontSize: fontSize.sm,
+  },
+  bellBtn: {
+    paddingHorizontal: spacing[3],
+    paddingVertical: spacing[2],
+    marginLeft: spacing[2],
+    position: "relative",
+  },
+  bellIcon: { fontSize: 22 },
+  bellBadge: {
+    position: "absolute",
+    top: 2,
+    right: 2,
+    minWidth: 18,
+    height: 18,
+    borderRadius: 9,
+    backgroundColor: colors.brand.orange,
+    paddingHorizontal: 4,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  bellBadgeText: {
+    color: "#fff",
+    fontSize: 10,
+    fontWeight: fontWeight.bold,
   },
   list: { padding: spacing[4], gap: spacing[3] },
   card: {

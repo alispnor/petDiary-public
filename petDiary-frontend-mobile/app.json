@@ -30,7 +30,14 @@
     },
     "plugins": [
       "expo-image-picker",
-      "expo-asset"
+      "expo-asset",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#24b6d4"
+        }
+      ]
     ]
   }
 }
