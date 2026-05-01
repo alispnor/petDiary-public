@@ -269,7 +269,7 @@ function ProfileTab({ user, setUser }: { user: AuthUser; setUser: (u: AuthUser) 
       {success && <p className="rounded-md bg-green-50 px-4 py-2 text-sm text-green-700">{t("account.profile.success")}</p>}
 
       <button type="submit" disabled={saving} className="btn-primary mt-2 self-start px-8">
-        {saving ? t("account.profile.saving") : "{t("account.profile.save")}"}
+        {saving ? t("account.profile.saving") : t("account.profile.save")}
       </button>
     </form>
   );
@@ -464,7 +464,7 @@ function SubscriptionTab() {
               </button>
               <button type="button" onClick={handleCancel} disabled={canceling}
                 className="flex-1 rounded-pill bg-red-600 py-2.5 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-50">
-                {canceling ? t("account.subscription.canceling") : "{t("account.subscription.confirm_btn")}"}
+                {canceling ? t("account.subscription.canceling") : t("account.subscription.confirm_btn")}
               </button>
             </div>
           </div>
@@ -490,11 +490,11 @@ function SecurityTab({ onAfterDelete }: { onAfterDelete: () => void }) {
 
   const handleDelete = async () => {
     if (confirmText.trim().toUpperCase() !== "EXCLUIR") {
-      setError("{t("account.security.error_type_excluir")}");
+      setError(t("account.security.error_type_excluir"));
       return;
     }
     if (!password) {
-      setError("{t("account.security.error_no_password")}");
+      setError(t("account.security.error_no_password"));
       return;
     }
     setDeleting(true);
@@ -510,9 +510,9 @@ function SecurityTab({ onAfterDelete }: { onAfterDelete: () => void }) {
       onAfterDelete();
     } catch (err) {
       if (axios.isAxiosError(err) && err.response?.status === 401) {
-        setError("{t("account.security.error_password")}");
+        setError(t("account.security.error_password"));
       } else {
-        setError("{t("account.security.error_delete")}");
+        setError(t("account.security.error_delete"));
       }
     } finally {
       setDeleting(false);
@@ -585,13 +585,13 @@ function SecurityTab({ onAfterDelete }: { onAfterDelete: () => void }) {
             </p>
             <input
               type="text"
-              placeholder=t("account.security.type_excluir")
+              placeholder={t("account.security.type_excluir")}
               value={confirmText}
               onChange={(e) => setConfirmText(e.target.value)}
               className="mt-3 w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm uppercase tracking-wider focus:border-red-500 focus:outline-none"
             />
             <PasswordInput
-              placeholder=t("account.security.your_password")
+              placeholder={t("account.security.your_password")}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="mt-3"
@@ -606,7 +606,7 @@ function SecurityTab({ onAfterDelete }: { onAfterDelete: () => void }) {
               <button type="button" onClick={handleDelete}
                 disabled={deleting || confirmText.trim().toUpperCase() !== "EXCLUIR" || !password}
                 className="flex-1 rounded-pill bg-red-600 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-50">
-                {deleting ? t("account.security.deleting") : "🗑 {t("account.security.delete_definitively")}"}
+                {deleting ? t("account.security.deleting") : `🗑 ${t("account.security.delete_definitively")}`}
               </button>
             </div>
           </div>

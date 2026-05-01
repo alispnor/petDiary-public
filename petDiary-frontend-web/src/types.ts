@@ -133,3 +133,60 @@ export interface AccessHistory {
   last_visit: string | null;
   status: AccessStatus;
 }
+
+// =========================================
+// Anexos (uploads em health records)
+// =========================================
+
+export interface Attachment {
+  id: string;
+  file_name: string;
+  mime_type: string;
+  file_size: number;
+  view_url: string;
+  download_url: string;
+  uploaded_at: string;
+  uploader_name?: string;
+}
+
+// =========================================
+// Auditoria
+// =========================================
+
+export type AuditAction = "CREATE" | "UPDATE" | "DELETE" | "REVOKE" | "CLAIM";
+
+export interface AuditEntry {
+  id: string;
+  action: AuditAction;
+  entity_type: string;
+  entity_id: string | null;
+  description: string;
+  actor_name_snapshot: string;
+  actor_role_snapshot: string;
+  created_at: string;
+}
+
+export interface PaginatedResponse<T> {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: T[];
+}
+
+// =========================================
+// Assinatura (billing)
+// =========================================
+
+export type SubscriptionPlan = "FREE" | "PRO";
+export type SubscriptionStatus = "ACTIVE" | "CANCELED" | "PAST_DUE" | "TRIAL";
+
+export interface Subscription {
+  id: string;
+  plan_type: SubscriptionPlan;
+  status: SubscriptionStatus;
+  is_pro_active: boolean;
+  cancel_at_period_end: boolean;
+  current_period_end: string | null;
+  created_at: string;
+  updated_at: string;
+}

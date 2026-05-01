@@ -51,6 +51,15 @@ class ChangePasswordSerializer(serializers.Serializer):
     new_password = serializers.CharField(write_only=True, min_length=8)
 
 
+class ForgotPasswordSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
+
+
+class ResetPasswordSerializer(serializers.Serializer):
+    token = serializers.UUIDField(required=True)
+    new_password = serializers.CharField(write_only=True, min_length=8)
+
+
 class UserCreateSerializer(serializers.ModelSerializer):
     """Serializer de cadastro (POST /auth/register/).
 

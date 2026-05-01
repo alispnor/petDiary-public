@@ -25,7 +25,8 @@
       "keep_logged": "Keep me signed in on this device",
       "session_warning": "ⓘ Your session will end when you close the browser",
       "no_account": "Don't have an account?",
-      "register_link": "Sign up"
+      "register_link": "Sign up",
+      "forgot_link": "Forgot my password"
     },
     "register": {
       "title": "Create your account",
@@ -45,6 +46,31 @@
       "generic": "Login failed. Please try again.",
       "register_generic": "Sign up failed. Please check the data.",
       "fields_required": "Please fill in all required fields correctly."
+    },
+    "forgot": {
+      "title": "Recover password",
+      "subtitle": "Enter your account email — we'll send you a link to create a new password.",
+      "email_placeholder": "you@email.com",
+      "submit": "Send link",
+      "submitting": "Sending…",
+      "success": "If this email is registered, you'll receive a link shortly. Check your inbox and spam folder.",
+      "back_to_login": "← Back to login"
+    },
+    "reset": {
+      "title": "Create new password",
+      "subtitle": "Set your new password. The link expires in 30 minutes.",
+      "new_password": "New password",
+      "confirm_password": "Confirm new password",
+      "submit": "Reset password",
+      "submitting": "Saving…",
+      "success": "Password reset successfully. Sign in with your new password.",
+      "go_to_login": "Go to login →",
+      "errors": {
+        "mismatch": "Passwords do not match.",
+        "min_length": "Password must be at least 8 characters long.",
+        "invalid_or_expired": "Invalid or expired link. Request a new one.",
+        "generic": "Could not reset password. Please try again."
+      }
     }
   },
   "fields": {

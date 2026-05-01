@@ -95,7 +95,7 @@ export default function AuditTimeline({ petId }: Props) {
   return (
     <ol className="space-y-2">
       {entries.map((e) => {
-        const role = ROLE_BADGE[e.actor_role_snapshot] ?? ROLE_BADGE[""];
+        const role = ROLE_BADGE[e.actor_role_snapshot] ?? ROLE_BADGE[""]!;
         return (
           <li
             key={e.id}

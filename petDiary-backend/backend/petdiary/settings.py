@@ -138,6 +138,7 @@ OPENAI_MODEL_AUDIO = config("OPENAI_MODEL_AUDIO", default="whisper-1")
 # Email transacional — "console" (loga em dev) | "smtp" | "resend"
 EMAIL_PROVIDER = config("EMAIL_PROVIDER", default="console")
 EMAIL_FROM = config("EMAIL_FROM", default="noreply@petdiary.com.br")
+FRONTEND_BASE_URL = config("FRONTEND_BASE_URL", default="http://localhost:5173")
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 

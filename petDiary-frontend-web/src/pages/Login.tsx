@@ -106,6 +106,15 @@ export default function Login() {
             required
           />
 
+          <div className="-mt-2 text-right">
+            <Link
+              to="/forgot-password"
+              className="text-xs text-brand-teal hover:underline"
+            >
+              {t("auth.login.forgot_link")}
+            </Link>
+          </div>
+
           <label className="flex cursor-pointer items-center gap-2 text-sm text-gray-600 select-none">
             <input
               type="checkbox"

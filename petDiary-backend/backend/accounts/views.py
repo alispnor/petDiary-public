@@ -4,9 +4,11 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.token_blacklist.models import OutstandingToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from .models import User
+from .models import PasswordResetToken, User
 from .serializers import (
     ChangePasswordSerializer,
+    ForgotPasswordSerializer,
+    ResetPasswordSerializer,
     UserCreateSerializer,
     UserSerializer,
 )
@@ -187,6 +189,107 @@ class CheckUsernameView(APIView):
 
         exists = User.objects.filter(username__iexact=username).exists()
         return Response({"available": not exists, "username": username})
+
+
+class ForgotPasswordView(APIView):
+    """Solicita link de redefinição de senha.
+
+    Sempre retorna 200 — não vaza se o email existe ou não no sistema
+    (defesa contra enumeração). Se o email pertence a um usuário ativo,
+    cria PasswordResetToken (validade 30min) e envia link via EmailService.
+    """
+
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        serializer = ForgotPasswordSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        email = serializer.validated_data["email"].strip().lower()
+
+        from datetime import timedelta
+        from django.conf import settings
+        from django.utils import timezone
+        from .services.email import build_password_reset_email, get_email_service
+
+        user = User.objects.filter(email__iexact=email, is_active=True).first()
+
+        if user:
+            ip = (
+                request.META.get("HTTP_X_FORWARDED_FOR", "").split(",")[0].strip()
+                or request.META.get("REMOTE_ADDR")
+                or None
+            )
+            reset = PasswordResetToken.objects.create(
+                user=user,
+                expires_at=timezone.now() + timedelta(minutes=30),
+                ip_address=ip,
+            )
+            base_url = getattr(settings, "FRONTEND_BASE_URL", "http://localhost:5173")
+            reset_url = f"{base_url.rstrip('/')}/reset-password/{reset.token}"
+            subject, body = build_password_reset_email(user, reset_url)
+            try:
+                get_email_service().send(to=user.email, subject=subject, body=body)
+            except Exception:
+                # Email transacional não pode quebrar o fluxo (mock console nunca falha)
+                pass
+
+        return Response(
+            {"detail": "Se este email estiver cadastrado, você receberá um link em instantes."},
+            status=status.HTTP_200_OK,
+        )
+
+
+class ResetPasswordView(APIView):
+    """Consome um PasswordResetToken e redefine a senha.
+
+    - Token deve existir, estar dentro da validade e não ter sido usado
+    - Após troca: marca used_at, blacklista refresh tokens existentes,
+      desliga must_change_password
+    """
+
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        serializer = ResetPasswordSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        token = serializer.validated_data["token"]
+        new_password = serializer.validated_data["new_password"]
+
+        from django.db import transaction
+        from django.utils import timezone
+        from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken
+
+        try:
+            reset = PasswordResetToken.objects.select_related("user").get(token=token)
+        except PasswordResetToken.DoesNotExist:
+            return Response(
+                {"detail": "Link inválido ou expirado. Solicite um novo."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if not reset.is_valid:
+            return Response(
+                {"detail": "Link inválido ou expirado. Solicite um novo."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        with transaction.atomic():
+            user = reset.user
+            user.set_password(new_password)
+            user.must_change_password = False
+            user.save(update_fields=["password", "must_change_password"])
+
+            reset.used_at = timezone.now()
+            reset.save(update_fields=["used_at"])
+
+            # Invalida sessões anteriores
+            for tok in OutstandingToken.objects.filter(user=user):
+                BlacklistedToken.objects.get_or_create(token=tok)
+
+        return Response(
+            {"detail": "Senha redefinida com sucesso. Faça login com a nova senha."},
+            status=status.HTTP_200_OK,
+        )
 
 
 class PetDiaryTokenObtainPairView(TokenObtainPairView):

@@ -92,3 +92,33 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.full_name or self.username
+
+
+class PasswordResetToken(models.Model):
+    """Token de recuperação de senha (link via email).
+
+    - Token UUID4 single-use
+    - Validade default 30 min
+    - Após uso, marca used_at — não pode ser reutilizado
+    - O usuário NÃO precisa estar autenticado pra usar /reset-password/<token>/
+    """
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(
+        "User", on_delete=models.CASCADE,
+        related_name="password_reset_tokens",
+    )
+    token = models.UUIDField(default=uuid.uuid4, unique=True, db_index=True)
+    expires_at = models.DateTimeField()
+    used_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = _("token de redefinição de senha")
+        verbose_name_plural = _("tokens de redefinição de senha")
+        ordering = ["-created_at"]
+
+    @property
+    def is_valid(self) -> bool:
+        from django.utils import timezone
+        return self.used_at is None and self.expires_at > timezone.now()

@@ -25,7 +25,8 @@
       "keep_logged": "Manter-me conectado neste dispositivo",
       "session_warning": "ⓘ Sua sessão será encerrada ao fechar o navegador",
       "no_account": "Não tem conta?",
-      "register_link": "Cadastre-se"
+      "register_link": "Cadastre-se",
+      "forgot_link": "Esqueci minha senha"
     },
     "register": {
       "title": "Crie sua conta",
@@ -45,6 +46,31 @@
       "generic": "Erro ao fazer login. Tente novamente.",
       "register_generic": "Erro ao cadastrar. Verifique os dados.",
       "fields_required": "Preencha os campos obrigatórios corretamente."
+    },
+    "forgot": {
+      "title": "Recuperar senha",
+      "subtitle": "Informe o email da sua conta — vamos enviar um link para você criar uma nova senha.",
+      "email_placeholder": "seu@email.com",
+      "submit": "Enviar link",
+      "submitting": "Enviando…",
+      "success": "Se este email estiver cadastrado, você receberá um link em instantes. Verifique sua caixa de entrada e a pasta de spam.",
+      "back_to_login": "← Voltar para o login"
+    },
+    "reset": {
+      "title": "Criar nova senha",
+      "subtitle": "Defina sua nova senha. O link expira em 30 minutos.",
+      "new_password": "Nova senha",
+      "confirm_password": "Confirme a nova senha",
+      "submit": "Redefinir senha",
+      "submitting": "Salvando…",
+      "success": "Senha redefinida com sucesso. Faça login com a nova senha.",
+      "go_to_login": "Ir para o login →",
+      "errors": {
+        "mismatch": "As senhas não coincidem.",
+        "min_length": "A senha precisa ter ao menos 8 caracteres.",
+        "invalid_or_expired": "Link inválido ou expirado. Solicite um novo.",
+        "generic": "Não foi possível redefinir a senha. Tente novamente."
+      }
     }
   },
   "fields": {

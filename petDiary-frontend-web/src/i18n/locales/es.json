@@ -25,7 +25,8 @@
       "keep_logged": "Mantenerme conectado en este dispositivo",
       "session_warning": "ⓘ Tu sesión finalizará al cerrar el navegador",
       "no_account": "¿No tienes cuenta?",
-      "register_link": "Regístrate"
+      "register_link": "Regístrate",
+      "forgot_link": "Olvidé mi contraseña"
     },
     "register": {
       "title": "Crea tu cuenta",
@@ -45,6 +46,31 @@
       "generic": "Error al iniciar sesión. Inténtalo de nuevo.",
       "register_generic": "Error al registrarse. Verifica los datos.",
       "fields_required": "Completa los campos obligatorios correctamente."
+    },
+    "forgot": {
+      "title": "Recuperar contraseña",
+      "subtitle": "Ingresa el email de tu cuenta — te enviaremos un enlace para crear una nueva contraseña.",
+      "email_placeholder": "tu@email.com",
+      "submit": "Enviar enlace",
+      "submitting": "Enviando…",
+      "success": "Si este email está registrado, recibirás un enlace en breve. Revisa tu bandeja de entrada y la carpeta de spam.",
+      "back_to_login": "← Volver al inicio de sesión"
+    },
+    "reset": {
+      "title": "Crear nueva contraseña",
+      "subtitle": "Establece tu nueva contraseña. El enlace expira en 30 minutos.",
+      "new_password": "Nueva contraseña",
+      "confirm_password": "Confirma la nueva contraseña",
+      "submit": "Restablecer contraseña",
+      "submitting": "Guardando…",
+      "success": "Contraseña restablecida con éxito. Inicia sesión con la nueva contraseña.",
+      "go_to_login": "Ir al inicio de sesión →",
+      "errors": {
+        "mismatch": "Las contraseñas no coinciden.",
+        "min_length": "La contraseña debe tener al menos 8 caracteres.",
+        "invalid_or_expired": "Enlace inválido o expirado. Solicita uno nuevo.",
+        "generic": "No se pudo restablecer la contraseña. Inténtalo de nuevo."
+      }
     }
   },
   "fields": {

@@ -3,6 +3,8 @@ import { useAuthStore, type UserRole } from "./store/authStore";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ChangePassword from "./pages/ChangePassword";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import TutorDashboard from "./pages/TutorDashboard";
 import VetEntry from "./pages/VetEntry";
 import ClinicalView from "./pages/ClinicalView";
@@ -53,6 +55,8 @@ export default function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
 
         <Route
           path="/change-password"
