@@ -4,14 +4,25 @@
 
 ---
 
-## Idiomas suportados (atualizado 2026-05-01)
+## Idiomas suportados (decisão durável 2026-05-01)
 
-| Código | Idioma | Direção | Status backend |
-|---|---|---|---|
-| `pt-br` | Português (Brasil) | LTR | ✅ default + `gettext_lazy` |
-| `en` | English | LTR | ✅ configurado, `.po` pendente |
-| `es` | Español | LTR | ✅ configurado, `.po` pendente |
-| **`ar`** | **العربية (Árabe)** | **RTL** | ✅ adicionado em 2026-05-01 (idioma nativo do Ali) |
+Ordem de prioridade definida pelo Ali — implementar **na ordem listada**, parando se não der pra fazer todos:
+
+| Prio | Código | Idioma | Direção | Notas |
+|:---:|---|---|---|---|
+| **1º** | `pt-br` | Português (Brasil) | LTR | **Default** + base de tradução |
+| **2º** | `es` | Español | LTR | Latam — segundo mercado mais provável |
+| **3º** | `pt-pt` | Português (Portugal) | LTR | Mesma língua, leve ajuste de termos (ex: cachorro→cão, geladeira→frigorífico) |
+| **4º** | `en` | English | LTR | Internacionalização padrão |
+| **5º** | `fr` | Français | LTR | Quando possível |
+| **6º** | `ar` | العربية (Árabe) | **RTL** | **Idioma nativo do Ali** — exige tratamento especial |
+
+### Princípios
+
+- pt-BR é o **idioma fonte** (escrever primeiro nele, depois traduzir)
+- Implementar **um idioma por vez** — pode parar em qualquer ponto se priorizar outras coisas
+- pt-pt vs pt-br: usar arquivo separado `pt-PT.json` mas reaproveitar 80%+ das chaves; ajustar só termos divergentes
+- Árabe (RTL) exige refatoração de **layout** (não só strings) — ver seção dedicada abaixo
 
 > ⚠️ **Árabe é RTL (right-to-left)** — exige tratamento especial em CSS/layout (espelhamento de margins, padding, ícones, dropdowns). Ver seção "RTL" abaixo.
 
@@ -25,9 +36,11 @@ LANGUAGE_CODE = "pt-br"
 USE_I18N = True
 LANGUAGES = [
     ("pt-br", "Português (Brasil)"),
-    ("en", "English"),
     ("es", "Español"),
-    ("ar", "العربية"),  # ← adicionado 2026-05-01
+    ("pt-pt", "Português (Portugal)"),
+    ("en", "English"),
+    ("fr", "Français"),
+    ("ar", "العربية"),  # RTL
 ]
 LOCALE_PATHS = [BASE_DIR / "locale"]
 MIDDLEWARE = [..., "django.middleware.locale.LocaleMiddleware", ...]
@@ -55,7 +68,7 @@ MIDDLEWARE = [..., "django.middleware.locale.LocaleMiddleware", ...]
 ### Fase L.1 — Backend: completar traduções existentes
 - Gerar `.po` para todos os idiomas:
   ```bash
-  docker compose exec api python manage.py makemessages -l en -l es -l ar
+  docker compose exec api python manage.py makemessages -l es -l pt_PT -l en -l fr -l ar
   ```
 - Traduzir strings em `locale/{en,es,ar}/LC_MESSAGES/django.po`
 - Para árabe: tradutor humano nativo recomendado (Ali pode revisar pessoalmente — é nativo)
@@ -172,11 +185,13 @@ Trocar **TODAS** as strings hardcoded:
 - Validation messages, loading states, alerts, modal content
 
 ### Fase L.4 — Web: seletor de idioma na UI
-- Header dropdown 🌐 com 4 opções:
-  - 🇧🇷 Português (default)
-  - 🇺🇸 English
+- Header dropdown 🌐 com 6 opções (na ordem de prioridade):
+  - 🇧🇷 Português (Brasil) — default
   - 🇪🇸 Español
-  - 🇸🇦 العربية (Árabe)
+  - 🇵🇹 Português (Portugal)
+  - 🇺🇸 English
+  - 🇫🇷 Français
+  - 🇸🇦 العربية (Árabe — RTL)
 - Persiste escolha em `localStorage` (i18next-browser-languagedetector já faz)
 - Também envia no `Accept-Language` header (atualizar `services/api.ts`)
 - Ao escolher árabe, layout vira RTL automaticamente (via `applyDir`)
@@ -259,7 +274,7 @@ if (I18nManager.isRTL !== isRtl) {
 - [ ] Compartilhar arquivos JSON entre web e mobile via symlink ou copy?
 - [ ] Idioma default vem do device, do backend, ou do header?
 - [ ] **Tradução automática** com IA (ChatGPT) para o pt-BR servir como fonte? Ou tradutor humano profissional?
-- [x] ~~Idiomas suportados?~~ → **DECIDIDO:** pt-BR (default), en, es, **ar (árabe — RTL, idioma nativo do Ali)**
+- [x] ~~Idiomas suportados?~~ → **DECIDIDO 2026-05-01 com ordem de prioridade:** pt-BR (default) → es → pt-PT → en → fr → ar (RTL)
 - [ ] Para árabe: Ali revisa pessoalmente as traduções? (recomendado — é nativo)
 - [ ] Mobile RTL: forçar reload do app na primeira vez (UX peculiar do React Native)?
 

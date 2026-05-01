@@ -92,11 +92,15 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
+# Ordem de prioridade definida pelo Ali em 2026-05-01 (decisão durável):
+# 1º pt-br (default), 2º es, 3º pt-pt, 4º en, 5º fr, 6º ar (RTL — nativo do Ali)
 LANGUAGES = [
     ("pt-br", "Português (Brasil)"),
-    ("en", "English"),
     ("es", "Español"),
-    ("ar", "العربية"),  # Árabe — RTL; idioma nativo do Ali (decisão durável)
+    ("pt-pt", "Português (Portugal)"),
+    ("en", "English"),
+    ("fr", "Français"),
+    ("ar", "العربية"),  # RTL — exige tratamento especial no frontend
 ]
 
 LOCALE_PATHS = [
