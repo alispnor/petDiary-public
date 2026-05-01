@@ -21,6 +21,7 @@ Pasta com **specs/prompts versionadas** para módulos grandes que serão impleme
 | 13 | [Admin Dashboard SaaS (Painel Super Admin)](./13-admin-dashboard-saas.md) | Web + Backend | Depende de Specs 01, 12 + role ADMIN |
 | 14 | [Auditoria SecOps + Performance + Testes (Backend)](./14-auditoria-seguranca-performance-backend.md) | Backend | Backend funcional (qualquer ponto após Fase 7) |
 | 15 | [Auditoria Performance + Resiliência (Frontend Web + Mobile)](./15-auditoria-performance-frontend.md) | Web + Mobile | Frontend funcional |
+| 16 | [Suíte de Smoke Tests (pytest E2E core)](./16-suite-smoke-tests-core-pytest.md) | Backend (testes) | Backend funcional |
 
 ## Ordem de execução recomendada
 
