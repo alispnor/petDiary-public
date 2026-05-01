@@ -179,15 +179,19 @@ manuais (`ml-*`/`mr-*` → `ms-*`/`me-*`) que precisará pontual.
 
 ---
 
-### D2. Spec 14 — Audit segurança + performance backend
-Já salva em `ai-memory/specs/14-auditoria-seguranca-performance-backend.md`.
-
-- [ ] JWT lifetime + rotation review
-- [ ] File upload validation (MIME real, magic bytes)
-- [ ] IDOR review em todos endpoints com `<id>`
-- [ ] N+1 audit (select_related/prefetch) no PetViewSet,
-      HealthRecordViewSet, NotificationListView
-- [ ] db_index em pet_id, date_occurred, etc.
+### D2. Spec 14 — Audit segurança + performance backend ✅ (commit `ee652ef`)
+- [x] JWT review — 30min access + 7d refresh + rotation + blacklist OK
+- [x] File upload validation (`health/services/upload_validator.py`):
+      whitelist MIME, magic bytes, 50 MB limit, filename sanitizado,
+      storage key com UUID
+- [x] IDOR review em todos endpoints — viewsets filtram por
+      user/tenant via `get_queryset()` ou `_user_can_access_pet()`
+- [x] N+1 — `NotificationListView` ganhou `select_related("user")`;
+      demais viewsets já tinham
+- [x] Índices DB — Pet(tutor), PetMember(pet,role)+(user),
+      HealthRecord(pet,-date_occurred)+(record_type), Attachment(record),
+      VetAccessToken(access_code)+(pet,vet,is_active)
+- [x] Smoke tests pós-mudanças: 5/5 verdes (4.79s, sem regressão)
 
 ---
 

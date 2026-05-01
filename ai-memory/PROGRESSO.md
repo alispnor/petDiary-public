@@ -1,7 +1,7 @@
 # 📊 PROGRESSO — petDiary
 
 > **Arquivo vivo.** Atualize a cada sessão de trabalho.
-> Última atualização: **2026-05-01 (sessão 13 — D1: 5 smoke tests pytest E2E core, todos verdes)**
+> Última atualização: **2026-05-01 (sessão 14 — D2 Spec 14: upload validation crítico + N+1 + 7 índices novos)**
 
 ---
 
@@ -930,6 +930,42 @@ auditoria visual em árabe (opcional, no device real).
 regressão. PIN, claim, revoke (com soft-delete), criar record — tudo
 verde. Próximo lógico: D2 (Spec 14 — audit segurança/performance
 backend) ou C1-C5 (paridade restante mobile/web).
+
+### 2026-05-01 — Sessão 14 (D2 — audit Spec 14)
+> Auditoria backend executada por subagente Explore (SecOps + perf).
+> JWT, IDOR e maior parte do N+1 já estavam OK; issues críticos
+> encontrados em upload e índices.
+
+**Issues encontrados e corrigidos (commit `ee652ef`):**
+
+CRITICAL — Upload sem validação real
+- Antes: aceita qualquer arquivo (.exe renomeado para .png passa),
+  MIME do client é confiável, sem limite de tamanho, filename direto
+  do user
+- Agora: `health/services/upload_validator.py` (novo, ~150 linhas):
+  whitelist MIME (12 tipos), magic bytes (RIFF/PNG/JPEG/PDF/etc),
+  50MB limit, filename sanitizado (NFKD→ASCII), storage key com UUID
+- Plugado em `RecordAttachmentListCreateView.post()`
+
+MEDIUM — N+1 e índices DB
+- `NotificationListView` ganhou `select_related("user")`
+- 7 índices novos via migrations: Pet(tutor), PetMember(pet,role)+(user),
+  HealthRecord(pet,-date_occurred)+(record_type), Attachment(record),
+  VetAccessToken(access_code)+(pet,vet,is_active)
+- 3 migrations aplicadas (pets/access/health)
+
+CI: bumpou `actions/checkout@v4→v5` e `setup-python@v5→v6` (Node 24,
+fix do warning de deprecação Node 20)
+
+**Validação:** `pytest -m smoke -v` → 5/5 verdes (4.79s, sem regressão)
+
+**Documentos:**
+- PENDENCIAS-ORDENADAS.md: D2 marcado completo
+- PROGRESSO.md: entry da sessão 14
+
+🎯 **Marco da sessão 14:** backend auditado em segurança (JWT/upload/
+IDOR) e performance (N+1/índices). Próximo: D3 (Spec 15 — frontend
+audit) ou C1-C5 (paridade restante mobile).
 
 ### Próxima sessão — TODO
 **Roadmap principal + Fases A-G → 100% completo!** ✨
