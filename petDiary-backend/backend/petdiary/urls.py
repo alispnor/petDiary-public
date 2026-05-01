@@ -5,12 +5,14 @@ from drf_spectacular.views import (
     SpectacularRedocView,
     SpectacularSwaggerView,
 )
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from rest_framework_simplejwt.views import TokenRefreshView
+
+from accounts.views import PetDiaryTokenObtainPairView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    # Auth (JWT)
-    path("api/v1/auth/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
+    # Auth (JWT) — custom view aplica login único para VET
+    path("api/v1/auth/token/", PetDiaryTokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api/v1/auth/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     # Apps
     path("api/v1/", include("accounts.urls")),

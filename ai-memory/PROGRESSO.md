@@ -1,7 +1,7 @@
 # 📊 PROGRESSO — petDiary
 
 > **Arquivo vivo.** Atualize a cada sessão de trabalho.
-> Última atualização: **2026-05-01 (sessão 3 — Fase 3 completa + specs 05/06/07)**
+> Última atualização: **2026-05-01 (sessão 3 — Fases 3 e 4 completas)**
 
 ---
 
@@ -331,9 +331,23 @@ Decisões do Ali registradas em memory: email+phone obrigatórios, CPF opcional,
   - Header agora mostra `clinic_name` do vet
   - Refresh do histórico após cada claim bem-sucedido
 - ✅ **Fase 3 — completa** (3.1 backend + 3.2 web tutor + 3.3 web vet)
+- ✅ **Decisão durável**: IA de mídia (Spec 04) será **gated 100% pelo plano PRO** (sem cota gratuita). FREE: upload/visualização/registros manuais. PRO: OCR/Whisper/sumarização. Permission class `IsActivePro` exposta pelo app `billing` (Spec 01).
+- ✅ **Fase 4.1** — Login único do veterinário:
+  - `rest_framework_simplejwt.token_blacklist` adicionado ao INSTALLED_APPS + 12 migrations aplicadas
+  - SIMPLE_JWT settings: `ROTATE_REFRESH_TOKENS=True` + `BLACKLIST_AFTER_ROTATION=True` (defesa contra reuso)
+  - `accounts/views.py:PetDiaryTokenObtainPairView` (custom subclass de TokenObtainPairView):
+    - Tutor: comportamento padrão (múltiplas sessões coexistem)
+    - **Vet**: ao logar, identifica todos os OutstandingTokens dele e adiciona ao BlacklistedToken (excluindo o jti recém-emitido)
+  - URL `/api/v1/auth/token/` agora aponta para a view custom
+  - Validado E2E (8 testes via curl):
+    1. ✅ vet login A → access OK
+    2. ✅ vet usa access A em /me/ → 200
+    3. ✅ vet login B (segundo dispositivo) → access OK
+    4. ✅ refresh A retorna `{"detail": "Token está na blacklist", "code": "token_not_valid"}` ✓✓
+    5. ✅ refresh B funciona normalmente
+    6-8. ✅ tutor luiza com sessões X e Y simultâneas — refresh X continua funcionando
 
 ### Próxima sessão — TODO
-- Fase 4: Login único do veterinário (token blacklist via `simplejwt[token_blacklist]`, derruba sessões anteriores)
 - Fase 5: Co-tutores / família (PetMember CARETAKER, sem permissão de gerar PIN)
 - Fase 6: Auditoria (AuditLog, só mutações)
 - Fase 7: Uploads/download/print + spec 05 (captura de mídia)
