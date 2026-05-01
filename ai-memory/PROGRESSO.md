@@ -299,10 +299,14 @@ Decisões do Ali registradas em memory: email+phone obrigatórios, CPF opcional,
   - `authStore` ganhou campo `keepLogged` + action `setKeepLogged(boolean)` que migra a sessão entre storages se o usuário trocar a preferência logado
   - `logout()` limpa de ambos storages; `partialize` evita persistir a flag no estado; listener `storage` sincroniza flag entre abas
   - Commit: `feat(web): authStore com storage dinâmico` + push
+- ✅ **Fase 2.2** — Checkbox "Manter conectado" no Login:
+  - Estado local `keepLogged` inicializa de `useAuthStore.getState().keepLogged` (preserva preferência entre sessões)
+  - `setKeepLogged(checked)` chamado ANTES do login para que o storage decida onde escrever desde o primeiro byte
+  - Hint discreto "ⓘ Sua sessão será encerrada ao fechar o navegador" quando desmarcado
+  - Estilo neutro com checkbox accent-brand-teal
 
 ### Próxima sessão — TODO
-- Fase 2.2: checkbox "Manter conectado" no Login (consumir `setKeepLogged`)
-- Fase 2.3: validar persist (fechar/reabrir aba) e session (cai ao fechar) + commit + push
+- Fase 2.3: validar persist (fechar/reabrir aba mantém logado) e session (desmarcado → cai ao fechar) + commit + push
 - Fase 3+: continuar plano consolidado
 
 ---

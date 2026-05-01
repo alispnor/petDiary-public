@@ -8,8 +8,11 @@ import PasswordInput from "../components/PasswordInput";
 export default function Login() {
   const navigate = useNavigate();
   const setAuth = useAuthStore((s) => s.setAuth);
+  const setKeepLogged = useAuthStore((s) => s.setKeepLogged);
+  const initialKeepLogged = useAuthStore.getState().keepLogged;
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [keepLogged, setKeepLoggedLocal] = useState(initialKeepLogged);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -18,6 +21,10 @@ export default function Login() {
     setLoading(true);
     setError("");
     try {
+      // Decide o storage ANTES do login para que o persist do Zustand
+      // já escreva no lugar certo (localStorage vs sessionStorage)
+      setKeepLogged(keepLogged);
+
       const { data: tokens } = await api.post<{
         access: string;
         refresh: string;
@@ -72,6 +79,16 @@ export default function Login() {
             required
           />
 
+          <label className="flex cursor-pointer items-center gap-2 text-sm text-gray-600 select-none">
+            <input
+              type="checkbox"
+              checked={keepLogged}
+              onChange={(e) => setKeepLoggedLocal(e.target.checked)}
+              className="h-4 w-4 cursor-pointer accent-brand-teal"
+            />
+            Manter-me conectado neste dispositivo
+          </label>
+
           {error && (
             <p className="rounded-md bg-red-50 px-4 py-2 text-sm text-red-600">
               {error}
@@ -85,6 +102,12 @@ export default function Login() {
           >
             {loading ? "Entrando…" : "Entrar"}
           </button>
+
+          {!keepLogged && (
+            <p className="text-center text-xs text-gray-400">
+              ⓘ Sua sessão será encerrada ao fechar o navegador
+            </p>
+          )}
 
           <p className="mt-2 text-center text-sm text-gray-500">
             Não tem conta?{" "}
