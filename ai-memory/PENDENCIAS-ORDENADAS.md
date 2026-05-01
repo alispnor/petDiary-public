@@ -172,8 +172,10 @@ manuais (`ml-*`/`mr-*` → `ms-*`/`me-*`) que precisará pontual.
   - [x] test_vet_claims_pin (claim + leitura do pet)
   - [x] test_vet_access_revoked (soft-delete + 403 do bug #8)
   - [x] test_create_health_record (POST + GET list)
-- [ ] CI GitHub Actions rodando `pytest -m smoke` em todo PR
-      (próximo subitem — ainda aberto)
+- [x] CI GitHub Actions rodando `pytest -m smoke` em todo PR
+      (`.github/workflows/smoke-tests.yml`, commit `73473b6`)
+
+🎯 **D1 100% concluído.**
 
 ---
 
