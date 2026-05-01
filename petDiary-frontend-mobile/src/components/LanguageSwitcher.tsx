@@ -7,26 +7,24 @@ import {
   StyleSheet,
   Pressable,
 } from "react-native";
+import { useTranslation } from "react-i18next";
 import { useAppStore } from "../store/useAppStore";
-import type { Language } from "../types";
+import { SUPPORTED_LANGUAGES } from "../i18n";
 import { colors, radii, spacing, fontSize, fontWeight } from "../theme";
 
-const LANGUAGES: { code: Language; label: string }[] = [
-  { code: "pt-BR", label: "🇧🇷 Português (Brasil)" },
-  { code: "es-ES", label: "🇪🇸 Español" },
-  { code: "en-US", label: "🇺🇸 English" },
-];
+const LANGUAGES = SUPPORTED_LANGUAGES.map((l) => ({ code: l.code, label: l.label }));
 
 type Props = {
   variant?: "compact" | "row";
 };
 
 export function LanguageSwitcher({ variant = "compact" }: Props) {
-  const language = useAppStore((s) => s.language);
+  const { i18n, t } = useTranslation();
   const setLanguage = useAppStore((s) => s.setLanguage);
   const [open, setOpen] = useState(false);
 
-  const current = LANGUAGES.find((l) => l.code === language) ?? LANGUAGES[0];
+  const current =
+    LANGUAGES.find((l) => l.code === i18n.language) ?? LANGUAGES[0];
 
   return (
     <>
@@ -48,15 +46,17 @@ export function LanguageSwitcher({ variant = "compact" }: Props) {
       >
         <Pressable style={styles.backdrop} onPress={() => setOpen(false)}>
           <View style={styles.sheet}>
-            <Text style={styles.sheetTitle}>Idioma do app</Text>
+            <Text style={styles.sheetTitle}>{t("common.language")}</Text>
             {LANGUAGES.map((l) => {
-              const active = l.code === language;
+              const active = l.code === i18n.language;
               return (
                 <TouchableOpacity
                   key={l.code}
                   style={[styles.option, active && styles.optionActive]}
                   onPress={() => {
-                    setLanguage(l.code);
+                    i18n.changeLanguage(l.code);
+                    // Salva no store também (compat com backend Accept-Language)
+                    setLanguage(l.code as any);
                     setOpen(false);
                   }}
                 >

@@ -80,19 +80,37 @@ sobreposições nem cortes.
 
 ---
 
-### B3. Instalar react-i18next no mobile + locales pt-BR
-- [ ] `npm install i18next react-i18next i18next-browser-languagedetector`
-      (ou expo-localization para detection)
-- [ ] `mobile/src/i18n/index.ts` configurado
-- [ ] Criar `locales/pt-BR.json` com TODAS as chaves dos textos
-      hardcoded das telas atuais (Login, Register, HomeTutor,
-      PetDashboard, AccountSettings, etc.)
-- [ ] Substituir todos `<Text>"texto"</Text>` por
-      `<Text>{t("chave")}</Text>`
-- [ ] LanguageSwitcher passa a mudar `i18n.language` E `Accept-Language`
+### B3.1. Infra i18n mobile + auth + telas principais ✅ (entregue)
+- [x] `npm install i18next react-i18next expo-localization`
+- [x] `src/i18n/index.ts` (init + 6 locales registrados — todos
+      apontando para pt-BR.json até B4)
+- [x] `src/i18n/locales/pt-BR.json` com namespaces completos: common,
+      auth, home, pet, records, attachments, vets, members, reminders,
+      notifications, account, subscription, help, preferences,
+      username_check
+- [x] `App.tsx` importa `./src/i18n` no boot
+- [x] LanguageSwitcher: 6 idiomas + chama `i18n.changeLanguage`
+- [x] `AppNavigator` reaplica idioma persistido após hidratação
+- [x] Migrados: Login, Register, ForgotPassword, HomeTutor, PetDashboard
+- [x] Tipo `Language` expandido para 6 códigos
 
-**DoD:** trocar idioma no LanguageSwitcher mobile → nada muda
-visualmente AINDA (só pt-BR existe), mas a infraestrutura está pronta.
+### B3.2. Migrar componentes restantes mobile
+> O `pt-BR.json` já tem TODAS as chaves prontas. Trabalho mecânico.
+
+- [ ] `screens/AccountSettings.tsx` — Alert.alert + labels + botões
+- [ ] `screens/SubscriptionDashboard.tsx` — todos os labels do checkout
+- [ ] `screens/HelpCenter.tsx` — FAQ + contato
+- [ ] `screens/Notifications.tsx` — usar `notifications.*`
+- [ ] `screens/NotificationPreferences.tsx` — usar `notifications.*`
+- [ ] `components/RecordFormModal.tsx`
+- [ ] `components/PetFormModal.tsx`
+- [ ] `components/VetAccessModal.tsx`
+- [ ] `components/MembersModal.tsx`
+- [ ] `components/RemindersModal.tsx`
+- [ ] `components/AttachmentsList.tsx`
+
+**DoD:** nenhum `<Text>"…"</Text>` literal em pt-BR no mobile
+(`grep -r '<Text>"' src/` retorna vazio).
 
 ---
 
@@ -133,6 +151,24 @@ Trocar para árabe → app pede pra reiniciar e abre em RTL.
 - [ ] Backend: app `support/` com modelo SupportTicket + endpoints
       (admin_panel hoje é stub)
 - [ ] Form de contato no web/mobile usa `POST /support/tickets/`
+
+### C6. Spec 18 — Admin completo + Suporte real (pedido Ali 2026-05-01)
+- [ ] Backend: app `support/` com SupportTicket + TicketMessage
+- [ ] Endpoints CRUD + chat + filtros + assignment
+- [ ] Hooks notify: abre/responde/resolve dispara notif
+- [ ] Web `/admin/tickets` real (substitui stub) + `/admin/tickets/<id>`
+      com chat split
+- [ ] Web `/help` com FAQ + abrir ticket + meus tickets + chat
+- [ ] Mobile: admin read-only (KPIs + lista tickets); edit redireciona
+      para web
+- [ ] Mobile HelpCenter ganha aba "💬 Meus tickets" + form + chat
+- [ ] Auditoria: toda ação admin gera AuditLog
+- [ ] Throttling reforçado em login para role=ADMIN (5/min)
+- [ ] (Opcional) 2FA para admin
+
+**Spec:** `ai-memory/specs/18-admin-completo-suporte-real.md`
+**Inclui:** decisão durável de "login admin é o mesmo /login universal"
+(não criar URL dedicada). Troca de senha já funciona em /conta.
 
 ---
 

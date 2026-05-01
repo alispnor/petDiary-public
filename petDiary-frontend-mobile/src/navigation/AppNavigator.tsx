@@ -20,6 +20,7 @@ import {
   registerForPushNotificationsAsync,
   setupNotificationTapHandler,
 } from "../services/notifications";
+import i18n from "../i18n";
 import { colors } from "../theme";
 import type { Pet } from "../types";
 
@@ -52,6 +53,15 @@ export function AppNavigator() {
     const unsub = useAppStore.persist.onFinishHydration(() => setHydrated(true));
     if (useAppStore.persist.hasHydrated()) setHydrated(true);
     return unsub;
+  }, [hydrated]);
+
+  // Aplica idioma persistido ao i18n após hidratação
+  useEffect(() => {
+    if (!hydrated) return;
+    const lang = useAppStore.getState().language;
+    if (lang && lang !== i18n.language) {
+      i18n.changeLanguage(lang).catch(() => {});
+    }
   }, [hydrated]);
 
   const isAuthenticated = !!token && !!user;

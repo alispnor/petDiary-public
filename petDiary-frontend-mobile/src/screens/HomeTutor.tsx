@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { useTranslation } from "react-i18next";
 import api from "../services/api";
 import { useAppStore } from "../store/useAppStore";
 import { PetFormModal } from "../components/PetFormModal";
@@ -26,6 +27,7 @@ const SPECIES_EMOJI: Record<Pet["species"], string> = {
 };
 
 export function HomeTutor({ navigation }: Props) {
+  const { t } = useTranslation();
   const setActivePet = useAppStore((s) => s.setActivePet);
   const user = useAppStore((s) => s.user);
 
@@ -55,8 +57,9 @@ export function HomeTutor({ navigation }: Props) {
       const { data } = await api.get<Pet[]>("/pets/");
       setPets(data);
     } catch {
-      setError("Não foi possível carregar seus pets.");
+      setError(t("home.load_pets_failed"));
     } finally {
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       setLoading(false);
       setRefreshing(false);
     }
@@ -96,25 +99,29 @@ export function HomeTutor({ navigation }: Props) {
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={{ flex: 1 }}>
-          <Text style={styles.greet}>Olá, {user?.full_name?.split(" ")[0]}!</Text>
-          <Text style={styles.subtitle}>Selecione um pet para gerenciar</Text>
+          <Text style={styles.greet}>
+            {user?.full_name
+              ? t("home.greeting", {
+                  name: user.full_name.split(" ")[0],
+                })
+              : t("home.greeting_no_name")}
+          </Text>
+          <Text style={styles.subtitle}>{t("home.subtitle")}</Text>
         </View>
         <TouchableOpacity
           onPress={() => setPetModal(true)}
           style={styles.headerBtnAccent}
-          accessibilityLabel="Adicionar pet"
+          accessibilityLabel={t("home.add_pet_a11y")}
         >
-          <Text style={styles.headerBtnAccentText}>+ Pet</Text>
+          <Text style={styles.headerBtnAccentText}>{t("home.new_pet_short")}</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
             navigation.navigate("Notifications");
-            // refresh ao voltar é pull-to-refresh do user; reset badge
-            // localmente para feedback imediato
             setUnread(0);
           }}
           style={styles.bellBtn}
-          accessibilityLabel="Notificações"
+          accessibilityLabel={t("home.notifications_a11y")}
         >
           <Text style={styles.bellIcon}>🔔</Text>
           {unread > 0 && (
@@ -142,22 +149,21 @@ export function HomeTutor({ navigation }: Props) {
         <View style={styles.center}>
           <Text style={styles.errorText}>{error}</Text>
           <TouchableOpacity onPress={() => load()} style={styles.retryBtn}>
-            <Text style={styles.btnText}>Tentar novamente</Text>
+            <Text style={styles.btnText}>{t("common.retry")}</Text>
           </TouchableOpacity>
         </View>
       ) : pets.length === 0 ? (
         <View style={styles.center}>
           <Text style={styles.emptyEmoji}>🐾</Text>
-          <Text style={styles.emptyTitle}>Você ainda não tem pets</Text>
+          <Text style={styles.emptyTitle}>{t("home.no_pets_title")}</Text>
           <Text style={styles.emptyText}>
-            Toque em <Text style={{ fontWeight: fontWeight.bold }}>+ Pet</Text>{" "}
-            no topo para cadastrar o primeiro.
+            {t("home.no_pets_text").replace(/<\/?bold>/g, "")}
           </Text>
           <TouchableOpacity
             onPress={() => setPetModal(true)}
             style={styles.retryBtn}
           >
-            <Text style={styles.btnText}>+ Adicionar pet</Text>
+            <Text style={styles.btnText}>{t("home.add_first_pet")}</Text>
           </TouchableOpacity>
         </View>
       ) : (

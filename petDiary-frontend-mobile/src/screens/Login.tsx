@@ -11,6 +11,7 @@ import {
   Image,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 import axios from "axios";
 import api from "../services/api";
 import { useAppStore } from "../store/useAppStore";
@@ -19,6 +20,7 @@ import type { User } from "../types";
 import { colors, radii, spacing, fontSize, fontWeight } from "../theme";
 
 export function LoginScreen({ navigation }: any) {
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const setAuth = useAppStore((s) => s.setAuth);
   const [username, setUsername] = useState("");
@@ -28,7 +30,7 @@ export function LoginScreen({ navigation }: any) {
 
   const handleLogin = async () => {
     if (!username || !password) {
-      Alert.alert("Atenção", "Preencha usuário e senha.");
+      Alert.alert(t("common.warning"), t("auth.fields_required"));
       return;
     }
     setLoading(true);
@@ -46,9 +48,9 @@ export function LoginScreen({ navigation }: any) {
       setAuth(tokens.access, tokens.refresh, user);
     } catch (err) {
       if (axios.isAxiosError(err) && err.response?.status === 401) {
-        Alert.alert("Erro", "Usuário ou senha inválidos.");
+        Alert.alert(t("common.error"), t("auth.invalid_credentials"));
       } else {
-        Alert.alert("Erro", "Não foi possível fazer login. Tente novamente.");
+        Alert.alert(t("common.error"), t("auth.login_failed"));
       }
     } finally {
       setLoading(false);
@@ -76,13 +78,11 @@ export function LoginScreen({ navigation }: any) {
           resizeMode="contain"
         />
         <Text style={styles.title}>PetDiary</Text>
-        <Text style={styles.subtitle}>
-          Acesse sua conta para gerenciar a saúde do seu pet
-        </Text>
+        <Text style={styles.subtitle}>{t("auth.app_subtitle")}</Text>
 
         <TextInput
           style={styles.input}
-          placeholder="Usuário"
+          placeholder={t("auth.username")}
           autoCapitalize="none"
           autoCorrect={false}
           value={username}
@@ -92,7 +92,7 @@ export function LoginScreen({ navigation }: any) {
         <View style={styles.passwordRow}>
           <TextInput
             style={[styles.input, styles.passwordInput]}
-            placeholder="Senha"
+            placeholder={t("auth.password")}
             secureTextEntry={!showPwd}
             value={password}
             onChangeText={setPassword}
@@ -109,7 +109,7 @@ export function LoginScreen({ navigation }: any) {
           onPress={() => navigation.navigate("ForgotPassword")}
           style={styles.forgotBtn}
         >
-          <Text style={styles.forgotText}>Esqueci minha senha</Text>
+          <Text style={styles.forgotText}>{t("auth.forgot")}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -117,7 +117,9 @@ export function LoginScreen({ navigation }: any) {
           onPress={handleLogin}
           disabled={loading}
         >
-          <Text style={styles.btnText}>{loading ? "Entrando…" : "Entrar"}</Text>
+          <Text style={styles.btnText}>
+            {loading ? t("auth.login_loading") : t("auth.login")}
+          </Text>
         </TouchableOpacity>
 
         <View style={styles.divider} />
@@ -127,8 +129,8 @@ export function LoginScreen({ navigation }: any) {
           style={styles.registerBtn}
         >
           <Text style={styles.registerText}>
-            Ainda não tem conta?{" "}
-            <Text style={styles.registerAccent}>Cadastre-se</Text>
+            {t("auth.no_account")}{" "}
+            <Text style={styles.registerAccent}>{t("auth.register_cta")}</Text>
           </Text>
         </TouchableOpacity>
       </View>

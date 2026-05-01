@@ -12,6 +12,7 @@ import {
   Image,
 } from "react-native";
 import axios from "axios";
+import { useTranslation } from "react-i18next";
 import api from "../services/api";
 import { useAppStore } from "../store/useAppStore";
 import { LanguageSwitcher } from "../components/LanguageSwitcher";
@@ -28,6 +29,7 @@ function maskPhone(value: string): string {
 }
 
 export function RegisterScreen({ navigation }: any) {
+  const { t } = useTranslation();
   const setAuth = useAppStore((s) => s.setAuth);
 
   const [fullName, setFullName] = useState("");
@@ -46,10 +48,7 @@ export function RegisterScreen({ navigation }: any) {
       !phone.trim() ||
       password.length < 8
     ) {
-      Alert.alert(
-        "Atenção",
-        "Preencha todos os campos. Usuário ≥ 3 caracteres, senha ≥ 8."
-      );
+      Alert.alert(t("common.warning"), t("auth.register_error_fields"));
       return;
     }
     setLoading(true);
@@ -89,9 +88,9 @@ export function RegisterScreen({ navigation }: any) {
                 )
                 .join("\n")
             : String(d);
-        Alert.alert("Erro no cadastro", msg);
+        Alert.alert(t("common.error"), msg);
       } else {
-        Alert.alert("Erro", "Não foi possível concluir o cadastro.");
+        Alert.alert(t("common.error"), t("auth.register_failed"));
       }
     } finally {
       setLoading(false);
@@ -113,33 +112,31 @@ export function RegisterScreen({ navigation }: any) {
             style={styles.logo}
             resizeMode="contain"
           />
-          <Text style={styles.title}>Criar conta</Text>
-          <Text style={styles.subtitle}>
-            Cadastro de tutor — gerencie a saúde do seu pet
-          </Text>
+          <Text style={styles.title}>{t("auth.register_title")}</Text>
+          <Text style={styles.subtitle}>{t("auth.register_subtitle")}</Text>
 
-          <Text style={styles.label}>Nome completo</Text>
+          <Text style={styles.label}>{t("auth.full_name")}</Text>
           <TextInput
             style={styles.input}
-            placeholder="Maria Silva"
+            placeholder={t("auth.full_name_placeholder")}
             value={fullName}
             onChangeText={setFullName}
           />
 
-          <Text style={styles.label}>Usuário</Text>
+          <Text style={styles.label}>{t("auth.username")}</Text>
           <TextInput
             style={styles.input}
-            placeholder="mariasilva"
+            placeholder={t("auth.username_placeholder")}
             autoCapitalize="none"
             autoCorrect={false}
             value={username}
             onChangeText={(v) => setUsername(v.replace(/\s+/g, "").toLowerCase())}
           />
 
-          <Text style={styles.label}>Email</Text>
+          <Text style={styles.label}>{t("auth.email")}</Text>
           <TextInput
             style={styles.input}
-            placeholder="maria@exemplo.com"
+            placeholder={t("auth.email_placeholder")}
             autoCapitalize="none"
             autoCorrect={false}
             keyboardType="email-address"
@@ -147,20 +144,20 @@ export function RegisterScreen({ navigation }: any) {
             onChangeText={setEmail}
           />
 
-          <Text style={styles.label}>Celular</Text>
+          <Text style={styles.label}>{t("auth.phone")}</Text>
           <TextInput
             style={styles.input}
-            placeholder="(11) 91234-5678"
+            placeholder={t("auth.phone_placeholder")}
             keyboardType="phone-pad"
             value={phone}
             onChangeText={(v) => setPhone(maskPhone(v))}
           />
 
-          <Text style={styles.label}>Senha (mín. 8 caracteres)</Text>
+          <Text style={styles.label}>{t("auth.password_min")}</Text>
           <View style={styles.passwordRow}>
             <TextInput
               style={[styles.input, styles.passwordInput]}
-              placeholder="••••••••"
+              placeholder={t("auth.password_placeholder")}
               secureTextEntry={!showPwd}
               value={password}
               onChangeText={setPassword}
@@ -179,7 +176,7 @@ export function RegisterScreen({ navigation }: any) {
             disabled={loading}
           >
             <Text style={styles.btnText}>
-              {loading ? "Criando…" : "Criar conta"}
+              {loading ? t("auth.register_loading") : t("auth.register_submit")}
             </Text>
           </TouchableOpacity>
 
@@ -188,7 +185,8 @@ export function RegisterScreen({ navigation }: any) {
             style={styles.linkBtn}
           >
             <Text style={styles.linkText}>
-              Já tem conta? <Text style={styles.linkAccent}>Entrar</Text>
+              {t("auth.have_account")}{" "}
+              <Text style={styles.linkAccent}>{t("auth.login_link")}</Text>
             </Text>
           </TouchableOpacity>
         </View>

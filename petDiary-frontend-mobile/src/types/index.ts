@@ -156,7 +156,13 @@ export interface NotificationPreferences {
   email_enabled: boolean;
 }
 
-export type Language = "pt-BR" | "en-US" | "es-ES";
+export type Language =
+  | "pt-BR"
+  | "pt-PT"
+  | "en-US"
+  | "es-ES"
+  | "fr-FR"
+  | "ar";
 
 export interface AppState {
   user: User | null;

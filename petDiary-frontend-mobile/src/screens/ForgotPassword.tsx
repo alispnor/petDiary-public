@@ -11,11 +11,13 @@ import {
 } from "react-native";
 import axios from "axios";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 import api from "../services/api";
 import { LanguageSwitcher } from "../components/LanguageSwitcher";
 import { colors, radii, spacing, fontSize, fontWeight } from "../theme";
 
 export function ForgotPasswordScreen({ navigation }: any) {
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
@@ -54,32 +56,25 @@ export function ForgotPasswordScreen({ navigation }: any) {
           style={styles.logo}
           resizeMode="contain"
         />
-        <Text style={styles.title}>Recuperar senha</Text>
+        <Text style={styles.title}>{t("auth.forgot_title")}</Text>
 
         {sent ? (
           <>
-            <Text style={styles.success}>
-              ✅ Se este email estiver cadastrado, você receberá um link de
-              redefinição em instantes. Cheque sua caixa de entrada e a pasta
-              de spam.
-            </Text>
+            <Text style={styles.success}>{t("auth.forgot_sent")}</Text>
             <TouchableOpacity
               style={styles.btn}
               onPress={() => navigation.goBack()}
             >
-              <Text style={styles.btnText}>Voltar ao login</Text>
+              <Text style={styles.btnText}>{t("auth.forgot_back_login")}</Text>
             </TouchableOpacity>
           </>
         ) : (
           <>
-            <Text style={styles.subtitle}>
-              Informe seu email cadastrado. Enviaremos um link para você criar
-              uma nova senha.
-            </Text>
+            <Text style={styles.subtitle}>{t("auth.forgot_subtitle")}</Text>
 
             <TextInput
               style={styles.input}
-              placeholder="seu@email.com"
+              placeholder={t("auth.forgot_email_placeholder")}
               autoCapitalize="none"
               autoCorrect={false}
               keyboardType="email-address"
@@ -96,7 +91,7 @@ export function ForgotPasswordScreen({ navigation }: any) {
               disabled={loading || !email.includes("@")}
             >
               <Text style={styles.btnText}>
-                {loading ? "Enviando…" : "Enviar link"}
+                {loading ? t("auth.forgot_sending") : t("auth.forgot_send")}
               </Text>
             </TouchableOpacity>
 
@@ -105,8 +100,10 @@ export function ForgotPasswordScreen({ navigation }: any) {
               style={styles.linkBtn}
             >
               <Text style={styles.linkText}>
-                Lembrou a senha?{" "}
-                <Text style={styles.linkAccent}>Voltar ao login</Text>
+                {t("auth.remembered")}{" "}
+                <Text style={styles.linkAccent}>
+                  {t("auth.forgot_back_login")}
+                </Text>
               </Text>
             </TouchableOpacity>
           </>

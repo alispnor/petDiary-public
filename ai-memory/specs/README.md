@@ -23,6 +23,7 @@ Pasta com **specs/prompts versionadas** para módulos grandes que serão impleme
 | 15 | [Auditoria Performance + Resiliência (Frontend Web + Mobile)](./15-auditoria-performance-frontend.md) | Web + Mobile | Frontend funcional |
 | 16 | [Suíte de Smoke Tests (pytest E2E core)](./16-suite-smoke-tests-core-pytest.md) | Backend (testes) | Backend funcional |
 | 17 | [Notificações push + Preferências (mobile **e web**)](./17-notificacoes-mobile-push-preferencias.md) | Backend + Mobile + Web | Spec 06 (Celery, já feita); requer EAS para iOS push real |
+| 18 | [Admin completo + Suporte real (login, troca senha, tickets, paridade mobile)](./18-admin-completo-suporte-real.md) | Backend + Web + Mobile | Spec 17 (notify); modelo SupportTicket novo; admin read-only no mobile |
 
 ## Ordem de execução recomendada
 

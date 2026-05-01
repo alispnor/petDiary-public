@@ -13,6 +13,7 @@ import {
   RefreshControl,
 } from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { useTranslation } from "react-i18next";
 import api from "../services/api";
 import type { RootStackParamList } from "../navigation/AppNavigator";
 import type { HealthRecord, RecordType, VetAccessToken } from "../types";
@@ -33,15 +34,16 @@ const TYPE_ICONS: Record<RecordType, string> = {
   NOTE: "📝",
 };
 
-const TYPE_LABELS: Record<RecordType, string> = {
-  VACCINE: "Vacina",
-  EXAM: "Exame",
-  PRESCRIPTION: "Receita",
-  SURGERY: "Cirurgia",
-  NOTE: "Nota",
+const TYPE_KEYS: Record<RecordType, string> = {
+  VACCINE: "records.type_vaccine",
+  EXAM: "records.type_exam",
+  PRESCRIPTION: "records.type_prescription",
+  SURGERY: "records.type_surgery",
+  NOTE: "records.type_note",
 };
 
 export function PetDashboard({ route }: Props) {
+  const { t } = useTranslation();
   const { pet } = route.params;
 
   const [records, setRecords] = useState<HealthRecord[]>([]);
@@ -66,7 +68,7 @@ export function PetDashboard({ route }: Props) {
       );
       setRecords(data);
     } catch {
-      setError("Não foi possível carregar os registros.");
+      setError(t("pet.dashboard_load_failed"));
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -86,7 +88,7 @@ export function PetDashboard({ route }: Props) {
       });
       setPinResult(data);
     } catch {
-      Alert.alert("Erro", "Não foi possível gerar o PIN.");
+      Alert.alert(t("common.error"), t("pet.dashboard_pin_failed"));
     } finally {
       setGeneratingPin(false);
     }
@@ -95,7 +97,7 @@ export function PetDashboard({ route }: Props) {
   const handleCopyPin = () => {
     if (pinResult) {
       Clipboard.setString(pinResult.access_code);
-      Alert.alert("Copiado!", "PIN copiado para a área de transferência.");
+      Alert.alert(t("common.copied"), t("pet.dashboard_pin_copied"));
     }
   };
 
@@ -134,7 +136,9 @@ export function PetDashboard({ route }: Props) {
             disabled={generatingPin}
           >
             <Text style={styles.btnText}>
-              {generatingPin ? "Gerando…" : "🔑 Gerar PIN"}
+              {generatingPin
+                ? t("pet.dashboard_pin_loading")
+                : t("pet.dashboard_pin_btn")}
             </Text>
           </TouchableOpacity>
         </View>
@@ -144,29 +148,29 @@ export function PetDashboard({ route }: Props) {
             style={styles.btnSecondary}
             onPress={() => setVetsModal(true)}
           >
-            <Text style={styles.btnSecondaryText}>🩺 Vets</Text>
+            <Text style={styles.btnSecondaryText}>{t("pet.dashboard_actions_vets")}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.btnSecondary}
             onPress={() => setMembersModal(true)}
           >
-            <Text style={styles.btnSecondaryText}>👨‍👩‍👧 Família</Text>
+            <Text style={styles.btnSecondaryText}>{t("pet.dashboard_actions_family")}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.btnSecondary}
             onPress={() => setRemindersModal(true)}
           >
-            <Text style={styles.btnSecondaryText}>🔔 Lembretes</Text>
+            <Text style={styles.btnSecondaryText}>{t("pet.dashboard_actions_reminders")}</Text>
           </TouchableOpacity>
         </View>
 
         <View style={styles.timelineHeader}>
-          <Text style={styles.sectionTitle}>Histórico Clínico</Text>
+          <Text style={styles.sectionTitle}>{t("pet.dashboard_history_title")}</Text>
           <TouchableOpacity
             style={styles.btnAdd}
             onPress={() => setRecordModal(true)}
           >
-            <Text style={styles.btnAddText}>+ Novo</Text>
+            <Text style={styles.btnAddText}>{t("pet.dashboard_new_record")}</Text>
           </TouchableOpacity>
         </View>
 
@@ -180,15 +184,13 @@ export function PetDashboard({ route }: Props) {
           <View style={styles.center}>
             <Text style={styles.errorText}>{error}</Text>
             <TouchableOpacity onPress={loadRecords} style={styles.retryBtn}>
-              <Text style={styles.btnText}>Tentar novamente</Text>
+              <Text style={styles.btnText}>{t("common.retry")}</Text>
             </TouchableOpacity>
           </View>
         ) : records.length === 0 ? (
           <View style={styles.center}>
             <Text style={styles.emptyText}>
-              Nenhum registro ainda.{"\n"}Toque em{" "}
-              <Text style={{ fontWeight: fontWeight.bold }}>+ Novo</Text> para
-              adicionar.
+              {t("pet.dashboard_empty_records").replace(/<\/?bold>/g, "")}
             </Text>
           </View>
         ) : (
@@ -214,7 +216,7 @@ export function PetDashboard({ route }: Props) {
                         {item.date_occurred}
                       </Text>
                       <Text style={styles.timelineTitle}>
-                        {TYPE_LABELS[item.record_type]} · {item.title}
+                        {t(TYPE_KEYS[item.record_type])} · {item.title}
                       </Text>
                       {item.description ? (
                         <Text style={styles.timelineDesc}>
@@ -222,7 +224,9 @@ export function PetDashboard({ route }: Props) {
                         </Text>
                       ) : null}
                       <Text style={styles.expandHint}>
-                        {isExpanded ? "▾ Ocultar anexos" : "▸ Ver anexos"}
+                        {isExpanded
+                          ? t("pet.dashboard_hide_attachments")
+                          : t("pet.dashboard_show_attachments")}
                       </Text>
                     </View>
                   </TouchableOpacity>
@@ -273,22 +277,24 @@ export function PetDashboard({ route }: Props) {
         <View style={styles.modalOverlay}>
           <View style={styles.modalCard}>
             <Text style={styles.modalEmoji}>🔑</Text>
-            <Text style={styles.modalTitle}>PIN gerado!</Text>
+            <Text style={styles.modalTitle}>
+              {t("pet.dashboard_pin_modal_title")}
+            </Text>
             <Text style={styles.modalSubtitle}>
-              Compartilhe com o veterinário. Vale por 1 hora.
+              {t("pet.dashboard_pin_modal_subtitle")}
             </Text>
             <View style={styles.pinBox}>
               <Text style={styles.pinCode}>{pinResult?.access_code}</Text>
             </View>
             <View style={styles.modalActions}>
               <TouchableOpacity style={styles.btnCopy} onPress={handleCopyPin}>
-                <Text style={styles.btnCopyText}>Copiar</Text>
+                <Text style={styles.btnCopyText}>{t("common.copy")}</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.btnClose}
                 onPress={() => setPinResult(null)}
               >
-                <Text style={styles.btnText}>Fechar</Text>
+                <Text style={styles.btnText}>{t("common.close")}</Text>
               </TouchableOpacity>
             </View>
           </View>
