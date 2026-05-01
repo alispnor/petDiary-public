@@ -6,10 +6,12 @@ import {
   Modal,
   StyleSheet,
   Pressable,
+  Alert,
+  I18nManager,
 } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useAppStore } from "../store/useAppStore";
-import { SUPPORTED_LANGUAGES } from "../i18n";
+import { SUPPORTED_LANGUAGES, isRTL } from "../i18n";
 import { colors, radii, spacing, fontSize, fontWeight } from "../theme";
 
 const LANGUAGES = SUPPORTED_LANGUAGES.map((l) => ({ code: l.code, label: l.label }));
@@ -54,10 +56,25 @@ export function LanguageSwitcher({ variant = "compact" }: Props) {
                   key={l.code}
                   style={[styles.option, active && styles.optionActive]}
                   onPress={() => {
+                    const wantRTL = isRTL(l.code);
+                    const isCurrentlyRTL = I18nManager.isRTL;
                     i18n.changeLanguage(l.code);
                     // Salva no store também (compat com backend Accept-Language)
                     setLanguage(l.code as any);
                     setOpen(false);
+
+                    // Se mudou direção do layout (LTR↔RTL), RN exige reload
+                    // do app para aplicar. Mostra prompt amigável.
+                    if (wantRTL !== isCurrentlyRTL) {
+                      I18nManager.allowRTL(true);
+                      I18nManager.forceRTL(wantRTL);
+                      Alert.alert(
+                        wantRTL ? "تغيير الاتجاه" : "Reiniciar para aplicar",
+                        wantRTL
+                          ? "يحتاج التطبيق إلى إعادة تشغيل لتطبيق اتجاه RTL."
+                          : "O app precisa ser reaberto para aplicar a nova direção do layout.",
+                      );
+                    }
                   }}
                 >
                   <Text

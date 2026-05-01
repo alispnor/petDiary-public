@@ -14,6 +14,11 @@ import { initReactI18next } from "react-i18next";
 import * as Localization from "expo-localization";
 
 import ptBR from "./locales/pt-BR.json";
+import ptPT from "./locales/pt-PT.json";
+import enUS from "./locales/en-US.json";
+import esES from "./locales/es-ES.json";
+import frFR from "./locales/fr-FR.json";
+import ar from "./locales/ar.json";
 
 const RTL_LANGS = ["ar", "he", "fa", "ur"];
 
@@ -47,11 +52,11 @@ i18n
   .init({
     resources: {
       "pt-BR": { translation: ptBR },
-      "pt-PT": { translation: ptBR }, // fallback até B4
-      "en-US": { translation: ptBR },
-      "es-ES": { translation: ptBR },
-      "fr-FR": { translation: ptBR },
-      ar: { translation: ptBR },
+      "pt-PT": { translation: ptPT },
+      "en-US": { translation: enUS },
+      "es-ES": { translation: esES },
+      "fr-FR": { translation: frFR },
+      ar: { translation: ar },
     },
     lng: detectInitial(),
     fallbackLng: "pt-BR",
