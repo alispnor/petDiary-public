@@ -1,7 +1,7 @@
 # 📊 PROGRESSO — petDiary
 
 > **Arquivo vivo.** Atualize a cada sessão de trabalho.
-> Última atualização: **2026-05-01 (sessão 3 — Fases 3, 4 + 5.1/5.2/5.3 OWNER+CARETAKER funciona)**
+> Última atualização: **2026-05-01 (sessão 3 — Fase 5 backend completo: convidar/remover familiar)**
 
 ---
 
@@ -352,6 +352,19 @@ Decisões do Ali registradas em memory: email+phone obrigatórios, CPF opcional,
   - Migration 0002 (estrutural) + 0003 (data: cada Pet existente vira PetMember OWNER com user=tutor)
   - Admin: PetMemberInline em Pet + PetMemberAdmin standalone
   - Verificado: 4 Pets → 4 PetMembers role=OWNER criados pra tutores corretos
+- ✅ **Fase 5.4** — Backend: endpoints `/members/` + restrições OWNER:
+  - `pets/serializers.py`: `_MemberUserSummary`, `PetMemberSerializer`, `InviteMemberSerializer` (cadastra User novo + cria PetMember(CARETAKER) atomicamente, gera senha temporária + must_change_password=True)
+  - `pets/member_views.py` (novo):
+    - `PetMemberListCreateView` → GET (qualquer membro lista) / POST (apenas OWNER)
+    - `PetMemberDestroyView` → DELETE (apenas OWNER); bloqueia remover OWNER ou a si próprio
+  - `pets/urls.py`: `/pets/<pid>/members/` e `/pets/<pid>/members/<mid>/`
+  - `access/views.py`:
+    - `GeneratePinView` agora checa `PetMember(role=OWNER)` em vez de `pet.tutor==user` → caretaker NÃO pode gerar PIN
+    - `RevokeAccessView` mesmo: filtro `pet__members__role=OWNER`
+    - `ActiveAccessListView` agora retorna pets de TODOS os membros (OWNER + CARETAKER) — caretaker enxerga vets ativos do pet também (read-only)
+  - Validação E2E (11 testes via curl, todos OK):
+    - T1 luiza GET /members/ retorna OWNER + CARETAKER · T2 luiza POST cria pedro com senha temp · T3 pedro login + must_change_password=true · T4 pedro tenta gerar PIN → 403 · T5 pedro tenta convidar → 403 · T6 pedro lista membros (OK, é membro) · T7 luiza DELETE pedro 204 · T8 pedro acessa pet → 404 · T9 tentar remover OWNER → 400 · T10 outro tutor (joao) tenta convidar → 403 · T11 cleanup
+
 - ✅ **Fase 5.3** — Backend: IsPetMemberOrHasVetAccess + queryset Pet:
   - `pets/permissions.py`: novo `IsPetMemberOrHasVetAccess` substitui o antigo `IsTutorOrHasVetAccess` (alias de compat mantido)
   - Tutor agora é **OWNER ou CARETAKER**: `pet.has_member(user)` (filtra via PetMember)

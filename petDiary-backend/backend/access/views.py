@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from accounts.models import User
-from pets.models import Pet
+from pets.models import Pet, PetMember
 
 from .models import VetAccessToken
 from .serializers import (
@@ -36,9 +36,13 @@ class GeneratePinView(generics.CreateAPIView):
             )
 
         pet_id = request.data.get("pet")
-        if not request.user.pets.filter(id=pet_id).exists():
+        # Apenas OWNER do pet pode gerar PIN (caretaker NÃO pode — Fase 5)
+        is_owner = PetMember.objects.filter(
+            pet_id=pet_id, user=request.user, role=PetMember.Role.OWNER,
+        ).exists()
+        if not is_owner:
             return Response(
-                {"detail": _("Este pet não pertence a você.")},
+                {"detail": _("Apenas o tutor principal pode gerar PINs para este pet.")},
                 status=status.HTTP_403_FORBIDDEN,
             )
 
@@ -109,10 +113,12 @@ class RevokeAccessView(APIView):
                 status=status.HTTP_403_FORBIDDEN,
             )
 
+        # Apenas OWNER do pet pode revogar (caretaker NÃO)
         token = get_object_or_404(
             VetAccessToken,
             id=token_id,
-            pet__tutor=request.user,  # garante que o tutor é dono do pet
+            pet__members__user=request.user,
+            pet__members__role=PetMember.Role.OWNER,
             deleted_at__isnull=True,
         )
 
@@ -144,15 +150,17 @@ class ActiveAccessListView(generics.ListAPIView):
         if self.request.user.role != User.Role.TUTOR:
             return VetAccessToken.objects.none()
 
+        # Tutor (OWNER ou CARETAKER) vê os vets ativos dos pets que ele tem acesso
         return (
             VetAccessToken.objects.filter(
-                pet__tutor=self.request.user,
+                pet__members__user=self.request.user,
                 is_active=True,
                 is_used=True,
                 deleted_at__isnull=True,
                 expires_at__gt=timezone.now(),
             )
             .select_related("pet", "vet")
+            .distinct()
             .order_by("-claimed_at")
         )
 
