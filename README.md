@@ -44,31 +44,43 @@ A divisao em fases existe para mitigar riscos tecnicos (custos de IA e servidore
 
 ```
 petDiary/
-├── petDiary-backend/           # API REST (Python/Django)
-│   ├── docker-compose.yml      # Orquestra todos os servicos (db, api, mobile, web)
-│   └── backend/
-│       ├── petdiary/           # Configuracoes do projeto Django (settings, urls, wsgi)
-│       ├── accounts/           # Autenticacao e gestao de usuarios (JWT)
-│       ├── pets/               # CRUD de pets, perfis e permissoes
-│       ├── health/             # Registros de saude (vacinas, consultas, exames)
-│       ├── access/             # Sistema de PIN temporario para veterinarios
-│       └── locale/             # Internacionalizacao (pt_BR, en, es)
+├── docker-compose.yml          # Orquestra db + redis + api + worker + beat + web (+mobile via perfil)
+├── .pre-commit-config.yaml     # Hooks: ruff (backend), prettier (front), detect-secrets
+├── ai-memory/                  # Memoria viva do projeto (PROGRESSO.md, decisoes, specs)
 │
-├── petDiary-frontend-mobile/   # App do Tutor (React Native/Expo)
+├── petDiary-backend/backend/   # API REST (Python/Django)
+│   ├── petdiary/               # settings, urls, celery, healthcheck, middleware
+│   ├── accounts/               # User (TUTOR/VET/ADMIN), JWT custom (login unico vet),
+│   │                             reset-password, change-password, tasks Celery
+│   ├── pets/                   # CRUD de pets + PetMember (OWNER/CARETAKER co-tutores)
+│   ├── health/                 # Registros de saude + anexos (storage abstrato local/S3)
+│   ├── access/                 # PIN temporario + revogacao + historico
+│   ├── audit/                  # AuditLog automatico via signals
+│   ├── billing/                # Subscription, Coupon, gateway abstrato (mock/Asaas/MP)
+│   ├── admin_panel/            # Endpoints SaaS admin (KPIs, users, coupons, tickets)
+│   └── locale/                 # i18n backend (6 linguas configuradas)
+│
+├── petDiary-frontend-mobile/   # App do Tutor (React Native/Expo SDK 54)
 │   └── src/
-│       ├── screens/            # Telas (HomeTutor, PetDashboard)
-│       ├── navigation/         # Navegacao entre telas (React Navigation)
-│       ├── store/              # Estado global (Zustand)
-│       ├── services/           # Comunicacao com a API (Axios)
-│       ├── utils/              # Utilitarios (captura de documentos)
-│       └── types/              # Tipagem TypeScript
+│       ├── screens/            # Login, HomeTutor, PetDashboard, AccountSettings,
+│       │                         SubscriptionDashboard, HelpCenter
+│       ├── navigation/         # Stack autenticado
+│       ├── store/              # Zustand + AsyncStorage
+│       ├── services/api.ts     # Axios + interceptors
+│       ├── theme/              # Design system (paleta, raios, sombras, fontes)
+│       └── types/
 │
-└── petDiary-frontend-web/      # Portal do Veterinario (React/Vite)
+└── petDiary-frontend-web/      # Portal universal Tutor + Vet + Admin (React 19 + Vite + Tailwind 4)
     └── src/
-        ├── pages/              # Paginas (VetDashboard, ClinicalView)
-        ├── components/         # Componentes (PinInput, Timeline, PetHeader, NoteForm)
-        ├── store/              # Estado global (Zustand — authStore, clinicalStore)
-        └── services/           # Comunicacao com a API (Axios)
+        ├── pages/              # Login, Register, ForgotPassword, ResetPassword,
+        │                         TutorDashboard, VetEntry, ClinicalView,
+        │                         AccountSettings, ChangePassword, admin/*
+        ├── components/         # PinInput, AttachmentsList (drag-drop+webcam),
+        │                         AuditTimeline, MembersSection, VetAccessSection,
+        │                         InviteMemberModal, LanguageSwitcher, etc
+        ├── i18n/locales/       # pt-BR, en, es (estrutura para pt-PT, fr, ar/RTL)
+        ├── store/              # authStore com storage dinamico (local/session)
+        └── services/           # Axios + logger estruturado
 ```
 
 ---
@@ -77,13 +89,17 @@ petDiary/
 
 | Camada | Tecnologia | Papel |
 |---|---|---|
-| **Backend** | Python 3 + Django REST Framework | Regras de negocio, autenticacao JWT, API REST |
+| **Backend** | Python 3.11 + Django 5 + DRF + SimpleJWT (token blacklist) | Regras de negocio, autenticacao JWT (rotacao + blacklist), API REST |
 | **Banco de Dados** | PostgreSQL 15 | Integridade dos dados de saude, historico de permissoes |
-| **Mobile (Tutor)** | React Native (Expo 52) + Zustand | App do tutor com captura de fotos/audio |
-| **Web (Veterinario)** | React 19 (Vite) + Tailwind CSS + Zustand | Portal clinico denso para leitura de exames |
+| **Async** | Celery 5 + Redis 7 + django-celery-beat | Worker (concurrency=2) + beat com DatabaseScheduler para tasks periodicas |
+| **Observabilidade** | structlog + Sentry-ready + `/livez` `/healthz` | Logs JSON em PROD, healthcheck k8s-style |
+| **Seguranca** | DRF ScopedRateThrottle + JWT rotation + blacklist | Rate limit por escopo em endpoints sensiveis |
+| **Mobile (Tutor)** | React Native (Expo SDK 54) + Zustand + AsyncStorage | App com captura, assinatura PRO, central de ajuda |
+| **Web (Universal)** | React 19 (Vite) + Tailwind 4 + Zustand + react-i18next | Portal Tutor + Vet + Admin (3 roles, mesma SPA) |
 | **Documentacao API** | drf-spectacular (OpenAPI) | Geracao automatica de schema da API |
-| **Infraestrutura** | Docker Compose | Orquestracao de todos os servicos em containers |
-| **Cloud (Planejado)** | AWS S3 + URLs pre-assinadas / AWS Textract | Upload direto de arquivos e OCR de documentos |
+| **Infraestrutura** | Docker Compose unificado (perfis local/dev/hom/prod/mobile) | Orquestracao de todos os servicos |
+| **Integracoes** | Mock-first toggleable (`*_MODE`/`*_PROVIDER`) | Gateway pagamento, IA (OpenAI/Whisper), email, S3 — flips de env quando vier credencial |
+| **DX** | pre-commit (ruff + prettier + detect-secrets) + ai-memory/ | Hooks padronizam codigo; memoria viva guia novas sessoes |
 
 ---
 
@@ -96,15 +112,31 @@ petDiary/
 ### Subindo todos os servicos
 
 ```bash
-cd petDiary-backend
-docker-compose up --build
+docker compose --env-file .env.local up --build
+
+# Com mobile (Expo Go no celular):
+docker compose --env-file .env.local --profile mobile up
 ```
 
 Isso inicia:
 - **PostgreSQL** na porta `5432`
+- **Redis** na porta `6379`
 - **API Django** na porta `8000`
-- **App Mobile (Expo)** na porta `8081`
+- **Celery worker + beat** (sem porta exposta — fala com Redis interno)
 - **Portal Web (Vite)** na porta `5173`
+- **App Mobile (Expo)** na porta `8081` (apenas com `--profile mobile`)
+
+### Endpoints de saude
+
+- `GET /livez/`  — liveness (200 se o processo responde)
+- `GET /healthz/` — readiness (testa Postgres + Redis; 200/503 com detalhe)
+
+### Hooks de qualidade
+
+```bash
+pip install pre-commit && pre-commit install
+pre-commit run --all-files
+```
 
 ---
 

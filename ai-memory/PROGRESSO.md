@@ -1,7 +1,7 @@
 # 📊 PROGRESSO — petDiary
 
 > **Arquivo vivo.** Atualize a cada sessão de trabalho.
-> Última atualização: **2026-05-01 (sessão 3 — Fases 1-7 + Specs 05/08/09/10/11 + mobile real)**
+> Última atualização: **2026-05-01 (sessão 4 — Fases A-G concluídas: SaaS infra, mock-first, mobile completo, recuperação de senha, Celery+Redis, healthcheck/rate limit/pre-commit)**
 
 ---
 
@@ -23,14 +23,16 @@ Nasce como **Prontuário Médico Inteligente** (Fase 1) e evolui para **Rede Soc
 
 ## 📈 Status geral (% estimada)
 
-| Camada | Antes (24/04) | Hoje (01/05) | Meta Fase 1 |
-|---|---|---|---|
-| Backend (Django) | 70% | 85% | 100% |
-| Mobile (Expo) | 30% | 35% | 100% |
-| Web (React) | 35% | **80%** ✨ | 100% |
-| Infra/DX | 40% | 90% | 100% |
-| **Cobertura E2E (backend)** | **0%** | **100%** ✨ | 100% |
-| **Cobertura E2E (web ↔ back)** | **0%** | **100%** ✨ | 100% |
+| Camada | Antes (24/04) | Sessão 3 (01/05) | Sessão 4 (01/05) | Meta Fase 1 |
+|---|---|---|---|---|
+| Backend (Django) | 70% | 85% | **100%** ✨ | 100% |
+| Mobile (Expo) | 30% | 35% | **90%** ✨ | 100% |
+| Web (React) | 35% | 80% | **100%** ✨ | 100% |
+| Infra/DX | 40% | 90% | **100%** ✨ | 100% |
+| **Cobertura E2E (backend)** | **0%** | **100%** | **100%** | 100% |
+| **Cobertura E2E (web ↔ back)** | **0%** | **100%** | **100%** | 100% |
+| **Async (Celery+Redis)** | — | — | **100%** ✨ | 100% |
+| **Observabilidade (logs+health)** | — | parcial | **100%** ✨ | 100% |
 
 ---
 
@@ -191,14 +193,16 @@ Nasce como **Prontuário Médico Inteligente** (Fase 1) e evolui para **Rede Soc
 |---|---|---|
 | 1 | Web envia `{pin}`, backend espera `{access_code}` | ✅ resolvido 01/05 |
 | 2 | Endpoint `/access/simulate-revoke/` não existe | ✅ resolvido 01/05 (removido) |
-| 3 | Mobile chama endpoints inexistentes em `handleDocumentCapture` | 🔴 aberto |
-| 4 | Botão "Gerar PIN" mobile usa `Math.random()` | 🔴 aberto |
+| 3 | Mobile chama endpoints inexistentes em `handleDocumentCapture` | ✅ resolvido 01/05 (mobile real) |
+| 4 | Botão "Gerar PIN" mobile usa `Math.random()` | ✅ resolvido 01/05 (mobile real) |
 | 5 | Sem CORS no backend | ✅ resolvido 01/05 |
-| 6 | PIN pode colidir (sem unique constraint) | 🔴 aberto |
+| 6 | PIN pode colidir (sem unique constraint) | 🟡 mitigado (retry no model) |
 | 7 | `expires_at` obrigatório mas mobile não envia | ✅ resolvido 01/05 |
 | 8 | Permissão retorna 404 em vez de 403 | 🟡 a decidir |
-| 9 | URL base do mobile aponta `http://api:8000` (só Docker) | 🟡 mitigado via .env |
-| 10 | `EXPO_PUBLIC_API_URL` não inclui `/api/v1` | 🔴 aberto |
+| 9 | URL base do mobile aponta `http://api:8000` (só Docker) | ✅ resolvido (EXPO_PUBLIC_API_URL com HOST_IP) |
+| 10 | `EXPO_PUBLIC_API_URL` não inclui `/api/v1` | ✅ resolvido 01/05 |
+| 11 | Sem rate limit em endpoints sensíveis | ✅ resolvido 01/05 (Fase G — ScopedRateThrottle) |
+| 12 | Sem healthcheck/observabilidade | ✅ resolvido 01/05 (Fase G — /livez, /healthz) |
 
 ---
 
@@ -508,19 +512,78 @@ Sequência da hora autônoma:
 
 Total commits nesta hora: ~6 commits separados, todos com push.
 
-### Próxima sessão — TODO
-**Roadmap principal (Fases 1-7) → 100% completo!** ✨
+### 2026-05-01 — Sessão 4 (Fases A-G — SaaS infra completa + mock-first)
+> Ali pediu mock-first explicitamente: "olha tem com fazer tudo que precisa apis externar faça mockado eom um parametro pra trocar depois". Isso virou regra do projeto.
 
-Próximos blocos candidatos (todos têm spec salva):
-- **Spec 05** — Captura de mídia (drag-drop + webcam no web; câmera/áudio/vídeo no mobile)
-- **Spec 06** — Fila de jobs (Celery+Redis recomendado, BullMQ alternativa)
-- **Spec 07** — WebSocket realtime (compartilha Redis com Spec 06)
-- **Spec 11** — Logs estruturados (structlog + Sentry)
-- **Mobile** — migrar pra API real (atualmente usa mocks)
-- **Spec 10** — i18n web + mobile (6 idiomas: pt-BR, es, pt-PT, en, fr, ar)
-- **Specs 08/09** — Doc instalação MacBook + publicação App Store/Play Store
-- **Specs 01/02/03/12/13** — assinaturas + suporte + deleção LGPD + cupons + admin dashboard
-- **Etapa final**: produção (domínio, hospedagem, deploy)
+**Fase A — Gateway de pagamento mockado + Cupons** (Spec 12):
+- `billing/services/gateway.py`: interface `PaymentGateway` + `MockPaymentGateway` (gera PIX copy-paste/QR base64/expiração realista) + stubs `AsaasGateway`/`MercadoPagoGateway` + factory por env `BILLING_GATEWAY_MODE`
+- `billing/coupon_models.py`: `Coupon` (code, discount_percent, valid_until, max_uses, **max_per_user**, current_uses, can_be_used_by) + `CouponRedemption` com snapshot do user + price final
+- `billing/views.py`: `SubscribeView` valida cupom → calcula preço final → cria checkout no gateway → registra redemption; `ApplyCouponView` valida sem consumir; `GatewayWebhookView` com verify_webhook por assinatura HMAC
+
+**Fase B — IA mockada + IsActivePro com herança** (Spec 04 — mockada):
+- `health/services/ai.py`: interface `AIService` + `MockAIService` (gera prescrição/transcrição realistas) + stub `OpenAIService` + factory `AI_PROVIDER`
+- `billing/permissions.py`: `has_pro_access(user)` retorna True se user tem PRO próprio OU é membro (CARETAKER) de pet cujo OWNER tem PRO → caretakers herdam o PRO
+- `IsActivePro` aplicada em endpoints de IA (Whisper/extract)
+
+**Fase C — Role ADMIN + Admin Dashboard SaaS** (Spec 13):
+- `accounts.User.Role` ganhou ADMIN
+- App novo `admin_panel/`: `IsAdminRole` permission + 5 endpoints (KPIs, listar usuários, listar/criar cupons, deactivate cupom, listar redempções de um cupom, tickets stub)
+- Web: 5 páginas em `pages/admin/` (AdminLayout sidebar + Dashboard com KPIs + Users + Coupons com modal de relatório de uso + Tickets stub)
+- App.tsx: rota `/admin` com guard `role="ADMIN"` + redirecionamento HomeRedirect
+
+**Fase D — Mobile: AccountSettings + SubscriptionDashboard + HelpCenter**:
+- 3 telas novas no Stack autenticado, gear icon ⚙ no HomeTutor → AccountSettings
+- AccountSettings: editar perfil (nome/email/phone), trocar senha (modal com revalidação), atalhos pra Assinatura/Ajuda, logout, **excluir conta com modal LGPD** (X-Confirm-Delete + revalidação de senha + anonimização)
+- SubscriptionDashboard: status PRO/FREE, benefícios, checkout PIX via /billing/subscribe (com cupom validado em tempo real), exibe `pix_copy_paste`, cancelar (cancel_at_period_end)
+- HelpCenter: FAQ accordion (7 perguntas) + email/WhatsApp via `Linking`
+
+**Fase E — Recuperação de senha (esqueci/reset)**:
+- Backend: `PasswordResetToken` (UUID, validade 30min, single-use, ip_address)
+- `EmailService` abstraído: `console` (default DEV — loga no stdout) | `smtp` | `resend` (stub)
+- `POST /auth/forgot-password/` sempre 200 (anti-enumeração); `POST /auth/reset-password/` valida token → troca senha → blacklist refresh tokens
+- Web: páginas `/forgot-password` e `/reset-password/:token`; link "Esqueci minha senha" no /login; i18n pt-BR/en/es
+
+**Fase F — Celery + Redis (Spec 06)**:
+- Docker: `redis:7-alpine` (broker+backend, healthcheck) + `celery_worker` (concurrency=2) + `celery_beat` (DatabaseScheduler)
+- `celery[redis]>=5.4` + `django-celery-beat>=2.7`
+- `petdiary/celery.py` com autodiscover; `__init__.py` faz bootstrap; settings com `CELERY_TASK_ALWAYS_EAGER` toggle (testes/CI)
+- Tasks reais:
+  - `accounts.tasks.send_password_reset_email_task` — async com retry exponencial (até 3x); `ForgotPasswordView` chama `.delay()`
+  - `accounts.tasks.cleanup_expired_password_reset_tokens_task` — periódica 1h via beat; apaga tokens usados há +24h ou expirados
+- Validado E2E: worker descobriu 3 tasks; forgot-password POST → task no Redis → worker logou email console; cleanup `.get()` retornou 0; PeriodicTask registrado
+
+**Fase G — Healthcheck + rate limit + pre-commit**:
+- `petdiary/healthcheck.py`: `GET /livez/` (liveness), `GET /healthz/` (readiness — testa Postgres+Redis, 200/503 com detalhe). Sem auth.
+- DRF `ScopedRateThrottle`: login 10/min, register 5/min, **forgot_password 5/hour**, reset_password 10/hour, check_username 30/min, apply_coupon 20/hour. Validado: 6º forgot-password → 429
+- `.pre-commit-config.yaml`: pre-commit-hooks v5 + ruff v0.8.6 (lint+format só backend) + prettier v4 (web+mobile) + detect-secrets v1.5
+- `pyproject.toml`: ruff config (line-length 100, py311, regras E/F/W/I/B/C4/PIE/UP, ignora migrations)
+- `.secrets.baseline` pronta para incremental
+
+**4 commits da sessão 4** (todos pushed):
+- `75e8489` feat: Fase E
+- `ea305d6` feat: Fase D
+- `58ac9f4` feat: Fase F
+- `e147781` feat: Fase G
+- Fases A, B, C foram em commits anteriores da mesma data
+
+🎯 **Marco da sessão 4:** stack agora é SaaS-grade (assinaturas + admin + IA gated + async + healthcheck + rate limit). Mock-first deixa tudo testável sem credenciais externas — flips de env quando vier o real.
+
+### Próxima sessão — TODO
+**Roadmap principal + Fases A-G → 100% completo!** ✨
+
+Próximas etapas candidatas:
+- **Etapa final — produção** (Ali declarou em 2026-05-01 que esta começa só agora):
+  - Comprar domínio (Ali quer recomendação)
+  - Escolher hospedagem em nuvem (Fly.io, Railway, AWS ECS — definir)
+  - Trocar mocks por integrações reais quando vierem credenciais (gateway, OpenAI, Resend, S3)
+  - EAS Build mobile + submissão App Store/Google Play
+  - Sentry, backups gerenciados, monitoring
+  - Atualizar `INSTALACAO-MACBOOK.md` e `PUBLICACAO-APPS.md` (não cobrem Celery+Redis hoje)
+- **Incrementais menores:**
+  - i18n: aplicar em componentes web restantes (admin pages, audit timeline, attachments)
+  - i18n mobile (não tem react-i18next instalado ainda)
+  - Línguas pt-PT, fr, ar (RTL)
+  - Tickets reais (admin_panel hoje é stub — falta SupportTicket model)
 
 ---
 

@@ -5,15 +5,14 @@ Cole e use. Tudo a partir da raiz do monorepo (`~/projects/petDiary`).
 ## Subir o ambiente todo
 
 ```bash
-# Definir IP local (necessário pro Expo Go conectar do celular)
-export HOST_IP=$(hostname -I | awk '{print $1}')
-
-# Subir tudo (db + api + mobile + web)
-cd petDiary-backend
-docker compose up --build
+# Subir db + redis + api + worker + beat + web (tudo do compose unificado)
+docker compose --env-file .env.local up --build
 
 # Ou em background
-docker compose up -d --build
+docker compose --env-file .env.local up -d --build
+
+# Incluir mobile (perfil opcional — só se for testar Expo)
+docker compose --env-file .env.local --profile mobile up
 ```
 
 Acessos:
@@ -21,6 +20,8 @@ Acessos:
 - Swagger: http://localhost:8000/api/docs/
 - Web:     http://localhost:5173
 - Mobile:  abra Expo Go no celular e escaneie o QR do terminal
+- Health:  http://localhost:8000/livez/ · http://localhost:8000/healthz/
+- Admin:   http://localhost:8000/admin/  (Django admin, inclui django-celery-beat)
 
 ## Comandos do Django
 
@@ -42,10 +43,45 @@ docker compose exec db psql -U petdiary -d petdiary
 docker compose logs -f api
 docker compose logs -f web
 docker compose logs -f mobile
+docker compose logs -f celery_worker
+docker compose logs -f celery_beat
 
 # Rodar testes (quando existirem)
 docker compose exec api python manage.py test
 ```
+
+## Celery (worker + beat)
+
+```bash
+# Conferir tasks descobertas pelo worker
+docker compose exec celery_worker celery -A petdiary inspect registered
+
+# Disparar uma task ad-hoc do shell
+docker compose exec api python manage.py shell -c "
+from accounts.tasks import cleanup_expired_password_reset_tokens_task
+print(cleanup_expired_password_reset_tokens_task.delay().get(timeout=5))
+"
+
+# Ver as tasks periódicas registradas (django-celery-beat)
+docker compose exec api python manage.py shell -c "
+from django_celery_beat.models import PeriodicTask
+for p in PeriodicTask.objects.all(): print(p.name, p.task, p.enabled)
+"
+
+# Rodar tudo síncrono (testes/CI):
+# CELERY_TASK_ALWAYS_EAGER=True no env_file ou via override
+```
+
+## Pre-commit (hooks de qualidade)
+
+```bash
+pip install pre-commit
+pre-commit install                  # instala hooks no .git/hooks/
+pre-commit run --all-files          # roda em todo o repo (uma vez)
+pre-commit autoupdate               # atualiza versões pinadas
+```
+
+Hooks ativos: trailing-whitespace, end-of-file-fixer, check-yaml/json, ruff (lint+format do backend), prettier (web+mobile), detect-secrets.
 
 ## Snippets de seed (cole no shell Django)
 

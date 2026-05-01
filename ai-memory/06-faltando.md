@@ -1,5 +1,20 @@
 # 06 — O que está faltando (checklist Fase 1)
 
+> ⚠️ **Snapshot histórico (24/04 → 01/05).** A maior parte dos itens abaixo já foi
+> entregue ao longo das sessões 1-4. **Para o estado atual atualizado, consulte
+> [`PROGRESSO.md`](./PROGRESSO.md).**
+>
+> Itens ainda em aberto neste 2026-05-01 (após Fases A-G):
+> - Tickets de suporte com modelo real (admin_panel hoje é stub — não tem `SupportTicket`)
+> - Migrar mocks para integrações reais quando vierem credenciais (Asaas/MP, OpenAI, Resend, S3)
+> - Cobertura de testes (pytest backend, jest/vitest web, RN testing-library mobile)
+> - CI básico (GitHub Actions: install, migrate, test, ruff, prettier)
+> - i18n web nas páginas restantes + i18n mobile (não tem react-i18next instalado)
+> - Línguas pt-PT, fr, ar (RTL) — backend já tem LANGUAGES configurado
+> - Etapa final de produção (domínio, hospedagem, EAS Build, deploy)
+
+---
+
 Lista crua. Use como checklist de PR.
 
 ## Backend
