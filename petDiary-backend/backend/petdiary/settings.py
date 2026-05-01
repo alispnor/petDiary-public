@@ -122,6 +122,22 @@ MEDIA_ROOT = BASE_DIR / "media"
 # Backend de storage para attachments — "local" (default) ou "s3" (futuro)
 ATTACHMENT_STORAGE_BACKEND = config("ATTACHMENT_STORAGE_BACKEND", default="local")
 
+# Gateway de pagamento — "mock" (default DEV) | "asaas" | "mercadopago"
+BILLING_GATEWAY_MODE = config("BILLING_GATEWAY_MODE", default="mock")
+GATEWAY_API_KEY = config("GATEWAY_API_KEY", default="")
+GATEWAY_WEBHOOK_SECRET = config("GATEWAY_WEBHOOK_SECRET", default="")
+SUBSCRIPTION_PRO_PRICE_BRL = config("SUBSCRIPTION_PRO_PRICE_BRL", default=14.90, cast=float)
+
+# IA — "mock" (default) | "openai"
+AI_PROVIDER = config("AI_PROVIDER", default="mock")
+OPENAI_API_KEY = config("OPENAI_API_KEY", default="")
+OPENAI_MODEL_TEXT = config("OPENAI_MODEL_TEXT", default="gpt-4o-mini")
+OPENAI_MODEL_AUDIO = config("OPENAI_MODEL_AUDIO", default="whisper-1")
+
+# Email transacional — "console" (loga em dev) | "smtp" | "resend"
+EMAIL_PROVIDER = config("EMAIL_PROVIDER", default="console")
+EMAIL_FROM = config("EMAIL_FROM", default="noreply@petdiary.com.br")
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # DRF

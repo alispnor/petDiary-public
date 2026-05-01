@@ -70,3 +70,6 @@ class Subscription(models.Model):
         return self.plan_type == self.Plan.PRO and self.status in (
             self.Status.ACTIVE, self.Status.TRIALING,
         )
+
+# Coupon model importado de coupon_models.py
+from .coupon_models import Coupon  # noqa: F401, E402
