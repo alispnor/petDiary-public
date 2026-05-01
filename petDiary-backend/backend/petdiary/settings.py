@@ -96,6 +96,7 @@ LANGUAGES = [
     ("pt-br", "Português (Brasil)"),
     ("en", "English"),
     ("es", "Español"),
+    ("ar", "العربية"),  # Árabe — RTL; idioma nativo do Ali (decisão durável)
 ]
 
 LOCALE_PATHS = [

@@ -4,6 +4,17 @@
 
 ---
 
+## Idiomas suportados (atualizado 2026-05-01)
+
+| Código | Idioma | Direção | Status backend |
+|---|---|---|---|
+| `pt-br` | Português (Brasil) | LTR | ✅ default + `gettext_lazy` |
+| `en` | English | LTR | ✅ configurado, `.po` pendente |
+| `es` | Español | LTR | ✅ configurado, `.po` pendente |
+| **`ar`** | **العربية (Árabe)** | **RTL** | ✅ adicionado em 2026-05-01 (idioma nativo do Ali) |
+
+> ⚠️ **Árabe é RTL (right-to-left)** — exige tratamento especial em CSS/layout (espelhamento de margins, padding, ícones, dropdowns). Ver seção "RTL" abaixo.
+
 ## Estado atual (verificado em 2026-05-01)
 
 ### ✅ Backend (Django) — i18n CONFIGURADO
@@ -12,7 +23,12 @@
 ```python
 LANGUAGE_CODE = "pt-br"
 USE_I18N = True
-LANGUAGES = [("pt-br", "Português (Brasil)"), ("en", "English"), ("es", "Español")]
+LANGUAGES = [
+    ("pt-br", "Português (Brasil)"),
+    ("en", "English"),
+    ("es", "Español"),
+    ("ar", "العربية"),  # ← adicionado 2026-05-01
+]
 LOCALE_PATHS = [BASE_DIR / "locale"]
 MIDDLEWARE = [..., "django.middleware.locale.LocaleMiddleware", ...]
 ```
@@ -37,11 +53,12 @@ MIDDLEWARE = [..., "django.middleware.locale.LocaleMiddleware", ...]
 ## Plano em fases
 
 ### Fase L.1 — Backend: completar traduções existentes
-- Gerar `.po` para `en` e `es`:
+- Gerar `.po` para todos os idiomas:
   ```bash
-  docker compose exec api python manage.py makemessages -l en -l es
+  docker compose exec api python manage.py makemessages -l en -l es -l ar
   ```
-- Traduzir strings em `locale/en/LC_MESSAGES/django.po` e `locale/es/...`
+- Traduzir strings em `locale/{en,es,ar}/LC_MESSAGES/django.po`
+- Para árabe: tradutor humano nativo recomendado (Ali pode revisar pessoalmente — é nativo)
 - Compilar:
   ```bash
   docker compose exec api python manage.py compilemessages
@@ -71,6 +88,9 @@ import LanguageDetector from "i18next-browser-languagedetector";
 import ptBR from "./locales/pt-BR.json";
 import en from "./locales/en.json";
 import es from "./locales/es.json";
+import ar from "./locales/ar.json";
+
+const RTL_LANGS = ["ar", "he", "fa", "ur"];
 
 i18n
   .use(LanguageDetector)
@@ -80,10 +100,21 @@ i18n
       "pt-BR": { translation: ptBR },
       en: { translation: en },
       es: { translation: es },
+      ar: { translation: ar },
     },
     fallbackLng: "pt-BR",
+    supportedLngs: ["pt-BR", "en", "es", "ar"],
     interpolation: { escapeValue: false },
   });
+
+// Aplica direção RTL/LTR no <html dir="..."> sempre que idioma muda
+function applyDir(lang: string) {
+  const isRtl = RTL_LANGS.some((l) => lang.startsWith(l));
+  document.documentElement.dir = isRtl ? "rtl" : "ltr";
+  document.documentElement.lang = lang;
+}
+applyDir(i18n.language);
+i18n.on("languageChanged", applyDir);
 
 export default i18n;
 ```
@@ -141,11 +172,40 @@ Trocar **TODAS** as strings hardcoded:
 - Validation messages, loading states, alerts, modal content
 
 ### Fase L.4 — Web: seletor de idioma na UI
-- Header dropdown 🌐 com 3 opções (pt-BR, en, es)
+- Header dropdown 🌐 com 4 opções:
+  - 🇧🇷 Português (default)
+  - 🇺🇸 English
+  - 🇪🇸 Español
+  - 🇸🇦 العربية (Árabe)
 - Persiste escolha em `localStorage` (i18next-browser-languagedetector já faz)
 - Também envia no `Accept-Language` header (atualizar `services/api.ts`)
+- Ao escolher árabe, layout vira RTL automaticamente (via `applyDir`)
 
-### Fase L.5 — Mobile: estrutura paralela
+### Fase L.4.1 — Web: suporte RTL (árabe)
+> ⚠️ Crítico para o Ali (idioma nativo). Layout precisa ser espelhado.
+
+- Tailwind v4: já oferece variantes `rtl:` e `ltr:` nativas
+- Trocar classes posicionais:
+  ```tsx
+  // ANTES (LTR-only):
+  <div className="ml-4 pl-2">
+  // DEPOIS (RTL-aware):
+  <div className="ms-4 ps-2">  // ms = margin-start, ps = padding-start
+  ```
+- Ícones direcionais: setas voltadas pra direita devem espelhar
+  ```tsx
+  <span className="rtl:scale-x-[-1]">→</span>
+  ```
+- Componente `<PinInput>`: ordem dos dígitos NÃO inverte (números são LTR mesmo em árabe)
+- Datas e horários: usar `Intl.DateTimeFormat(locale)` que já formata correto
+- Testar em todas as telas:
+  - Login / Register / ChangePassword
+  - TutorDashboard (cards, modais, sidebar)
+  - VetEntry (sidebar de histórico)
+  - ClinicalView (timeline, form de nota)
+  - VetAccessSection (collapse + modais)
+
+### Fase L.5 — Mobile: estrutura paralela (incluindo RTL)
 ```bash
 npx expo install expo-localization
 npm install i18n-js  # ou usar mesmo react-i18next
@@ -154,11 +214,25 @@ npm install i18n-js  # ou usar mesmo react-i18next
 Auto-detectar idioma do device:
 ```ts
 import * as Localization from "expo-localization";
+import { I18nManager } from "react-native";
 import i18n from "i18n-js";
 
-i18n.locale = Localization.locale.startsWith("pt") ? "pt-BR" :
-              Localization.locale.startsWith("es") ? "es" : "en";
+const locale = Localization.locale.toLowerCase();
+const lang = locale.startsWith("pt") ? "pt-BR" :
+             locale.startsWith("es") ? "es" :
+             locale.startsWith("ar") ? "ar" : "en";
+
+i18n.locale = lang;
+
+// RTL: precisa de RELOAD do app pra aplicar (limitação do React Native)
+const isRtl = lang === "ar";
+if (I18nManager.isRTL !== isRtl) {
+  I18nManager.forceRTL(isRtl);
+  // Em mudança manual via UI, mostrar modal "Reiniciando app..." e Updates.reloadAsync()
+}
 ```
+
+> Atenção mobile RTL: `react-native` precisa de **restart do app** quando idioma vira RTL pela primeira vez. Lib `expo-updates` ajuda (Updates.reloadAsync). Documentar essa UX peculiar.
 
 ### Fase L.6 — Mobile: refatorar componentes
 - Mesmo processo do web; chaves em `src/i18n/locales/*.json`
@@ -185,6 +259,19 @@ i18n.locale = Localization.locale.startsWith("pt") ? "pt-BR" :
 - [ ] Compartilhar arquivos JSON entre web e mobile via symlink ou copy?
 - [ ] Idioma default vem do device, do backend, ou do header?
 - [ ] **Tradução automática** com IA (ChatGPT) para o pt-BR servir como fonte? Ou tradutor humano profissional?
+- [x] ~~Idiomas suportados?~~ → **DECIDIDO:** pt-BR (default), en, es, **ar (árabe — RTL, idioma nativo do Ali)**
+- [ ] Para árabe: Ali revisa pessoalmente as traduções? (recomendado — é nativo)
+- [ ] Mobile RTL: forçar reload do app na primeira vez (UX peculiar do React Native)?
+
+## Considerações adicionais para árabe
+
+- **Fonte:** Nunito não tem glifos árabes ideais. Considerar:
+  - **Cairo** (Google Fonts) — ótima legibilidade árabe
+  - **Tajawal** (Google Fonts) — alternativa
+  - Manter Nunito para pt-BR/en/es; carregar Cairo só quando `lang === "ar"`
+- **Numerais:** decidir entre algarismos arábicos ocidentais (1234) ou indo-arábicos (١٢٣٤). Recomendo manter ocidentais (mais universais; é o padrão até em apps em árabe modernos)
+- **Datas:** `Intl.DateTimeFormat("ar-SA")` retorna calendário islâmico por default — usar `calendar: "gregory"` para gregoriano
+- **Pluralização árabe:** tem 6 formas (zero, um, dois, poucos, muitos, outro) — i18next lida automaticamente
 
 ## Encaixe no roadmap
 
