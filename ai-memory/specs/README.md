@@ -1,0 +1,45 @@
+# 📦 Specs — Implementações futuras
+
+Pasta com **specs/prompts versionadas** para módulos grandes que serão implementados em fases futuras. Cada arquivo é independente e pode ser copiado direto na conversa quando for hora de implementar.
+
+## Índice
+
+| # | Spec | Camada | Depende de |
+|---|---|---|---|
+| 01 | [Backend — Assinaturas + Webhook + Deleção LGPD + Suporte](./01-backend-assinaturas-suporte-conta.md) | Django REST | Fases 1-2 (cadastro pronto) |
+| 02 | [Mobile — Cobrança + Gestão de Conta](./02-mobile-cobranca-conta.md) | Expo / RN | Spec 01 implementada |
+| 03 | [Mobile — Central de Ajuda](./03-mobile-central-ajuda.md) | Expo / RN | Endpoint `/support/tickets/` da Spec 01 |
+
+## Ordem de execução recomendada
+
+```
+Spec 01 (Backend)
+   ├──▶ Spec 02 (Mobile Cobrança)
+   └──▶ Spec 03 (Mobile Ajuda)
+```
+
+A Spec 01 é fundação para as duas mobile. Depois que estiver pronta, as duas mobile podem rodar em paralelo (mas como dependem do mesmo Zustand de auth, recomendo serial).
+
+## Encaixe no roadmap principal
+
+Essas specs são **etapas grandes** que entram **DEPOIS** das fases já planejadas:
+
+1. ✅ Fase 1 — cadastro completo (concluída)
+2. ⏳ Fase 2 — login UX (manter conectado)
+3. ⏳ Fase 3 — acessos bidirecionais vet ↔ pet
+4. ⏳ Fase 4 — login único do veterinário
+5. ⏳ Fase 5 — co-tutores
+6. ⏳ Fase 6 — auditoria
+7. ⏳ Fase 7 — uploads/download/print
+8. ⏳ **Fase 8 — Spec 01 (Backend monetização + suporte + LGPD)** ← novo
+9. ⏳ **Fase 9 — Spec 02 (Mobile cobrança + deleção)** ← novo
+10. ⏳ **Fase 10 — Spec 03 (Mobile ajuda)** ← novo
+11. ⏳ Etapa final — Produção (domínio, hospedagem, PRODUCAO.md, EAS Build)
+
+## Considerações antes de iniciar
+
+**Web equivalente:** as Specs 02 e 03 são para **mobile**, mas o web atual também precisa das mesmas telas (assinatura, deletar conta, ajuda) por exigência da Apple/Google + LGPD. Considerar criar specs equivalentes para web ou adaptar essas no contexto.
+
+**Gateway de pagamento:** Ali mencionou Mercado Pago **ou** Asaas, com repasse final para Nubank PJ. Decidir antes de iniciar a Spec 01 (afeta integração).
+
+**Plano FREE vs PRO:** os benefícios e o preço do PRO ainda não foram definidos — definir antes da Spec 02.

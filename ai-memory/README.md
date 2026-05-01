@@ -20,6 +20,7 @@ Pasta de memória do projeto. Tudo que importa para retomar o trabalho está aqu
 | [08-decisoes.md](./08-decisoes.md) | Decisões arquiteturais já tomadas e por quê |
 | [09-docker-orquestracao.md](./09-docker-orquestracao.md) | Docker Compose unificado, perfis, envs, comandos |
 | [10-identidade-visual.md](./10-identidade-visual.md) | Logo, paleta, script de geração de ícones, assets |
+| [specs/](./specs/) | **Specs futuras** (módulos grandes não iniciados) — assinaturas, suporte, deleção LGPD, etc. |
 
 ## Como usar
 
