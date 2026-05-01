@@ -20,6 +20,7 @@ import { RecordFormModal } from "../components/RecordFormModal";
 import { AttachmentsList } from "../components/AttachmentsList";
 import { VetAccessModal } from "../components/VetAccessModal";
 import { MembersModal } from "../components/MembersModal";
+import { RemindersModal } from "../components/RemindersModal";
 import { colors, radii, spacing, fontSize, fontWeight } from "../theme";
 
 type Props = NativeStackScreenProps<RootStackParamList, "PetDashboard">;
@@ -52,6 +53,7 @@ export function PetDashboard({ route }: Props) {
   const [recordModal, setRecordModal] = useState(false);
   const [vetsModal, setVetsModal] = useState(false);
   const [membersModal, setMembersModal] = useState(false);
+  const [remindersModal, setRemindersModal] = useState(false);
 
   const [generatingPin, setGeneratingPin] = useState(false);
   const [pinResult, setPinResult] = useState<VetAccessToken | null>(null);
@@ -148,7 +150,13 @@ export function PetDashboard({ route }: Props) {
             style={styles.btnSecondary}
             onPress={() => setMembersModal(true)}
           >
-            <Text style={styles.btnSecondaryText}>👨‍👩‍👧 Familiares</Text>
+            <Text style={styles.btnSecondaryText}>👨‍👩‍👧 Família</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.btnSecondary}
+            onPress={() => setRemindersModal(true)}
+          >
+            <Text style={styles.btnSecondaryText}>🔔 Lembretes</Text>
           </TouchableOpacity>
         </View>
 
@@ -246,6 +254,13 @@ export function PetDashboard({ route }: Props) {
         visible={membersModal}
         petId={pet.id}
         onClose={() => setMembersModal(false)}
+      />
+
+      <RemindersModal
+        visible={remindersModal}
+        petId={pet.id}
+        petName={pet.name}
+        onClose={() => setRemindersModal(false)}
       />
 
       {/* PIN Modal */}

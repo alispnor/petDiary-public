@@ -109,6 +109,22 @@ export interface Attachment {
   uploader_name?: string;
 }
 
+export type ReminderType = "VACCINE" | "VET_RETURN" | "CUSTOM";
+
+export interface Reminder {
+  id: string;
+  pet: string;
+  health_record: string | null;
+  type: ReminderType;
+  title: string;
+  description: string;
+  date_due: string;
+  notified_at: string | null;
+  dismissed_at: string | null;
+  is_active: boolean;
+  created_at: string;
+}
+
 export type NotificationType =
   | "VACCINE"
   | "VET_RETURN"

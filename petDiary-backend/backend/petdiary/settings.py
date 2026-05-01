@@ -168,6 +168,10 @@ CELERY_BEAT_SCHEDULE = {
         "task": "notifications.tasks.check_payment_due_task",
         "schedule": 86400.0,  # 1x/dia
     },
+    "check-reminders-daily": {
+        "task": "health.tasks.check_reminders_task",
+        "schedule": 86400.0,  # 1x/dia
+    },
 }
 
 # Push notifications — mock-first toggleable

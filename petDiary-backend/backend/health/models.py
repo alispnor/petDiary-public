@@ -91,3 +91,59 @@ class HealthRecordAttachment(models.Model):
 
     def __str__(self):
         return f"{self.file_name} ({self.record.title})"
+
+
+class Reminder(models.Model):
+    """Lembrete de evento futuro do pet (vacina, retorno ao vet etc.).
+
+    Tutor cria com `date_due`. Task Celery diária varre `date_due` próximo
+    e dispara notify() com tipo VACCINE / VET_RETURN / SYSTEM (custom).
+    """
+
+    class Type(models.TextChoices):
+        VACCINE = "VACCINE", _("Vacina")
+        VET_RETURN = "VET_RETURN", _("Retorno ao vet")
+        CUSTOM = "CUSTOM", _("Personalizado")
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    pet = models.ForeignKey(
+        "pets.Pet",
+        on_delete=models.CASCADE,
+        related_name="reminders",
+    )
+    health_record = models.ForeignKey(
+        HealthRecord,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="reminders",
+    )
+    type = models.CharField(max_length=20, choices=Type.choices)
+    title = models.CharField(max_length=140)
+    description = models.TextField(blank=True, default="")
+    date_due = models.DateField()
+
+    notified_at = models.DateTimeField(null=True, blank=True)
+    dismissed_at = models.DateTimeField(null=True, blank=True)
+
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True, blank=True,
+        related_name="created_reminders",
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["date_due", "-created_at"]
+        indexes = [
+            models.Index(fields=["pet", "date_due"]),
+            models.Index(fields=["date_due", "notified_at", "dismissed_at"]),
+        ]
+
+    def __str__(self):
+        return f"{self.title} · {self.pet.name} · {self.date_due}"
+
+    @property
+    def is_active(self) -> bool:
+        return self.dismissed_at is None

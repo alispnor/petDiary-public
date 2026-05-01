@@ -7,6 +7,11 @@ from .attachment_views import (
     AttachmentServeView,
     RecordAttachmentListCreateView,
 )
+from .reminder_views import (
+    ReminderDetailView,
+    ReminderDismissView,
+    ReminderListCreateView,
+)
 from .views import HealthRecordViewSet
 
 router = DefaultRouter()
@@ -23,4 +28,11 @@ urlpatterns = [
     path("attachments/<uuid:attachment_id>/process-ai/", AttachmentProcessAIView.as_view(), name="attachment-process-ai"),
     path("attachments/<uuid:attachment_id>/<str:mode>/",
          AttachmentServeView.as_view(), name="attachment-serve"),
+    # Reminders
+    path("pets/<uuid:pet_pk>/reminders/",
+         ReminderListCreateView.as_view(), name="reminder-list-create"),
+    path("reminders/<uuid:pk>/",
+         ReminderDetailView.as_view(), name="reminder-detail"),
+    path("reminders/<uuid:pk>/dismiss/",
+         ReminderDismissView.as_view(), name="reminder-dismiss"),
 ]

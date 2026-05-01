@@ -6,6 +6,7 @@ import { useAuthStore } from "../store/authStore";
 import type { ActiveAccess, Pet, Species, VetAccessToken } from "../types";
 import VetAccessSection from "../components/VetAccessSection";
 import MembersSection from "../components/MembersSection";
+import RemindersSection from "../components/RemindersSection";
 import LanguageSwitcher from "../components/LanguageSwitcher";
 import NotificationsBell from "../components/NotificationsBell";
 
@@ -265,6 +266,8 @@ export default function TutorDashboard() {
                   petName={pet.name}
                   currentUserId={user?.id ?? ""}
                 />
+
+                <RemindersSection petId={pet.id} petName={pet.name} />
               </div>
             ))}
           </div>
