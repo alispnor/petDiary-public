@@ -1,16 +1,18 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import api from "../services/api";
 import { useAuthStore } from "../store/authStore";
 import type { ActiveAccess, Pet, Species, VetAccessToken } from "../types";
 import VetAccessSection from "../components/VetAccessSection";
 import MembersSection from "../components/MembersSection";
 
-const SPECIES_OPTIONS: { value: Species; label: string; emoji: string }[] = [
-  { value: "DOG", label: "Cachorro", emoji: "🐕" },
-  { value: "CAT", label: "Gato", emoji: "🐱" },
-  { value: "BIRD", label: "Pássaro", emoji: "🐦" },
-  { value: "OTHER", label: "Outro", emoji: "🐾" },
+// Lista usada apenas como fonte de keys; labels traduzidos via t() na render
+const SPECIES_OPTIONS: { value: Species; emoji: string }[] = [
+  { value: "DOG", emoji: "🐕" },
+  { value: "CAT", emoji: "🐱" },
+  { value: "BIRD", emoji: "🐦" },
+  { value: "OTHER", emoji: "🐾" },
 ];
 
 const SPECIES_EMOJI: Record<Species, string> = {
@@ -20,7 +22,15 @@ const SPECIES_EMOJI: Record<Species, string> = {
   OTHER: "🐾",
 };
 
+const SPECIES_LABEL_KEY: Record<Species, string> = {
+  DOG: "Cachorro",
+  CAT: "Gato",
+  BIRD: "Pássaro",
+  OTHER: "Outro",
+};
+
 export default function TutorDashboard() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
   const logout = useAuthStore((s) => s.logout);
@@ -51,7 +61,7 @@ export default function TutorDashboard() {
       setPets(petsRes.data);
       setAccesses(accRes.data);
     } catch {
-      setError("Não foi possível carregar seus dados.");
+      setError(t("tutor.errors.load"));
     } finally {
       setLoading(false);
     }
@@ -87,7 +97,7 @@ export default function TutorDashboard() {
       setShowCreate(false);
       await loadAll();
     } catch {
-      setError("Erro ao criar pet.");
+      setError(t("tutor.errors.create_pet"));
     } finally {
       setCreating(false);
     }
@@ -101,7 +111,7 @@ export default function TutorDashboard() {
       });
       setPinResult(data);
     } catch {
-      setError("Erro ao gerar PIN.");
+      setError(t("tutor.errors.generate_pin"));
     } finally {
       setGeneratingPin(null);
     }
@@ -120,34 +130,40 @@ export default function TutorDashboard() {
           <img src="/logo-192.png" alt="PetDiary" className="h-8 w-8" />
           <h1 className="text-lg font-bold text-gradient">PetDiary</h1>
           <span className="rounded-full bg-brand-teal/10 px-3 py-0.5 text-xs font-semibold text-brand-teal">
-            Tutor
+            {t("tutor.header_role")}
           </span>
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-sm text-gray-600">Olá, {user?.full_name}</span>
+          <span className="text-sm text-gray-600">{t("tutor.greeting")}, {user?.full_name}</span>
+          <Link
+            to="/conta"
+            className="rounded-md bg-gray-100 px-4 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-200"
+          >
+            ⚙️
+          </Link>
           <button
             onClick={handleLogout}
             className="rounded-md bg-gray-100 px-4 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-200"
           >
-            Sair
+            {t("common.logout")}
           </button>
         </div>
       </header>
 
       <main className="mx-auto max-w-4xl px-6 py-8">
         <div className="mb-6 flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-gray-800">Meus Pets</h2>
+          <h2 className="text-2xl font-bold text-gray-800">{t("tutor.my_pets")}</h2>
           <button onClick={() => setShowCreate(!showCreate)} className="btn-primary">
-            {showCreate ? "Cancelar" : "+ Novo Pet"}
+            {showCreate ? t("common.cancel") : t("tutor.new_pet")}
           </button>
         </div>
 
         {showCreate && (
           <form onSubmit={handleCreatePet} className="card mb-6 flex flex-col gap-3">
-            <h3 className="text-lg font-semibold text-gray-700">Cadastrar pet</h3>
+            <h3 className="text-lg font-semibold text-gray-700">{t("tutor.register_pet")}</h3>
             <input
               type="text"
-              placeholder="Nome do pet"
+              placeholder={t("tutor.pet_name")}
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
@@ -165,13 +181,13 @@ export default function TutorDashboard() {
                       : "bg-gray-100 text-gray-600"
                   }`}
                 >
-                  {opt.emoji} {opt.label}
+                  {opt.emoji} {SPECIES_LABEL_KEY[opt.value]}
                 </button>
               ))}
             </div>
             <input
               type="text"
-              placeholder="Raça"
+              placeholder={t("tutor.breed")}
               value={breed}
               onChange={(e) => setBreed(e.target.value)}
               className="rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-brand-teal focus:outline-none"
@@ -179,13 +195,13 @@ export default function TutorDashboard() {
             <input
               type="number"
               step="0.1"
-              placeholder="Peso (kg)"
+              placeholder={t("tutor.weight_kg")}
               value={weight}
               onChange={(e) => setWeight(e.target.value)}
               className="rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-brand-teal focus:outline-none"
             />
             <button type="submit" disabled={creating} className="btn-primary">
-              {creating ? "Salvando…" : "Cadastrar"}
+              {creating ? t("tutor.saving") : t("tutor.register_btn")}
             </button>
           </form>
         )}
@@ -197,10 +213,10 @@ export default function TutorDashboard() {
         )}
 
         {loading ? (
-          <p className="text-center text-gray-400">Carregando…</p>
+          <p className="text-center text-gray-400">{t("common.loading")}</p>
         ) : pets.length === 0 ? (
           <div className="card text-center text-gray-500">
-            Você ainda não cadastrou nenhum pet. Clique em <b>+ Novo Pet</b>.
+            {t("tutor.no_pets")}
           </div>
         ) : (
           <div className="grid gap-4 md:grid-cols-2">
@@ -223,14 +239,14 @@ export default function TutorDashboard() {
                     to={`/clinical/${pet.id}`}
                     className="w-full rounded-pill bg-brand-teal py-2 text-center text-sm font-semibold text-white transition hover:opacity-90"
                   >
-                    📋 Ver prontuário
+                    {t("tutor.view_records")}
                   </Link>
                   <button
                     onClick={() => handleGeneratePin(pet.id)}
                     disabled={generatingPin === pet.id}
                     className="w-full rounded-pill border-2 border-brand-orange bg-white py-2 text-sm font-semibold text-brand-orange transition hover:bg-brand-orange hover:text-white disabled:opacity-50"
                   >
-                    {generatingPin === pet.id ? "Gerando…" : "🔑 Gerar PIN para vet"}
+                    {generatingPin === pet.id ? t("tutor.generating") : t("tutor.generate_pin")}
                   </button>
                 </div>
 
@@ -264,9 +280,9 @@ export default function TutorDashboard() {
             <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-brand-orange/15 text-3xl">
               🔑
             </div>
-            <h2 className="mb-2 text-xl font-bold text-gray-800">PIN gerado</h2>
+            <h2 className="mb-2 text-xl font-bold text-gray-800">{t("pin_modal.title")}</h2>
             <p className="mb-4 text-sm text-gray-500">
-              Compartilhe este código com o veterinário. Vale por 1 hora.
+              {t("pin_modal.subtitle")}
             </p>
             <div className="my-6 rounded-2xl bg-gray-100 py-6 text-center">
               <p className="font-mono text-5xl font-extrabold tracking-widest text-gradient">
@@ -280,13 +296,13 @@ export default function TutorDashboard() {
                 }}
                 className="flex-1 rounded-pill border-2 border-brand-teal py-2.5 text-sm font-semibold text-brand-teal hover:bg-brand-teal hover:text-white"
               >
-                Copiar
+                {t("pin_modal.copy")}
               </button>
               <button
                 onClick={() => setPinResult(null)}
                 className="flex-1 btn-primary"
               >
-                Fechar
+                {t("common.close")}
               </button>
             </div>
           </div>

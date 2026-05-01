@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import axios from "axios";
 import { useAuthStore } from "../store/authStore";
 import api from "../services/api";
@@ -8,6 +9,7 @@ import AccessHistorySidebar from "../components/AccessHistorySidebar";
 import type { AccessHistory } from "../types";
 
 export default function VetEntry() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
   const setPin = useAuthStore((s) => s.setPin);
@@ -48,9 +50,9 @@ export default function VetEntry() {
       navigate(`/clinical/${data.pet}`);
     } catch (err) {
       if (axios.isAxiosError(err) && err.response?.status === 404) {
-        setError("PIN inválido ou expirado.");
+        setError(t("vet.errors.invalid_pin"));
       } else {
-        setError("Erro ao validar PIN. Tente novamente.");
+        setError(t("vet.errors.generic"));
       }
     } finally {
       setLoading(false);
@@ -69,7 +71,7 @@ export default function VetEntry() {
           <img src="/logo-192.png" alt="PetDiary" className="h-8 w-8" />
           <h1 className="text-lg font-bold text-gradient">PetDiary</h1>
           <span className="rounded-full bg-brand-orange/15 px-3 py-0.5 text-xs font-semibold text-brand-orange">
-            Veterinário
+            {t("vet.header_role")}
           </span>
         </div>
         <div className="flex items-center gap-3">
@@ -78,11 +80,17 @@ export default function VetEntry() {
             {user?.crmv ? ` · ${user.crmv}` : ""}
             {user?.clinic_name ? ` · ${user.clinic_name}` : ""}
           </span>
+          <Link
+            to="/conta"
+            className="rounded-md bg-gray-100 px-4 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-200"
+          >
+            ⚙️
+          </Link>
           <button
             onClick={handleLogout}
             className="rounded-md bg-gray-100 px-4 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-200"
           >
-            Sair
+            {t("common.logout")}
           </button>
         </div>
       </header>
@@ -93,11 +101,10 @@ export default function VetEntry() {
         <main className="flex flex-1 flex-col items-center justify-center gap-6 px-8 py-12 overflow-y-auto">
           <div className="text-center">
             <h2 className="text-3xl font-bold text-gray-800">
-              Insira o PIN do paciente
+              {t("vet.title")}
             </h2>
             <p className="mt-2 max-w-md text-sm text-gray-500">
-              O tutor gerou um PIN de 6 dígitos no aplicativo. Digite abaixo
-              para acessar o prontuário.
+              {t("vet.subtitle")}
             </p>
           </div>
 
