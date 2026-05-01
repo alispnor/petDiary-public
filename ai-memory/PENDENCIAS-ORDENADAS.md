@@ -94,23 +94,18 @@ sobreposições nem cortes.
 - [x] Migrados: Login, Register, ForgotPassword, HomeTutor, PetDashboard
 - [x] Tipo `Language` expandido para 6 códigos
 
-### B3.2. Migrar componentes restantes mobile
-> O `pt-BR.json` já tem TODAS as chaves prontas. Trabalho mecânico.
+### B3.2. Migrar componentes restantes mobile ✅ (commit `92da306`)
+- [x] AccountSettings, SubscriptionDashboard, HelpCenter
+- [x] Notifications, NotificationPreferences
+- [x] 7 modais/componentes (Pet, Record, Vet, Members, Reminders,
+      Attachments, LanguageSwitcher)
+- [x] pt-BR.json estendido com `subscription.benefit_*`,
+      `help.faq_q1..q7` + `help.faq_a1..a7`, e demais chaves
+- [x] Pluralização de "em X dias" via `{{count}}` (pronto pra outras
+      línguas usarem regras nativas)
 
-- [ ] `screens/AccountSettings.tsx` — Alert.alert + labels + botões
-- [ ] `screens/SubscriptionDashboard.tsx` — todos os labels do checkout
-- [ ] `screens/HelpCenter.tsx` — FAQ + contato
-- [ ] `screens/Notifications.tsx` — usar `notifications.*`
-- [ ] `screens/NotificationPreferences.tsx` — usar `notifications.*`
-- [ ] `components/RecordFormModal.tsx`
-- [ ] `components/PetFormModal.tsx`
-- [ ] `components/VetAccessModal.tsx`
-- [ ] `components/MembersModal.tsx`
-- [ ] `components/RemindersModal.tsx`
-- [ ] `components/AttachmentsList.tsx`
-
-**DoD:** nenhum `<Text>"…"</Text>` literal em pt-BR no mobile
-(`grep -r '<Text>"' src/` retorna vazio).
+🎯 **B3 inteiro concluído** (B3.1 commit `6433d1c` + B3.2 commit
+`92da306`). Mobile 100% i18n-ready em pt-BR.
 
 ---
 

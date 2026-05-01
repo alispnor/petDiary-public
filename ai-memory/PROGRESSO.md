@@ -1,7 +1,7 @@
 # 📊 PROGRESSO — petDiary
 
 > **Arquivo vivo.** Atualize a cada sessão de trabalho.
-> Última atualização: **2026-05-01 (sessão 9 — B3.1: infra i18n mobile + 5 telas migradas + Spec 18 admin/suporte salva)**
+> Última atualização: **2026-05-01 (sessão 10 — B3 inteiro fechado: mobile 100% i18n-ready em pt-BR)**
 
 ---
 
@@ -812,6 +812,32 @@ VAPID keys (PENDENCIAS-HUMANAS item 14) para push real em produção.
 🎯 **Marco da sessão 9:** infra i18n pronta + 5 telas em pt-BR via
 `t()`. Para fechar B3 inteiro falta apenas migração mecânica das
 telas restantes (B3.2). Depois B4 cria os 5 outros locales.
+
+### 2026-05-01 — Sessão 10 (B3.2 — i18n mobile completo)
+> Continuação direta da sessão 9. B3.2 entregue, B3 inteiro fechado.
+
+**Entregue (commit `92da306`):**
+- 7 modais migrados: RecordFormModal, PetFormModal, VetAccessModal,
+  MembersModal, RemindersModal, AttachmentsList, LanguageSwitcher
+- 5 telas migradas: AccountSettings, SubscriptionDashboard,
+  HelpCenter (FAQ inteiro), Notifications, NotificationPreferences
+- pt-BR.json estendido: `subscription.benefit_*`, `help.faq_q1..q7`,
+  `help.faq_a1..a7`, e outras chaves de hero/section/contact
+- Pluralização via `{{count}}` em "em X dias" (pronto para regras
+  nativas de outras línguas)
+- Zero `<Text>"..."</Text>` literal restante no mobile
+
+**Cumpre regra durável** (`feedback_i18n_first.md`): toda string nova
+de mobile já passa por `t()`. Débito técnico de i18n no mobile foi a
+zero.
+
+**Documentos atualizados:**
+- PARIDADE-MOBILE-WEB.md: nota de débito atualizada (mobile zerado)
+- PENDENCIAS-ORDENADAS.md: B3.2 marcado completo. B3 inteiro ✅.
+
+🎯 **Marco da sessão 10:** mobile completamente i18n-ready em pt-BR.
+Próximo lógico é B4 (criar pt-PT, en-US, es-ES, fr-FR, ar com RTL)
+ou B1+B2 (web — pt-PT, fr, ar/RTL). Ali decide.
 
 ### Próxima sessão — TODO
 **Roadmap principal + Fases A-G → 100% completo!** ✨

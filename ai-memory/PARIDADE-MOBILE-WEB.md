@@ -168,13 +168,12 @@
 > **Regra durável (Ali, 2026-05-01):** todo componente novo deve usar
 > `t("chave")` desde o primeiro commit (memory `feedback_i18n_first.md`).
 >
-> **Débito técnico de i18n** — strings hardcoded a migrar em pendências:
+> **Débito técnico de i18n** — strings hardcoded a migrar:
 > - Web (B1): `RemindersSection`, `NotificationsTab` em AccountSettings,
 >   parte de `Notifications.tsx`, `MembersSection`, `VetAccessSection`,
 >   `AttachmentsList`, `AuditTimeline`
-> - Mobile (B3.2): AccountSettings, Subscription, HelpCenter,
->   Notifications, NotificationPreferences, todos os 7 modais. Infra
->   i18n (B3.1) **já entregue** — falta apenas substituir strings.
+> - Mobile: ✅ ZERO. **B3 inteiro concluído** (B3.1+B3.2). Toda string
+>   passa por `t()`. Falta apenas criar locales não-pt-BR (pendência B4).
 
 | Idioma | Código | Web | Mobile | Backend | Notas |
 |---|---|---|---|---|---|
