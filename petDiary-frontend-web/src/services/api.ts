@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useAuthStore } from "../store/authStore";
+import { logger } from "./logger";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "http://localhost:8000/api/v1",
@@ -19,13 +20,23 @@ api.interceptors.response.use(
   (error) => {
     if (axios.isAxiosError(error)) {
       const status = error.response?.status;
+      const url = error.config?.url;
+      const method = error.config?.method?.toUpperCase();
+
+      logger.warn("http_error", {
+        method,
+        url,
+        status,
+        message: error.message,
+      });
+
       if (status === 401) {
-        // token inválido/expirado: derruba sessão
         useAuthStore.getState().logout();
       } else if (status === 403) {
-        // acesso revogado pelo tutor (vet)
         useAuthStore.getState().revokeAccess();
       }
+    } else {
+      logger.error("network_error", { message: String(error) });
     }
     return Promise.reject(error);
   }
