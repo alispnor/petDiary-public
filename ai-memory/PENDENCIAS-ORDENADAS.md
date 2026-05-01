@@ -161,17 +161,19 @@ manuais (`ml-*`/`mr-*` → `ms-*`/`me-*`) que precisará pontual.
 
 ## 🟡 PRIORIDADE D — Qualidade & Testes
 
-### D1. Spec 16 — Smoke tests pytest E2E
-Já salva em `ai-memory/specs/16-suite-smoke-tests-core-pytest.md`.
-
-- [ ] `pytest` + `pytest-django` no requirements-dev
-- [ ] `tests/test_smoke_core.py` com 5 fluxos:
-  - [ ] test_user_authentication
-  - [ ] test_tutor_generates_pin
-  - [ ] test_vet_claims_pin
-  - [ ] test_vet_access_revoked
-  - [ ] test_create_health_record
-- [ ] CI GitHub Actions rodando o pytest
+### D1. Spec 16 — Smoke tests pytest E2E ✅ (commit `30485ad`)
+- [x] pytest>=8 + pytest-django>=4.8 no requirements
+- [x] pytest.ini com DJANGO_SETTINGS_MODULE + marker `@smoke`
+- [x] tests/conftest.py com fixtures reusáveis (api_client, tutor,
+      vet, pet, tutor_client, vet_client)
+- [x] tests/test_smoke_core.py com 5 fluxos — **todos passando em 4.3s**:
+  - [x] test_user_authentication (JWT)
+  - [x] test_tutor_generates_pin (6 dígitos numéricos)
+  - [x] test_vet_claims_pin (claim + leitura do pet)
+  - [x] test_vet_access_revoked (soft-delete + 403 do bug #8)
+  - [x] test_create_health_record (POST + GET list)
+- [ ] CI GitHub Actions rodando `pytest -m smoke` em todo PR
+      (próximo subitem — ainda aberto)
 
 ---
 

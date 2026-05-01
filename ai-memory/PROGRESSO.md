@@ -1,7 +1,7 @@
 # 📊 PROGRESSO — petDiary
 
 > **Arquivo vivo.** Atualize a cada sessão de trabalho.
-> Última atualização: **2026-05-01 (sessão 12 — B4: mobile ganha 5 locales + RTL. Paridade total nos 6 idiomas)**
+> Última atualização: **2026-05-01 (sessão 13 — D1: 5 smoke tests pytest E2E core, todos verdes)**
 
 ---
 
@@ -900,6 +900,36 @@ para reduzir risco de divergência.
 idiomas oficiais. Web entregou em B1+B2 (commit `0056677`); mobile
 em B3 (infra+pt-BR) + B4 (5 locales). Único subitem aberto:
 auditoria visual em árabe (opcional, no device real).
+
+### 2026-05-01 — Sessão 13 (D1 — Spec 16 smoke tests)
+> Continuação direta da sessão 12. Suíte mínima de testes do core.
+
+**Entregue (commit `30485ad`):**
+- pytest>=8 + pytest-django>=4.8 nas dependências
+- pytest.ini com DJANGO_SETTINGS_MODULE + marker `@smoke` + tb=short
+- tests/conftest.py com fixtures globais reusáveis: api_client, tutor,
+  vet, pet (com PetMember(OWNER) auto), tutor_client/vet_client com
+  force_authenticate
+- tests/test_smoke_core.py com 5 testes E2E (todos passando em 4.3s):
+  1. test_user_authentication — JWT login retorna access+refresh
+  2. test_tutor_generates_pin — PIN 6 dígitos numéricos, expires_at +1h
+  3. test_vet_claims_pin — claim seta is_used + claimed_at; vet lê pet
+  4. test_vet_access_revoked — soft-delete, vet recebe 403 (bug #8 fix)
+  5. test_create_health_record — POST + GET list
+
+**Comandos novos** (ai-memory/07-comandos.md):
+- `pytest -m smoke -v` (só smoke)
+- `pytest` (tudo)
+- `pytest tests/test_smoke_core.py -v` (arquivo específico)
+
+**Documentos atualizados:**
+- PENDENCIAS-ORDENADAS.md: D1 marcado completo. Sub-item aberto:
+  CI GitHub Actions rodando `pytest -m smoke` em PRs
+
+🎯 **Marco da sessão 13:** o core do produto está protegido contra
+regressão. PIN, claim, revoke (com soft-delete), criar record — tudo
+verde. Próximo lógico: D2 (Spec 14 — audit segurança/performance
+backend) ou C1-C5 (paridade restante mobile/web).
 
 ### Próxima sessão — TODO
 **Roadmap principal + Fases A-G → 100% completo!** ✨
