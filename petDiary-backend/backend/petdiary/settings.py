@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     "pets",
     "health",
     "access",
+    "audit",
 ]
 
 MIDDLEWARE = [

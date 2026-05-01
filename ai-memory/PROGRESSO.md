@@ -1,7 +1,7 @@
 # 📊 PROGRESSO — petDiary
 
 > **Arquivo vivo.** Atualize a cada sessão de trabalho.
-> Última atualização: **2026-05-01 (sessão 3 — Fase 5 inteira completa, especs 12/13 salvas)**
+> Última atualização: **2026-05-01 (sessão 3 — Fase 6.1 backend de auditoria implementado)**
 
 ---
 
@@ -312,6 +312,17 @@ Decisões do Ali registradas em memory: email+phone obrigatórios, CPF opcional,
   - Integrado em TutorDashboard via `<MembersSection>` em cada card
 - ✅ **Fase 5 — completa** (5.1+5.2+5.3+5.4 backend + 5.5+5.6 web)
 - ✅ **Specs 12 (Cupons) e 13 (Admin Dashboard)** salvas em `ai-memory/specs/`
+- ✅ **Fase 6.1** — Backend: app `audit/` + AuditLog + signals:
+  - Novo app `audit/` com `models.py`, `helpers.py`, `serializers.py`, `views.py`, `urls.py`, `admin.py`, `signals.py`
+  - Modelo `AuditLog`: actor (FK SET_NULL), actor_name_snapshot (preserva mesmo se conta excluída), actor_role_snapshot, action (CREATE/UPDATE/DELETE/REVOKE/CLAIM), entity_type, entity_id, pet (FK opcional), description, changes (JSON), ip_address, user_agent, created_at — com 3 índices
+  - `helpers.log_action()`: função pública para qualquer parte do app criar entrada (com fallback para "Sistema" se não há ator); falha silenciosa
+  - `signals.py`: receivers em HealthRecord, Pet, PetMember, VetAccessToken (post_save + post_delete)
+    - **Bug corrigido durante validação**: cascade delete do Pet quebrava FK constraint. Solução: `pre_delete` de Pet seta thread-local `suppress_pet_ids`; signals filhos checam e pulam log; `post_delete` do Pet logra com `pet=None`
+  - `views.PetAuditListView`: GET /pets/<id>/audit/ paginado (20/página, max 100); permissão = membros do pet OU vet com acesso ativo (transparência clínica)
+  - Admin: registro read-only (logs imutáveis), só superuser pode purgar
+  - Migration 0001 aplicada
+  - Validação E2E (8 testes via curl):
+    - Audit começa vazio (T1) · criar pet → 1 entrada · criar PetMember automatic OWNER → 2 entradas · criar HealthRecord → 3 entradas · GET /audit/ retorna 3 corretamente (T4) · vet sem acesso vê vazio (T5) · outro tutor vê vazio (T6) · DELETE do pet funciona (T7) · log final tem 4 entradas incluindo "Excluiu pet" (T8)
 - ✅ **Fase 3.1** — Backend: ciclo de vida de acesso vet ↔ pet:
   - `VetAccessToken` ganhou `claimed_at` (DateTimeField). Migration 0003 aplicada.
   - `ClaimAccessView` agora seta `claimed_at = now()` no momento do claim
