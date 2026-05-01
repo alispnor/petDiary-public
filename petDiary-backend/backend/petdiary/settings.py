@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     "access",
     "audit",
     "billing",
+    "admin_panel",
 ]
 
 MIDDLEWARE = [

@@ -51,6 +51,11 @@ export default function Login() {
         return;
       }
 
+      if (user.role === "ADMIN") {
+        navigate("/admin", { replace: true });
+        return;
+      }
+
       navigate(user.role === "TUTOR" ? "/tutor" : "/vet", { replace: true });
     } catch (err) {
       if (axios.isAxiosError(err) && err.response?.status === 401) {

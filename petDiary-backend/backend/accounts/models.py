@@ -9,6 +9,7 @@ class User(AbstractUser):
     class Role(models.TextChoices):
         TUTOR = "TUTOR", _("Tutor")
         VET = "VET", _("Veterinário")
+        ADMIN = "ADMIN", _("Administrador")
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     iam_uid = models.CharField(
