@@ -17,8 +17,15 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (axios.isAxiosError(error) && error.response?.status === 403) {
-      useAuthStore.getState().revokeAccess();
+    if (axios.isAxiosError(error)) {
+      const status = error.response?.status;
+      if (status === 401) {
+        // token inválido/expirado: derruba sessão
+        useAuthStore.getState().logout();
+      } else if (status === 403) {
+        // acesso revogado pelo tutor (vet)
+        useAuthStore.getState().revokeAccess();
+      }
     }
     return Promise.reject(error);
   }

@@ -1,0 +1,146 @@
+/* Projeto: PetDiary
+   Design System Base - Paleta de Cores extraída do Logotipo
+*/
+
+/* 1. Importação da Fonte
+   'Nunito' é uma fonte Sans-Serif com terminais arredondados.
+   Ela transmite um ar amigável (excelente para pets) sem perder o profissionalismo clínico.
+*/
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap');
+
+:root {
+  /* =========================================
+     CORES DA MARCA (BRAND COLORS)
+     ========================================= */
+  --color-brand-teal: #24b6d4;     /* Azul Esverdeado Vibrante (Tecnologia/Saúde) */
+  --color-brand-orange: #f27339;   /* Laranja Quente (Energia/Acolhimento) */
+
+  /* Variações para hover e contrastes */
+  --color-brand-teal-dark: #168b9f;
+  --color-brand-orange-dark: #cc541d;
+
+  /* Gradiente Oficial da Marca (usado em ícones e botões primários) */
+  --gradient-primary: linear-gradient(135deg, var(--color-brand-teal) 0%, var(--color-brand-orange) 100%);
+
+  /* =========================================
+     CORES DE FUNDO (BACKGROUND & SURFACES)
+     ========================================= */
+  /* Tons off-white baseados no estilo Neumorphic do logo */
+  --color-bg-app: #f4f1eb;         /* Cor principal do fundo da tela */
+  --color-surface: #fdfcf9;        /* Cor dos cards (levemente mais claro que o fundo) */
+  --color-surface-elevated: #ffffff; /* Modais e popups */
+
+  /* =========================================
+     CORES DE TEXTO E TIPOGRAFIA
+     ========================================= */
+  --color-text-primary: #2d3748;   /* Cinza escuro azulado (não usar preto puro para não cansar a vista) */
+  --color-text-secondary: #718096; /* Cinza médio para subtítulos e dicas */
+  --color-text-inverse: #ffffff;   /* Texto branco para botões coloridos */
+
+  /* =========================================
+     SISTEMA DE SOMBRAS (NEUMORPHISM E CARDS)
+     ========================================= */
+  --shadow-neumorphic:
+    -6px -6px 12px #ffffff,
+    6px 6px 12px #d9d4cc;
+
+  --shadow-card-soft: 0px 4px 12px rgba(45, 55, 72, 0.05);
+
+  /* =========================================
+     BORDAS E RAIOS (BORDER-RADIUS)
+     ========================================= */
+  --radius-sm: 8px;
+  --radius-md: 16px;       /* Padrão para os cards de pets */
+  --radius-lg: 24px;       /* Modais e painéis amplos */
+  --radius-pill: 9999px;   /* Botões arredondados e badges */
+
+  /* =========================================
+     FAMÍLIA DE FONTES
+     ========================================= */
+  --font-family-base: 'Nunito', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* =========================================
+   TAILWIND v4 — TOKENS @theme
+   Expõe as variáveis acima como utilitários Tailwind.
+   Ex.: bg-brand-teal, text-brand-orange, font-base, rounded-md
+   ========================================= */
+@theme {
+  --color-brand-teal: #24b6d4;
+  --color-brand-teal-dark: #168b9f;
+  --color-brand-orange: #f27339;
+  --color-brand-orange-dark: #cc541d;
+  --color-bg-app: #f4f1eb;
+  --color-surface: #fdfcf9;
+  --color-surface-elevated: #ffffff;
+  --color-text-primary: #2d3748;
+  --color-text-secondary: #718096;
+
+  --font-base: 'Nunito', system-ui, sans-serif;
+
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-pill: 9999px;
+}
+
+/* =========================================
+   RESETS GERAIS E APLICAÇÃO BASE
+   ========================================= */
+body {
+  font-family: var(--font-family-base);
+  background-color: var(--color-bg-app);
+  color: var(--color-text-primary);
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-top: 0;
+}
+
+/* =========================================
+   UTILITÁRIOS GLOBAIS
+   ========================================= */
+
+/* Texto com gradiente da marca (muito usado em títulos SaaS) */
+.text-gradient {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Botão primário oficial */
+.btn-primary {
+  background: var(--gradient-primary);
+  color: var(--color-text-inverse);
+  font-weight: 600;
+  padding: 12px 24px;
+  border-radius: var(--radius-pill);
+  border: none;
+  cursor: pointer;
+  transition: filter 0.2s ease, transform 0.1s ease;
+}
+.btn-primary:hover { filter: brightness(1.05); }
+.btn-primary:active { transform: scale(0.98); }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Card padrão */
+.card {
+  background-color: var(--color-surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card-soft);
+  padding: 24px;
+}
+
+/* Surface neumórfica (uso pontual em destaques) */
+.surface-neu {
+  background-color: var(--color-bg-app);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-neumorphic);
+}
