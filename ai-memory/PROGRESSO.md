@@ -1,7 +1,7 @@
 # 📊 PROGRESSO — petDiary
 
 > **Arquivo vivo.** Atualize a cada sessão de trabalho.
-> Última atualização: **2026-05-01 (sessão 2 — Fase 1 cadastro completo concluída)**
+> Última atualização: **2026-05-01 (sessão 3 — Fase 2.1 storage dinâmico + 4 specs futuras salvas)**
 
 ---
 
@@ -285,6 +285,25 @@ Decisões do Ali registradas em memory: email+phone obrigatórios, CPF opcional,
 - Fase 6: Auditoria (AuditLog, só mutações)
 - Fase 7: Uploads/download/print (adiada)
 - **Etapa final** (após Fase 6): preparação para produção — domínio, hospedagem em nuvem, PRODUCAO.md com requisitos para iOS/Android e LGPD
+
+### 2026-05-01 — Sessão 3 (em andamento) — Fase 2: Login UX
+- ✅ **4 specs futuras** salvas em `ai-memory/specs/` e versionadas no git:
+  - 01: Backend assinaturas + suporte + deleção LGPD (Asaas/MP, freemium)
+  - 02: Mobile cobrança (CheckoutPix/Card) + deleção de conta (LGPD/Apple)
+  - 03: Mobile central de ajuda (FAQ + form de contato)
+  - 04: Integrações OpenAI (Whisper/GPT-4o-mini) + AWS S3 (presigned URLs)
+- ✅ Limpeza: `CLAUDE.md` e `frontend-guidelines.md` (templates do Guep CRM) removidos do tracking + adicionados ao `.gitignore`
+- ✅ **Fase 2.1** — `authStore` com storage dinâmico:
+  - Novo `src/store/dynamicStorage.ts`: `dynamicAuthStorage` (StateStorage) que delega entre localStorage e sessionStorage
+  - Flag `petdiary-keep-logged` em chave separada do localStorage (resolve circularidade: storage decide antes do estado existir)
+  - `authStore` ganhou campo `keepLogged` + action `setKeepLogged(boolean)` que migra a sessão entre storages se o usuário trocar a preferência logado
+  - `logout()` limpa de ambos storages; `partialize` evita persistir a flag no estado; listener `storage` sincroniza flag entre abas
+  - Commit: `feat(web): authStore com storage dinâmico` + push
+
+### Próxima sessão — TODO
+- Fase 2.2: checkbox "Manter conectado" no Login (consumir `setKeepLogged`)
+- Fase 2.3: validar persist (fechar/reabrir aba) e session (cai ao fechar) + commit + push
+- Fase 3+: continuar plano consolidado
 
 ---
 
