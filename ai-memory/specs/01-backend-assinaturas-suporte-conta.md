@@ -121,5 +121,12 @@ SUBSCRIPTION_TRIAL_DAYS=7
 - [ ] Asaas ou Mercado Pago? (recomendo Asaas)
 - [ ] Preço do plano PRO?
 - [ ] Tem trial? Quantos dias?
-- [ ] Quais features são gated (FREE vs PRO)?
+- [x] ~~Quais features são gated (FREE vs PRO)?~~ → **PARCIAL 2026-05-01:** toda IA de mídia (OCR receitas, Whisper áudio, sumarização) é PRO-only. Upload/download/visualização ficam no FREE. Resto a definir.
 - [ ] Tickets de suporte só recebem (write-only) ou usuário vê histórico/respostas?
+
+## Cruzamento com Spec 04 (IA + S3)
+
+A IA de mídia (Spec 04) é **gated 100% pelo plano PRO**. Implementação concreta:
+- Permission class `IsActivePro` exposta por este app `billing`
+- Spec 04 importa e aplica em todos os endpoints `process-ai/`, `transcribe/`, etc.
+- Frontend lê `subscription.plan_type` do `/users/me/` e mostra paywall antes de chamar IA

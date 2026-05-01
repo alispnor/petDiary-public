@@ -108,8 +108,43 @@ E pediu pra "pega o que esta faltando e colocar no .env" — ou seja, preparar t
 - [ ] OpenAI direta ou via gateway (Anthropic, Replicate)? — recomendo OpenAI direto para começar (Whisper é state-of-art)
 - [ ] Bucket S3 público ou todas as URLs presigned? — recomendo **tudo presigned** (privacidade médica)
 - [ ] Região AWS: `sa-east-1` (São Paulo) ou `us-east-1` (mais barato)? — recomendo `sa-east-1` para LGPD
-- [ ] Quem paga pelo processamento de IA: tudo no plano PRO, ou freemium com cota mensal?
+- [x] ~~Quem paga pelo processamento de IA: tudo no plano PRO, ou freemium com cota mensal?~~ → **DECIDIDO 2026-05-01: gated 100% pelo plano PRO** (sem cota free). FREE consegue só fazer upload e visualizar; PRO ganha OCR de receitas, Whisper, sumarização automática.
 - [ ] Onde rodar Celery worker? Mesmo container ou serviço separado?
+
+## ⚠️ Gating de IA por plano (decisão durável do Ali — 2026-05-01)
+
+**Toda chamada de IA de mídia exige plano PRO ativo.** Implementação:
+
+```python
+# health/views.py (decorator de proteção)
+from billing.permissions import IsActivePro
+
+class ProcessAIView(APIView):
+    permission_classes = [IsAuthenticated, IsActivePro]
+    # ...
+```
+
+```python
+# billing/permissions.py
+class IsActivePro(BasePermission):
+    message = "Recurso disponível apenas no plano PRO."
+
+    def has_permission(self, request, view):
+        sub = getattr(request.user, "subscription", None)
+        return bool(sub and sub.plan_type == "PRO" and sub.status == "ACTIVE")
+```
+
+**No frontend:** ao tentar acionar IA, se status != PRO ATIVO, mostrar paywall ("Atualize para PRO" → leva para `/billing/subscribe`). Nunca chamar o endpoint sem checar plano antes (UX evita 403 surpresa).
+
+**Endpoints afetados** (todos exigirão `IsActivePro`):
+- `POST /pets/<id>/health-records/<rid>/process-ai/` — OCR + sumarização de imagens/PDFs
+- `POST /pets/<id>/audio/transcribe/` — Whisper de áudio gravado
+- Qualquer endpoint futuro de IA (resumo de exames, alerta de medicamentos, etc.)
+
+**Endpoints NÃO afetados** (ficam livres no FREE):
+- Upload puro pra S3 (`upload-url/`)
+- Visualização e download de attachments
+- CRUD de health records sem IA
 
 ---
 
