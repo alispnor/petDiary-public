@@ -2,6 +2,7 @@ import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuthStore } from "../../store/authStore";
 import LanguageSwitcher from "../../components/LanguageSwitcher";
+import NotificationsBell from "../../components/NotificationsBell";
 
 export default function AdminLayout() {
   const { t } = useTranslation();
@@ -52,8 +53,9 @@ export default function AdminLayout() {
 
         <div className="border-t border-gray-700 pt-3">
           <p className="text-xs text-gray-400 truncate">{user?.full_name}</p>
-          <div className="mt-2">
+          <div className="mt-2 flex items-center gap-2">
             <LanguageSwitcher />
+            <NotificationsBell />
           </div>
           <button
             onClick={handleLogout}

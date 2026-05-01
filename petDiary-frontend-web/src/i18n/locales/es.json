@@ -256,6 +256,7 @@
       "profile": "👤 Perfil",
       "family": "👨‍👩‍👧 Familia",
       "subscription": "💳 Suscripción",
+      "notifications": "Notificaciones",
       "security": "🔐 Seguridad"
     },
     "profile": {
@@ -382,5 +383,12 @@
   "clinical_extra": {
     "back": "← Volver",
     "header_title": "Historial"
+  },
+  "notifications": {
+    "title": "Notificaciones",
+    "mark_all": "Marcar todas como leídas",
+    "clear_all": "Limpiar todo",
+    "empty_title": "Sin notificaciones",
+    "empty_text": "Aquí aparecerán recordatorios de vacuna, retorno al veterinario, vencimiento de pago y cuando un veterinario acceda al historial."
   }
 }

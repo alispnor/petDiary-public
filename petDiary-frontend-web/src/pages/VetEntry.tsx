@@ -7,6 +7,7 @@ import api from "../services/api";
 import PinInput from "../components/PinInput";
 import AccessHistorySidebar from "../components/AccessHistorySidebar";
 import LanguageSwitcher from "../components/LanguageSwitcher";
+import NotificationsBell from "../components/NotificationsBell";
 import type { AccessHistory } from "../types";
 
 export default function VetEntry() {
@@ -82,6 +83,7 @@ export default function VetEntry() {
             {user?.clinic_name ? ` · ${user.clinic_name}` : ""}
           </span>
           <LanguageSwitcher />
+          <NotificationsBell />
           <Link
             to="/conta"
             className="rounded-md bg-gray-100 px-4 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-200"

@@ -256,6 +256,7 @@
       "profile": "👤 Profile",
       "family": "👨‍👩‍👧 Family",
       "subscription": "💳 Subscription",
+      "notifications": "Notifications",
       "security": "🔐 Security"
     },
     "profile": {
@@ -382,5 +383,12 @@
   "clinical_extra": {
     "back": "← Back",
     "header_title": "Records"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "mark_all": "Mark all as read",
+    "clear_all": "Clear all",
+    "empty_title": "No notifications",
+    "empty_text": "You'll see vaccine reminders, vet follow-up, payment due dates and when a vet opens the medical record."
   }
 }

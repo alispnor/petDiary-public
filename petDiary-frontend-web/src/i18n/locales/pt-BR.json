@@ -256,6 +256,7 @@
       "profile": "👤 Perfil",
       "family": "👨‍👩‍👧 Familiares",
       "subscription": "💳 Assinatura",
+      "notifications": "Notificações",
       "security": "🔐 Segurança"
     },
     "profile": {
@@ -382,5 +383,12 @@
   "clinical_extra": {
     "back": "← Voltar",
     "header_title": "Prontuário"
+  },
+  "notifications": {
+    "title": "Notificações",
+    "mark_all": "Marcar todas lidas",
+    "clear_all": "Limpar tudo",
+    "empty_title": "Sem notificações",
+    "empty_text": "Você verá aqui lembretes de vacina, retorno ao vet, vencimento de pagamento e quando algum vet acessar o prontuário."
   }
 }

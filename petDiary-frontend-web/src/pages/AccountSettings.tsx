@@ -9,9 +9,10 @@ import LanguageSwitcher from "../components/LanguageSwitcher";
 import MembersSection from "../components/MembersSection";
 import { maskCPF, maskPhone, maskCEP, unmask } from "../utils/masks";
 import { searchAddressByZip } from "../services/viaCep";
-import type { Pet, Subscription } from "../types";
+import { registerWebPush } from "../services/notifications";
+import type { Pet, Subscription, NotificationPreferences } from "../types";
 
-type Tab = "profile" | "family" | "subscription" | "security";
+type Tab = "profile" | "family" | "subscription" | "notifications" | "security";
 
 const UF_LIST = [
   "AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB",
@@ -91,6 +92,9 @@ export default function AccountSettings() {
           <TabBtn active={tab === "subscription"} onClick={() => setTab("subscription")}>
             {t("account.tabs.subscription")}
           </TabBtn>
+          <TabBtn active={tab === "notifications"} onClick={() => setTab("notifications")}>
+            🔔 {t("account.tabs.notifications", "Notificações")}
+          </TabBtn>
           <TabBtn active={tab === "security"} onClick={() => setTab("security")}>
             {t("account.tabs.security")}
           </TabBtn>
@@ -101,6 +105,7 @@ export default function AccountSettings() {
         )}
         {tab === "family" && user && <FamilyTab currentUserId={user.id} />}
         {tab === "subscription" && <SubscriptionTab />}
+        {tab === "notifications" && <NotificationsTab />}
         {tab === "security" && (
           <SecurityTab onAfterDelete={() => { logout(); navigate("/login", { replace: true }); }} />
         )}
@@ -610,6 +615,196 @@ function SecurityTab({ onAfterDelete }: { onAfterDelete: () => void }) {
               </button>
             </div>
           </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// =====================================================
+// NotificationsTab — preferências por tipo + botão ativar push
+// =====================================================
+
+const PREF_ROWS: {
+  key: keyof NotificationPreferences;
+  icon: string;
+  label: string;
+  hint: string;
+}[] = [
+  {
+    key: "push_vaccine",
+    icon: "💉",
+    label: "Vacinação",
+    hint: "Lembretes de vacinas próximas ou em atraso",
+  },
+  {
+    key: "push_vet_return",
+    icon: "🏥",
+    label: "Retorno ao veterinário",
+    hint: "Lembretes de consultas marcadas",
+  },
+  {
+    key: "push_payment_due",
+    icon: "💳",
+    label: "Vencimento de pagamento",
+    hint: "Aviso 3 dias antes da renovação PRO",
+  },
+  {
+    key: "push_payment_ok",
+    icon: "✅",
+    label: "Pagamento confirmado",
+    hint: "Recibo quando o PIX cair",
+  },
+  {
+    key: "push_pin_generated",
+    icon: "🔑",
+    label: "PIN criado",
+    hint: "Confirmação após gerar PIN para o vet",
+  },
+  {
+    key: "push_vet_access_claimed",
+    icon: "🩺",
+    label: "Vet acessou prontuário",
+    hint: "Quando o vet usa o PIN para abrir os dados",
+  },
+  {
+    key: "push_system",
+    icon: "📢",
+    label: "Avisos do sistema",
+    hint: "Manutenções, novidades e mudanças importantes",
+  },
+];
+
+function NotificationsTab() {
+  const [prefs, setPrefs] = useState<NotificationPreferences | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [permission, setPermission] = useState<NotificationPermission | "unsupported">(
+    typeof window !== "undefined" && "Notification" in window
+      ? Notification.permission
+      : "unsupported"
+  );
+  const [activating, setActivating] = useState(false);
+
+  useEffect(() => {
+    let cancel = false;
+    (async () => {
+      try {
+        const { data } = await api.get<NotificationPreferences>(
+          "/notifications/preferences/"
+        );
+        if (!cancel) setPrefs(data);
+      } catch {
+        // ignora
+      } finally {
+        if (!cancel) setLoading(false);
+      }
+    })();
+    return () => {
+      cancel = true;
+    };
+  }, []);
+
+  const handleToggle = async (
+    key: keyof NotificationPreferences,
+    value: boolean
+  ) => {
+    if (!prefs) return;
+    const next = { ...prefs, [key]: value };
+    setPrefs(next);
+    setSaving(true);
+    try {
+      await api.put("/notifications/preferences/", next);
+    } catch {
+      setPrefs(prefs);
+      alert("Não foi possível salvar.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleEnableBrowserPush = async () => {
+    setActivating(true);
+    const ok = await registerWebPush();
+    setActivating(false);
+    if (typeof window !== "undefined" && "Notification" in window) {
+      setPermission(Notification.permission);
+    }
+    if (!ok) {
+      alert(
+        "Não foi possível ativar push neste navegador. Verifique se as notificações estão liberadas nas configurações do site."
+      );
+    } else {
+      alert("✓ Notificações ativadas neste navegador.");
+    }
+  };
+
+  if (loading || !prefs) {
+    return <p className="py-12 text-center text-gray-400">Carregando…</p>;
+  }
+
+  return (
+    <div className="card">
+      <h2 className="mb-4 text-lg font-bold text-gray-700">
+        🔔 Preferências de notificação
+      </h2>
+
+      <div className="divide-y divide-gray-100">
+        {PREF_ROWS.map((row) => (
+          <label
+            key={row.key}
+            className="flex cursor-pointer items-center justify-between gap-3 py-3"
+          >
+            <div className="flex items-start gap-3">
+              <span className="text-2xl">{row.icon}</span>
+              <div>
+                <p className="font-semibold text-gray-700">{row.label}</p>
+                <p className="text-xs text-gray-500">{row.hint}</p>
+              </div>
+            </div>
+            <input
+              type="checkbox"
+              checked={!!prefs[row.key]}
+              onChange={(e) => handleToggle(row.key, e.target.checked)}
+              disabled={saving}
+              className="h-5 w-9 cursor-pointer accent-brand-teal"
+            />
+          </label>
+        ))}
+      </div>
+
+      <div className="mt-6 rounded-lg border border-gray-200 bg-gray-50 p-4">
+        <h3 className="font-semibold text-gray-700">Permissão do navegador</h3>
+        {permission === "unsupported" && (
+          <p className="mt-1 text-sm text-gray-500">
+            Seu navegador não suporta notificações push.
+          </p>
+        )}
+        {permission === "denied" && (
+          <p className="mt-1 text-sm text-red-600">
+            Notificações bloqueadas. Você precisa liberar nas configurações do
+            navegador (cadeado na barra de endereço → Notificações).
+          </p>
+        )}
+        {permission === "granted" && (
+          <p className="mt-1 text-sm text-green-700">
+            ✓ Notificações permitidas neste navegador.
+          </p>
+        )}
+        {permission === "default" && (
+          <>
+            <p className="mt-1 text-sm text-gray-500">
+              Toque para receber notificações neste navegador mesmo com a aba
+              fechada.
+            </p>
+            <button
+              onClick={handleEnableBrowserPush}
+              disabled={activating}
+              className="mt-3 rounded-pill bg-brand-teal px-4 py-2 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-50"
+            >
+              {activating ? "Ativando…" : "Ativar notificações no navegador"}
+            </button>
+          </>
         )}
       </div>
     </div>

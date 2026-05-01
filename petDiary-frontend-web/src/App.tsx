@@ -1,5 +1,7 @@
+import { useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { useAuthStore, type UserRole } from "./store/authStore";
+import { registerWebPush } from "./services/notifications";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ChangePassword from "./pages/ChangePassword";
@@ -14,6 +16,7 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminCoupons from "./pages/admin/AdminCoupons";
 import AdminTickets from "./pages/admin/AdminTickets";
+import Notifications from "./pages/Notifications";
 
 function RequireAuth({
   children,
@@ -50,6 +53,21 @@ function HomeRedirect() {
 }
 
 export default function App() {
+  const token = useAuthStore((s) => s.token);
+  const user = useAuthStore((s) => s.user);
+
+  useEffect(() => {
+    if (!token || !user) return;
+    // Tenta registrar web push silenciosamente. Se permission for "default",
+    // o navegador vai pedir confirmação ao user; se "denied", retorna false.
+    // O user também pode ativar manualmente em /conta → Notificações.
+    if (typeof window !== "undefined" && "Notification" in window) {
+      if (Notification.permission === "granted") {
+        registerWebPush().catch(() => {});
+      }
+    }
+  }, [token, user]);
+
   return (
     <BrowserRouter>
       <Routes>
@@ -99,6 +117,15 @@ export default function App() {
           element={
             <RequireAuth>
               <AccountSettings />
+            </RequireAuth>
+          }
+        />
+
+        <Route
+          path="/notifications"
+          element={
+            <RequireAuth>
+              <Notifications />
             </RequireAuth>
           }
         />

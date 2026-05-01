@@ -190,3 +190,38 @@ export interface Subscription {
   created_at: string;
   updated_at: string;
 }
+
+// =========================================
+// Notificações (Spec 17)
+// =========================================
+
+export type NotificationType =
+  | "VACCINE"
+  | "VET_RETURN"
+  | "PAYMENT_DUE"
+  | "PAYMENT_OK"
+  | "PIN_GENERATED"
+  | "VET_ACCESS_CLAIMED"
+  | "SYSTEM";
+
+export interface AppNotification {
+  id: string;
+  type: NotificationType;
+  title: string;
+  body: string;
+  data: Record<string, any>;
+  read_at: string | null;
+  is_read: boolean;
+  created_at: string;
+}
+
+export interface NotificationPreferences {
+  push_vaccine: boolean;
+  push_vet_return: boolean;
+  push_payment_due: boolean;
+  push_payment_ok: boolean;
+  push_pin_generated: boolean;
+  push_vet_access_claimed: boolean;
+  push_system: boolean;
+  email_enabled: boolean;
+}
