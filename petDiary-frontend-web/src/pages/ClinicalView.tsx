@@ -4,6 +4,7 @@ import api from "../services/api";
 import { useAuthStore } from "../store/authStore";
 import type { HealthRecord, Pet, RecordType } from "../types";
 import RevokedModal from "../components/RevokedModal";
+import AuditTimeline from "../components/AuditTimeline";
 
 const SPECIES_LABEL: Record<string, string> = {
   DOG: "Cachorro",
@@ -38,6 +39,8 @@ export default function ClinicalView() {
   const [description, setDescription] = useState("");
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
   const [submitting, setSubmitting] = useState(false);
+
+  const [activeTab, setActiveTab] = useState<"clinical" | "audit">("clinical");
 
   const loadData = async () => {
     if (!petId) return;
@@ -153,35 +156,60 @@ export default function ClinicalView() {
                 </div>
               </div>
 
-              <h3 className="mb-3 text-lg font-semibold text-gray-700">
-                Histórico Clínico
-              </h3>
+              <div className="mb-4 flex gap-1 border-b border-gray-200">
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("clinical")}
+                  className={`px-4 py-2 text-sm font-semibold transition border-b-2 ${
+                    activeTab === "clinical"
+                      ? "border-brand-teal text-brand-teal"
+                      : "border-transparent text-gray-500 hover:text-gray-700"
+                  }`}
+                >
+                  📋 Histórico Clínico
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("audit")}
+                  className={`px-4 py-2 text-sm font-semibold transition border-b-2 ${
+                    activeTab === "audit"
+                      ? "border-brand-teal text-brand-teal"
+                      : "border-transparent text-gray-500 hover:text-gray-700"
+                  }`}
+                >
+                  📜 Histórico de alterações
+                </button>
+              </div>
 
-              {records.length === 0 ? (
-                <p className="text-sm text-gray-400">
-                  Nenhum registro ainda. Adicione o primeiro à direita.
-                </p>
-              ) : (
-                <ol className="relative border-l-2 border-brand-teal/30 pl-6">
-                  {records.map((r) => (
-                    <li key={r.id} className="mb-6">
-                      <span className="absolute -left-[9px] mt-1.5 h-4 w-4 rounded-full border-2 border-white bg-brand-teal" />
-                      <div className="rounded-lg border-l-4 border-brand-teal bg-white p-4 shadow-sm">
-                        <div className="mb-1 flex items-center justify-between">
-                          <h4 className="font-semibold text-gray-800">
-                            {RECORD_TYPE_LABEL[r.record_type]} · {r.title}
-                          </h4>
-                          <span className="text-xs text-gray-400">
-                            {r.date_occurred}
-                          </span>
+              {activeTab === "clinical" ? (
+                records.length === 0 ? (
+                  <p className="text-sm text-gray-400">
+                    Nenhum registro ainda. Adicione o primeiro à direita.
+                  </p>
+                ) : (
+                  <ol className="relative border-l-2 border-brand-teal/30 pl-6">
+                    {records.map((r) => (
+                      <li key={r.id} className="mb-6">
+                        <span className="absolute -left-[9px] mt-1.5 h-4 w-4 rounded-full border-2 border-white bg-brand-teal" />
+                        <div className="rounded-lg border-l-4 border-brand-teal bg-white p-4 shadow-sm">
+                          <div className="mb-1 flex items-center justify-between">
+                            <h4 className="font-semibold text-gray-800">
+                              {RECORD_TYPE_LABEL[r.record_type]} · {r.title}
+                            </h4>
+                            <span className="text-xs text-gray-400">
+                              {r.date_occurred}
+                            </span>
+                          </div>
+                          {r.description && (
+                            <p className="text-sm text-gray-600">{r.description}</p>
+                          )}
                         </div>
-                        {r.description && (
-                          <p className="text-sm text-gray-600">{r.description}</p>
-                        )}
-                      </div>
-                    </li>
-                  ))}
-                </ol>
+                      </li>
+                    ))}
+                  </ol>
+                )
+              ) : (
+                pet && <AuditTimeline petId={pet.id} />
               )}
             </>
           )}

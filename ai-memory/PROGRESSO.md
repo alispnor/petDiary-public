@@ -1,7 +1,7 @@
 # 📊 PROGRESSO — petDiary
 
 > **Arquivo vivo.** Atualize a cada sessão de trabalho.
-> Última atualização: **2026-05-01 (sessão 3 — Fase 6.1 backend de auditoria implementado)**
+> Última atualização: **2026-05-01 (sessão 3 — Fase 6 completa: auditoria backend + UI)**
 
 ---
 
@@ -312,6 +312,18 @@ Decisões do Ali registradas em memory: email+phone obrigatórios, CPF opcional,
   - Integrado em TutorDashboard via `<MembersSection>` em cada card
 - ✅ **Fase 5 — completa** (5.1+5.2+5.3+5.4 backend + 5.5+5.6 web)
 - ✅ **Specs 12 (Cupons) e 13 (Admin Dashboard)** salvas em `ai-memory/specs/`
+- ✅ **Fase 6.2** — Web: aba "Histórico de alterações" no ClinicalView:
+  - Tipos novos em `types.ts`: `AuditAction`, `AuditEntry`, `PaginatedResponse<T>`
+  - Componente `<AuditTimeline>`: lê `/pets/<id>/audit/?page_size=100`, mostra cada entrada com:
+    - Ícone por ação (✏️ CREATE, 📝 UPDATE, 🗑 DELETE, 🚫 REVOKE, 🔑 CLAIM)
+    - Nome do ator + badge colorido por role (TUTOR azul-teal, VET laranja, SYSTEM cinza)
+    - "Atualizou HealthRecord" / "Criou Pet" etc + descrição
+    - Data relativa ("há 2 min", "há 3 dias", fallback data completa)
+  - `ClinicalView` ganhou abas: `📋 Histórico Clínico` (default) e `📜 Histórico de alterações`
+  - Tabs com border-bottom estilo Material; layout mantém o aside de "Adicionar registro"
+  - Vet com acesso ativo TAMBÉM vê a aba (transparência clínica)
+- ✅ **Fase 6 — completa** (6.1 backend + 6.2 web)
+
 - ✅ **Fase 6.1** — Backend: app `audit/` + AuditLog + signals:
   - Novo app `audit/` com `models.py`, `helpers.py`, `serializers.py`, `views.py`, `urls.py`, `admin.py`, `signals.py`
   - Modelo `AuditLog`: actor (FK SET_NULL), actor_name_snapshot (preserva mesmo se conta excluída), actor_role_snapshot, action (CREATE/UPDATE/DELETE/REVOKE/CLAIM), entity_type, entity_id, pet (FK opcional), description, changes (JSON), ip_address, user_agent, created_at — com 3 índices
