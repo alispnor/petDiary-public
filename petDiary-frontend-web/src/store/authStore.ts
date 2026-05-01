@@ -9,7 +9,7 @@ import {
 
 const AUTH_STORAGE_KEY = "petdiary-auth";
 
-export type UserRole = "TUTOR" | "VET";
+export type UserRole = "TUTOR" | "VET" | "ADMIN";
 
 export interface AuthUser {
   id: string;

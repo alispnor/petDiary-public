@@ -7,6 +7,11 @@ import TutorDashboard from "./pages/TutorDashboard";
 import VetEntry from "./pages/VetEntry";
 import ClinicalView from "./pages/ClinicalView";
 import AccountSettings from "./pages/AccountSettings";
+import AdminLayout from "./pages/admin/AdminLayout";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminUsers from "./pages/admin/AdminUsers";
+import AdminCoupons from "./pages/admin/AdminCoupons";
+import AdminTickets from "./pages/admin/AdminTickets";
 
 function RequireAuth({
   children,
@@ -28,6 +33,7 @@ function RequireAuth({
   }
 
   if (role && user.role !== role) {
+    if (user.role === "ADMIN") return <Navigate to="/admin" replace />;
     return <Navigate to={user.role === "TUTOR" ? "/tutor" : "/vet"} replace />;
   }
   return <>{children}</>;
@@ -37,6 +43,7 @@ function HomeRedirect() {
   const user = useAuthStore((s) => s.user);
   if (!user) return <Navigate to="/login" replace />;
   if (user.must_change_password) return <Navigate to="/change-password" replace />;
+  if (user.role === "ADMIN") return <Navigate to="/admin" replace />;
   return <Navigate to={user.role === "TUTOR" ? "/tutor" : "/vet"} replace />;
 }
 
@@ -91,6 +98,20 @@ export default function App() {
             </RequireAuth>
           }
         />
+
+        <Route
+          path="/admin"
+          element={
+            <RequireAuth role="ADMIN">
+              <AdminLayout />
+            </RequireAuth>
+          }
+        >
+          <Route index element={<AdminDashboard />} />
+          <Route path="users" element={<AdminUsers />} />
+          <Route path="coupons" element={<AdminCoupons />} />
+          <Route path="tickets" element={<AdminTickets />} />
+        </Route>
 
         <Route path="/" element={<HomeRedirect />} />
         <Route path="*" element={<Navigate to="/" replace />} />
