@@ -2,7 +2,7 @@ import axios from "axios";
 import { useAppStore } from "../store/useAppStore";
 
 const API_BASE_URL =
-  process.env.EXPO_PUBLIC_API_URL || "http://192.168.10.203:8000/api/v1";
+  process.env.EXPO_PUBLIC_API_URL || "http://localhost:8000/api/v1";
 
 const api = axios.create({
   baseURL: API_BASE_URL,

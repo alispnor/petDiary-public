@@ -1,17 +1,23 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { View, ActivityIndicator, StyleSheet } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useAppStore } from "../store/useAppStore";
 import { LoginScreen } from "../screens/Login";
+import { RegisterScreen } from "../screens/Register";
+import { ForgotPasswordScreen } from "../screens/ForgotPassword";
 import { HomeTutor } from "../screens/HomeTutor";
 import { PetDashboard } from "../screens/PetDashboard";
 import { AccountSettings } from "../screens/AccountSettings";
 import { SubscriptionDashboard } from "../screens/SubscriptionDashboard";
 import { HelpCenter } from "../screens/HelpCenter";
+import { colors } from "../theme";
 import type { Pet } from "../types";
 
 export type RootStackParamList = {
   Login: undefined;
+  Register: undefined;
+  ForgotPassword: undefined;
   HomeTutor: undefined;
   PetDashboard: { pet: Pet };
   AccountSettings: undefined;
@@ -24,6 +30,24 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 export function AppNavigator() {
   const token = useAppStore((s) => s.token);
   const user = useAppStore((s) => s.user);
+  const [hydrated, setHydrated] = useState(
+    useAppStore.persist.hasHydrated()
+  );
+
+  useEffect(() => {
+    if (hydrated) return;
+    const unsub = useAppStore.persist.onFinishHydration(() => setHydrated(true));
+    if (useAppStore.persist.hasHydrated()) setHydrated(true);
+    return unsub;
+  }, [hydrated]);
+
+  if (!hydrated) {
+    return (
+      <View style={styles.loading}>
+        <ActivityIndicator size="large" color={colors.brand.teal} />
+      </View>
+    );
+  }
 
   const isAuthenticated = !!token && !!user;
 
@@ -37,11 +61,23 @@ export function AppNavigator() {
         }}
       >
         {!isAuthenticated ? (
-          <Stack.Screen
-            name="Login"
-            component={LoginScreen}
-            options={{ headerShown: false }}
-          />
+          <>
+            <Stack.Screen
+              name="Login"
+              component={LoginScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Register"
+              component={RegisterScreen}
+              options={{ title: "Criar conta" }}
+            />
+            <Stack.Screen
+              name="ForgotPassword"
+              component={ForgotPasswordScreen}
+              options={{ title: "Recuperar senha" }}
+            />
+          </>
         ) : (
           <>
             <Stack.Screen
@@ -75,3 +111,12 @@ export function AppNavigator() {
     </NavigationContainer>
   );
 }
+
+const styles = StyleSheet.create({
+  loading: {
+    flex: 1,
+    backgroundColor: colors.bg.app,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+});

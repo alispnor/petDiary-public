@@ -12,10 +12,11 @@ import {
 import axios from "axios";
 import api from "../services/api";
 import { useAppStore } from "../store/useAppStore";
+import { LanguageSwitcher } from "../components/LanguageSwitcher";
 import type { User } from "../types";
 import { colors, radii, spacing, fontSize, fontWeight } from "../theme";
 
-export function LoginScreen() {
+export function LoginScreen({ navigation }: any) {
   const setAuth = useAppStore((s) => s.setAuth);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -32,7 +33,7 @@ export function LoginScreen() {
       const { data: tokens } = await api.post<{
         access: string;
         refresh: string;
-      }>("/auth/token/", { username, password });
+      }>("/auth/token/", { username: username.trim().toLowerCase(), password });
 
       const { data: user } = await axios.get<User>(
         `${api.defaults.baseURL}/users/me/`,
@@ -56,6 +57,10 @@ export function LoginScreen() {
       style={styles.container}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
+      <View style={styles.langWrap}>
+        <LanguageSwitcher />
+      </View>
+
       <View style={styles.card}>
         <Text style={styles.title}>PetDiary</Text>
         <Text style={styles.subtitle}>
@@ -88,6 +93,13 @@ export function LoginScreen() {
         </View>
 
         <TouchableOpacity
+          onPress={() => navigation.navigate("ForgotPassword")}
+          style={styles.forgotBtn}
+        >
+          <Text style={styles.forgotText}>Esqueci minha senha</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
           style={[styles.btn, loading && styles.btnDisabled]}
           onPress={handleLogin}
           disabled={loading}
@@ -95,9 +107,17 @@ export function LoginScreen() {
           <Text style={styles.btnText}>{loading ? "Entrando…" : "Entrar"}</Text>
         </TouchableOpacity>
 
-        <Text style={styles.hint}>
-          Cadastre-se primeiro pelo portal web em http://localhost:5173
-        </Text>
+        <View style={styles.divider} />
+
+        <TouchableOpacity
+          onPress={() => navigation.navigate("Register")}
+          style={styles.registerBtn}
+        >
+          <Text style={styles.registerText}>
+            Ainda não tem conta?{" "}
+            <Text style={styles.registerAccent}>Cadastre-se</Text>
+          </Text>
+        </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
   );
@@ -109,6 +129,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.bg.app,
     justifyContent: "center",
     paddingHorizontal: spacing[4],
+  },
+  langWrap: {
+    position: "absolute",
+    top: spacing[6],
+    right: spacing[4],
   },
   card: {
     backgroundColor: colors.bg.surface,
@@ -143,14 +168,8 @@ const styles = StyleSheet.create({
     fontSize: fontSize.base,
     marginBottom: spacing[3],
   },
-  passwordRow: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  passwordInput: {
-    flex: 1,
-    paddingRight: 50,
-  },
+  passwordRow: { flexDirection: "row", alignItems: "center" },
+  passwordInput: { flex: 1, paddingRight: 50 },
   eyeBtn: {
     position: "absolute",
     right: spacing[3],
@@ -158,6 +177,12 @@ const styles = StyleSheet.create({
     padding: spacing[1],
   },
   eyeIcon: { fontSize: 20 },
+  forgotBtn: { alignSelf: "flex-end", marginBottom: spacing[3] },
+  forgotText: {
+    fontSize: fontSize.xs,
+    color: colors.brand.teal,
+    fontWeight: fontWeight.semibold,
+  },
   btn: {
     backgroundColor: colors.brand.teal,
     borderRadius: radii.pill,
@@ -171,10 +196,19 @@ const styles = StyleSheet.create({
     fontSize: fontSize.base,
     textAlign: "center",
   },
-  hint: {
-    marginTop: spacing[4],
-    fontSize: fontSize.xs,
+  divider: {
+    height: 1,
+    backgroundColor: colors.border,
+    marginVertical: spacing[5],
+  },
+  registerBtn: { marginTop: 0 },
+  registerText: {
+    fontSize: fontSize.sm,
     color: colors.text.secondary,
     textAlign: "center",
+  },
+  registerAccent: {
+    color: colors.brand.teal,
+    fontWeight: fontWeight.semibold,
   },
 });

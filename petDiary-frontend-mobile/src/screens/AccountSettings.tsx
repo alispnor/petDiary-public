@@ -14,6 +14,7 @@ import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import axios from "axios";
 import api from "../services/api";
 import { useAppStore } from "../store/useAppStore";
+import { LanguageSwitcher } from "../components/LanguageSwitcher";
 import type { User } from "../types";
 import type { RootStackParamList } from "../navigation/AppNavigator";
 import { colors, radii, spacing, fontSize, fontWeight, shadows } from "../theme";
@@ -175,6 +176,12 @@ export function AccountSettings({ navigation }: Props) {
             {savingProfile ? "Salvando…" : "Salvar alterações"}
           </Text>
         </TouchableOpacity>
+      </View>
+
+      {/* Idioma */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Idioma</Text>
+        <LanguageSwitcher variant="row" />
       </View>
 
       {/* Atalhos */}
