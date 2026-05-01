@@ -1,5 +1,6 @@
 from datetime import timedelta
 
+from django.db import IntegrityError
 from django.db.models import Max, Q
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
@@ -11,7 +12,7 @@ from rest_framework.views import APIView
 from accounts.models import User
 from pets.models import Pet, PetMember
 
-from .models import VetAccessToken
+from .models import VetAccessToken, generate_unique_access_code
 from .serializers import (
     ActiveAccessSerializer,
     ClaimAccessSerializer,
@@ -51,9 +52,23 @@ class GeneratePinView(generics.CreateAPIView):
         if not data.get("expires_at"):
             data["expires_at"] = (timezone.now() + DEFAULT_PIN_LIFETIME).isoformat()
 
-        serializer = self.get_serializer(data=data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
+        # Gera código único + retry no nível DB caso outro request consiga
+        # inserir o mesmo código entre o nosso check e o INSERT.
+        for attempt in range(3):
+            data["access_code"] = generate_unique_access_code()
+            serializer = self.get_serializer(data=data)
+            serializer.is_valid(raise_exception=True)
+            try:
+                serializer.save()
+                break
+            except IntegrityError:
+                if attempt == 2:
+                    return Response(
+                        {"detail": _("Não foi possível gerar um PIN único. Tente novamente.")},
+                        status=status.HTTP_503_SERVICE_UNAVAILABLE,
+                    )
+                continue
+
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
