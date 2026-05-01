@@ -15,29 +15,16 @@
 
 ## 🟢 PRIORIDADE A — Fechar features iniciadas
 
-### A1. Spec 17 Fase 5d — Notificações no WEB
-- [ ] Service worker `petDiary-frontend-web/public/sw.js` (push handler
-      + notificationclick com deep link)
-- [ ] `services/notifications.ts` web: `registerWebPush()` que pede
-      permissão, faz subscribe via PushManager, POST devices/register
-      com platform=web
-- [ ] Página `/notifications` (lista + mark-read + delete + clear-all)
-- [ ] Página `/conta` ganha seção "Preferências de notificação" (7
-      toggles) + botão "Ativar no navegador"
-- [ ] Componente `<NotificationsBell />` reusável com badge unread
-- [ ] Header de TutorDashboard, VetEntry e AdminLayout exibem
-      `<NotificationsBell />`
-- [ ] Pós-login (App.tsx): chama `registerWebPush()` (não bloqueante)
-
-**DoD:** abrir `/notifications` no Chrome, ver lista, marcar lida,
-excluir, limpar tudo. Toggle on/off em /conta persiste. Badge atualiza.
-
-**Dependência:** Backend já pronto (Fase 5a). VAPID keys: usa string
-vazia em DEV (mock service no backend); chaves reais ficam em
-PENDENCIAS-HUMANAS.md item 14 (produção).
-
-**Spec:** `ai-memory/specs/17-notificacoes-mobile-push-preferencias.md`
-seção "Fase 5d — Web"
+### A1. Spec 17 Fase 5d — Notificações no WEB ✅ (commit `13bfbb9`)
+- [x] Service worker `petDiary-frontend-web/public/sw.js`
+- [x] `services/notifications.ts` web com `registerWebPush()`
+- [x] Página `/notifications`
+- [x] Aba "🔔 Notificações" em /conta (7 toggles + ativar push)
+- [x] Componente `<NotificationsBell />`
+- [x] Plugado em TutorDashboard, VetEntry, AdminLayout
+- [x] App.tsx: registerWebPush silencioso pós-login se já granted
+- [x] i18n pt-BR/en/es
+- [x] PARIDADE-MOBILE-WEB seção 12 atualizada
 
 ---
 

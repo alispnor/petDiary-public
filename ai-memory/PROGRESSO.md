@@ -1,7 +1,7 @@
 # 📊 PROGRESSO — petDiary
 
 > **Arquivo vivo.** Atualize a cada sessão de trabalho.
-> Última atualização: **2026-05-01 (sessão 6 — Spec 17 backend + mobile: app notifications, push mockado, hook automático, telas mobile com excluir/limpar)**
+> Última atualização: **2026-05-01 (sessão 7 — Spec 17 Fase 5d: notificações web + paridade total mobile↔web)**
 
 ---
 
@@ -685,6 +685,44 @@ adicionados aos endpoints (Ali pediu durante a Fase 5c).
 🎯 **Marco da sessão 6:** mobile já recebe e gerencia notificações
 in-app + preferências. Falta web (Fase 5d) e lembretes automáticos
 (Fase 5b).
+
+### 2026-05-01 — Sessão 7 (Spec 17 Fase 5d — web)
+> Após mobile (sessão 6), agora paridade total mobile↔web para
+> notificações.
+
+**Web entregue** (commit `13bfbb9`):
+- public/sw.js — handler push + notificationclick com deep link
+- services/notifications.ts — registerWebPush (subscribe VAPID + POST
+  device); unregisterWebPush; em DEV (sem VAPID) retorna false
+  silencioso, in-app funciona normal
+- pages/Notifications.tsx — lista + mark-read no click + delete
+  individual + mark-all-read + clear-all + empty state
+- AccountSettings ganhou aba "🔔 Notificações": 7 toggles + status
+  permission do navegador + botão "Ativar"
+- components/NotificationsBell.tsx — badge unread com polling 60s
+- Plugado em TutorDashboard, VetEntry, AdminLayout
+- App.tsx: pós-login, registerWebPush silencioso se permission já
+  é "granted" (não molesta o user)
+- i18n: chaves `notifications.*` e `account.tabs.notifications` em
+  pt-BR/en/es
+- Rota `/notifications` no App.tsx
+
+**Decisões durables:**
+- Em DEV não pedir permissão automática — só re-registrar se já
+  estiver granted. User ativa explicitamente em /conta
+- `<NotificationsBell />` faz polling 60s. Quando WebSocket (Spec 07)
+  rodar, substituir por subscribe
+
+**Documentos atualizados:**
+- PARIDADE-MOBILE-WEB.md seção 12 — todas as 11 linhas com ✅ no web
+- PENDENCIAS-ORDENADAS.md A1 marcado completo
+
+**Pendências Spec 17 ainda abertas:**
+- Fase 5b — modelo Reminder + tasks Celery (vacina/retorno
+  automáticos por data) — pendência A2
+
+🎯 **Marco da sessão 7:** notificações em paridade total mobile↔web.
+Falta só lembretes automáticos (Reminder) para fechar a Spec 17 inteira.
 
 ### Próxima sessão — TODO
 **Roadmap principal + Fases A-G → 100% completo!** ✨
