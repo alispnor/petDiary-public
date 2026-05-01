@@ -1,0 +1,68 @@
+# ===============================================
+# Envs (secrets — nunca versionar)
+# ===============================================
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# ===============================================
+# Dependências
+# ===============================================
+node_modules/
+**/node_modules/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# ===============================================
+# Builds e caches
+# ===============================================
+dist/
+build/
+.expo/
+.expo-shared/
+.next/
+.cache/
+.turbo/
+*.tsbuildinfo
+staticfiles/
+**/staticfiles/
+
+# ===============================================
+# Logs
+# ===============================================
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pip-log.txt
+
+# ===============================================
+# IDE
+# ===============================================
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ===============================================
+# Sistema
+# ===============================================
+.DS_Store
+Thumbs.db
+
+# ===============================================
+# Específicos do projeto
+# ===============================================
+# Ícones gerados pelo script (regeneráveis a partir de logotipo/petDiaryLogo.png)
+logotipo/exports/
+
+# Banco de dados local (volume Docker já é nomeado, mas por garantia)
+*.sqlite3
+db.sqlite3
+
+# Pickup automático local (não compartilhar entre devs)
+.ai-pickup.md
