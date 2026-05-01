@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import api from "../services/api";
 import { useAuthStore, type AuthUser } from "../store/authStore";
+import PasswordInput from "../components/PasswordInput";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -63,14 +64,12 @@ export default function Login() {
             required
             className="rounded-lg border border-gray-300 px-4 py-3 text-sm focus:border-brand-teal focus:outline-none"
           />
-          <input
-            type="password"
+          <PasswordInput
             placeholder="Senha"
             autoComplete="current-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            className="rounded-lg border border-gray-300 px-4 py-3 text-sm focus:border-brand-teal focus:outline-none"
           />
 
           {error && (

@@ -1,12 +1,7 @@
 /* Projeto: PetDiary
    Design System Base - Paleta de Cores extraída do Logotipo
+   (a fonte Nunito é carregada via <link> no index.html)
 */
-
-/* 1. Importação da Fonte
-   'Nunito' é uma fonte Sans-Serif com terminais arredondados.
-   Ela transmite um ar amigável (excelente para pets) sem perder o profissionalismo clínico.
-*/
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap');
 
 :root {
   /* =========================================
