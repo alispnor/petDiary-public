@@ -32,9 +32,23 @@ class UserSerializer(serializers.ModelSerializer):
             "document",
             "crmv",
             "clinic_name",
+            "must_change_password",
             *ADDRESS_FIELDS,
         )
-        read_only_fields = ("id", "role")  # role não é editado depois do registro
+        # role e must_change_password mutáveis apenas via endpoints dedicados
+        read_only_fields = ("id", "role", "must_change_password")
+
+
+class ChangePasswordSerializer(serializers.Serializer):
+    """Body do POST /auth/change-password/.
+
+    Se o usuário tem `must_change_password=True` (caretaker recém-convidado),
+    `current_password` é OPCIONAL — primeira troca dispensa a senha temporária
+    informada pelo OWNER. Para os demais casos, é obrigatório.
+    """
+
+    current_password = serializers.CharField(write_only=True, required=False, allow_blank=True)
+    new_password = serializers.CharField(write_only=True, min_length=8)
 
 
 class UserCreateSerializer(serializers.ModelSerializer):

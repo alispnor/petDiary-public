@@ -1,7 +1,7 @@
 # 📊 PROGRESSO — petDiary
 
 > **Arquivo vivo.** Atualize a cada sessão de trabalho.
-> Última atualização: **2026-05-01 (sessão 3 — Fases 3, 4 completas + 5.1 OWNER/CARETAKER)**
+> Última atualização: **2026-05-01 (sessão 3 — Fases 3, 4 + 5.1 + 5.2 — change-password)**
 
 ---
 
@@ -352,6 +352,20 @@ Decisões do Ali registradas em memory: email+phone obrigatórios, CPF opcional,
   - Migration 0002 (estrutural) + 0003 (data: cada Pet existente vira PetMember OWNER com user=tutor)
   - Admin: PetMemberInline em Pet + PetMemberAdmin standalone
   - Verificado: 4 Pets → 4 PetMembers role=OWNER criados pra tutores corretos
+- ✅ **Fase 5.2** — Backend: must_change_password + change-password endpoint:
+  - User ganha `must_change_password` (BooleanField, default False) — caretakers convidados terão True até trocarem
+  - `UserSerializer` expõe o campo (read-only — só muda via fluxo dedicado)
+  - `POST /api/v1/auth/change-password/`:
+    - Auth required
+    - Body `{current_password, new_password}` — current opcional se must_change_password=True
+    - Após sucesso: `set_password` + flag=False + **blacklist de TODOS os refresh tokens** anteriores deste user (defesa contra reuso)
+    - Mensagem: "Senha alterada com sucesso. Faça login novamente."
+  - Validação E2E (9 testes via curl, todos OK):
+    - T1-T5: caretaker carlos_familiar → login → flag=True → troca sem current_password → senha antiga invalidada → flag=False
+    - T6: luiza (flag=False) sem current_password → 400 "campo obrigatório"
+    - T7: luiza com current_password errada → 400 "Senha atual incorreta"
+    - T8: luiza com current_password correta → 200
+    - T9: senha revertida para não quebrar testes futuros
 
 ### Próxima sessão — TODO
 - Fase 5: Co-tutores / família (PetMember CARETAKER, sem permissão de gerar PIN)

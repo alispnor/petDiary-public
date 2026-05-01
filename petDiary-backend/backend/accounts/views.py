@@ -5,7 +5,11 @@ from rest_framework_simplejwt.token_blacklist.models import OutstandingToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from .models import User
-from .serializers import UserCreateSerializer, UserSerializer
+from .serializers import (
+    ChangePasswordSerializer,
+    UserCreateSerializer,
+    UserSerializer,
+)
 
 
 class UserCreateView(generics.CreateAPIView):
@@ -19,6 +23,60 @@ class UserMeView(generics.RetrieveUpdateAPIView):
 
     def get_object(self):
         return self.request.user
+
+
+class ChangePasswordView(APIView):
+    """Permite ao usuário autenticado trocar a própria senha.
+
+    Regras:
+    - Se `must_change_password=True` (caretaker recém-convidado), o
+      `current_password` é OPCIONAL — primeira troca dispensa a senha
+      temporária informada pelo OWNER.
+    - Em qualquer outro caso, o `current_password` é obrigatório e
+      precisa bater com a senha atual.
+    - Após sucesso, `must_change_password` vira False e os refresh tokens
+      anteriores do usuário são blacklistados (defesa contra reuso).
+    """
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        serializer = ChangePasswordSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        user = request.user
+        current = (serializer.validated_data.get("current_password") or "").strip()
+        new_password = serializer.validated_data["new_password"]
+
+        # current_password obrigatório se NÃO está em must_change_password
+        if not user.must_change_password:
+            if not current:
+                return Response(
+                    {"current_password": ["Este campo é obrigatório."]},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            if not user.check_password(current):
+                return Response(
+                    {"current_password": ["Senha atual incorreta."]},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+        user.set_password(new_password)
+        user.must_change_password = False
+        user.save(update_fields=["password", "must_change_password"])
+
+        # Invalida sessões anteriores (refresh tokens deste user)
+        from rest_framework_simplejwt.token_blacklist.models import (
+            BlacklistedToken,
+            OutstandingToken,
+        )
+        for tok in OutstandingToken.objects.filter(user=user):
+            BlacklistedToken.objects.get_or_create(token=tok)
+
+        return Response(
+            {"detail": "Senha alterada com sucesso. Faça login novamente."},
+            status=status.HTTP_200_OK,
+        )
 
 
 class CheckUsernameView(APIView):

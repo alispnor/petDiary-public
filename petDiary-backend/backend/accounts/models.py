@@ -74,6 +74,17 @@ class User(AbstractUser):
     address_city = models.CharField(_("cidade"), max_length=120, blank=True, default="")
     address_state = models.CharField(_("estado/UF"), max_length=2, blank=True, default="")
 
+    # === Conta criada por terceiro (caretaker convidado) ===
+    must_change_password = models.BooleanField(
+        _("deve trocar a senha no próximo login"),
+        default=False,
+        help_text=_(
+            "Marcado quando o usuário foi criado por outra pessoa (ex.: tutor "
+            "convidando familiar) com senha temporária. Frontend força tela "
+            "de troca antes de liberar o app."
+        ),
+    )
+
     class Meta:
         verbose_name = _("usuário")
         verbose_name_plural = _("usuários")
