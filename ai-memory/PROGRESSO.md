@@ -1,7 +1,7 @@
 # 📊 PROGRESSO — petDiary
 
 > **Arquivo vivo.** Atualize a cada sessão de trabalho.
-> Última atualização: **2026-05-01 (sessão 3 — Fase 7.1 attachments backend completo)**
+> Última atualização: **2026-05-01 (sessão 3 — Fases 1-7 todas completas, hora autônoma do Ali)**
 
 ---
 
@@ -446,14 +446,32 @@ Decisões do Ali registradas em memory: email+phone obrigatórios, CPF opcional,
     - T8: luiza com current_password correta → 200
     - T9: senha revertida para não quebrar testes futuros
 
+### 2026-05-01 — Hora autônoma do Ali (almoço)
+> Ali deu autorização explícita pra trabalhar autônomo por 1h sem confirmação a cada fase.
+> **Resultado:** Fechei Fases 5, 6 e 7 nesta janela. Roadmap principal todo verde.
+
+Sequência da hora autônoma:
+1. Fechei **Fase 5.6** (web seção Familiares + modal de convite + credenciais)
+2. **Fase 6.1** (backend): app `audit/` + AuditLog model + signals automáticos + endpoint `/pets/<id>/audit/` + bug-fix de cascade delete
+3. **Fase 6.2** (web): aba "Histórico de alterações" no ClinicalView com `<AuditTimeline>` mostrando ator/ação/data relativa
+4. **Fase 7.1** (backend): storage abstrato (`StorageBackend` interface, `LocalStorageBackend`, `S3StorageBackend` stub) + `HealthRecordAttachment` model + endpoints multipart upload/list/view/download/delete
+5. **Fase 7.2** (web): `<AttachmentsList>` com upload, ícone por mime, view inline (blob URL), download, print, delete; integrado em cada record do `ClinicalView`
+
+Total commits nesta hora: ~6 commits separados, todos com push.
+
 ### Próxima sessão — TODO
-- Fase 5: Co-tutores / família (PetMember CARETAKER, sem permissão de gerar PIN)
-- Fase 6: Auditoria (AuditLog, só mutações)
-- Fase 7: Uploads/download/print + spec 05 (captura de mídia)
-- Fase 7.5: Spec 06 (filas) — pré-requisito para webhooks/IA
-- Fase 7.7: Spec 07 (WebSocket realtime) — pode rodar junto com 7.5 (compartilha Redis)
-- Fases 8-10 (specs salvas): assinaturas/suporte/deleção LGPD
-- Etapa final: produção
+**Roadmap principal (Fases 1-7) → 100% completo!** ✨
+
+Próximos blocos candidatos (todos têm spec salva):
+- **Spec 05** — Captura de mídia (drag-drop + webcam no web; câmera/áudio/vídeo no mobile)
+- **Spec 06** — Fila de jobs (Celery+Redis recomendado, BullMQ alternativa)
+- **Spec 07** — WebSocket realtime (compartilha Redis com Spec 06)
+- **Spec 11** — Logs estruturados (structlog + Sentry)
+- **Mobile** — migrar pra API real (atualmente usa mocks)
+- **Spec 10** — i18n web + mobile (6 idiomas: pt-BR, es, pt-PT, en, fr, ar)
+- **Specs 08/09** — Doc instalação MacBook + publicação App Store/Play Store
+- **Specs 01/02/03/12/13** — assinaturas + suporte + deleção LGPD + cupons + admin dashboard
+- **Etapa final**: produção (domínio, hospedagem, deploy)
 
 ---
 
