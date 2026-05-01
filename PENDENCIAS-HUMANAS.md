@@ -26,6 +26,7 @@ O código está pronto para produção do lado técnico. O que falta agora é
 | 11 | Apple Developer Program + Google Play Console | 2–7 dias úteis | US$ 99/ano + US$ 25 vitalício |
 | 12 | EAS Build + submissão das lojas | 1 semana com revisões | — |
 | 13 | Política de privacidade + termos de uso (LGPD) | 4–8h ou advogado | R$ 0 ou R$ 1k–5k |
+| 14 | Gerar par VAPID para Web Push (Spec 17) | 5 min | grátis |
 
 **Custo total estimado ano 1:** ~R$ 1.500 a R$ 3.000 (depende de hosting e volume).
 
@@ -388,6 +389,28 @@ eas submit --platform android
 ### Onde publicar
 - URL pública: `https://petdiary.com.br/privacidade` e `/termos`
 - Linkar no rodapé do app web e em "Conta > Sobre" do mobile
+
+---
+
+## 14. VAPID keys (Web Push)
+
+### O que fazer
+1. Gerar par de chaves VAPID:
+   ```bash
+   npx web-push generate-vapid-keys
+   ```
+2. Anotar `Public Key` e `Private Key`
+3. Adicionar no `.env.prod`:
+   ```
+   VAPID_PUBLIC_KEY=BKxxx...
+   VAPID_PRIVATE_KEY=...
+   VAPID_CONTACT_EMAIL=ops@petdiary.com.br
+   ```
+
+### Onde isso aparece no código
+- `notifications/services/push.py:WebPushService` (Spec 17)
+- Endpoint `GET /notifications/web-push/vapid-public-key/` retorna a
+  pública para o frontend fazer subscribe
 
 ---
 

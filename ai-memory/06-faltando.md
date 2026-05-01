@@ -55,22 +55,25 @@ Lista crua. Use como checklist de PR.
 ## Mobile
 
 ### Telas faltando
-- [ ] Login
-- [ ] Cadastro (registrar tutor)
-- [ ] Form criar pet
-- [ ] Detalhe / edição de pet
-- [ ] Form adicionar registro manual (NOTE/VACCINE/etc)
-- [ ] Tela de gravar áudio (Speech-to-Text)
-- [ ] Tela de PINs ativos (revogar)
-- [ ] Tela de configurações (idioma, logout)
+- [x] Login ✅
+- [x] Cadastro (registrar tutor) ✅ _(sessão 5)_
+- [x] Form criar pet ✅ _(sessão 5)_
+- [ ] Edição de pet (criar pronto; editar pendente)
+- [x] Form adicionar registro manual (NOTE/VACCINE/etc) ✅ _(sessão 5)_
+- [ ] Tela de gravar áudio (Speech-to-Text) — depende Spec 04
+- [x] Tela de vets ativos com revogar ✅ _(sessão 5)_
+- [x] Tela de configurações (idioma, logout) ✅ AccountSettings
+- [x] Tela de familiares (membros) ✅ _(sessão 5)_
+- [x] Esqueci minha senha ✅ _(sessão 5)_
 
 ### Integrações
-- [ ] Trocar `MOCK_PETS` por `GET /pets/`
-- [ ] Trocar `MOCK_TIMELINE` por `GET /pets/<id>/health-records/`
-- [ ] Trocar PIN fake por `POST /access/generate-pin/`
-- [ ] Corrigir endpoints em `handleDocumentCapture`
-- [ ] Tratar erros de rede (toast/banner)
-- [ ] Loading states nas listas
+- [x] Trocar `MOCK_PETS` por `GET /pets/` ✅
+- [x] Trocar `MOCK_TIMELINE` por `GET /pets/<id>/health-records/` ✅
+- [x] Trocar PIN fake por `POST /access/generate-pin/` ✅
+- [x] Upload de anexos via câmera/galeria/documento ✅ _(sessão 5)_
+- [ ] Corrigir endpoints em `handleDocumentCapture` (legado, pendente)
+- [x] Tratar erros de rede (toast/banner) ✅
+- [x] Loading states nas listas ✅
 
 ### DX
 - [ ] ESLint config (script existe, falta `.eslintrc`)

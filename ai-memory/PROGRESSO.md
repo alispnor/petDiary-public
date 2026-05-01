@@ -1,7 +1,7 @@
 # 📊 PROGRESSO — petDiary
 
 > **Arquivo vivo.** Atualize a cada sessão de trabalho.
-> Última atualização: **2026-05-01 (sessão 4 — Fases A-G concluídas: SaaS infra, mock-first, mobile completo, recuperação de senha, Celery+Redis, healthcheck/rate limit/pre-commit)**
+> Última atualização: **2026-05-01 (sessão 5 — paridade mobile↔web entregue: cadastro/forgot/idiomas/registros/anexos/membros/vets no mobile + matriz de paridade)**
 
 ---
 
@@ -567,6 +567,62 @@ Total commits nesta hora: ~6 commits separados, todos com push.
 - Fases A, B, C foram em commits anteriores da mesma data
 
 🎯 **Marco da sessão 4:** stack agora é SaaS-grade (assinaturas + admin + IA gated + async + healthcheck + rate limit). Mock-first deixa tudo testável sem credenciais externas — flips de env quando vier o real.
+
+### 2026-05-01 — Sessão 5 (paridade mobile ↔ web)
+> Ali pediu paridade total entre mobile e web. Entregue tudo que o web
+> oferecia e o mobile não tinha + corrigiu bugs do app mobile.
+
+**Bugs corrigidos:**
+- `petDiary-frontend-mobile/.env` esquecido com IP velho
+  (192.168.10.203 sem `/api/v1`) sobrescrevia env do docker-compose.
+  Apagado — Expo agora usa env correto via env_file. Bug do "ana não
+  conseguia logar".
+- LanguageSwitcher Login mobile estava atrás do notch — ajustado para
+  usar `useSafeAreaInsets()`.
+- AppNavigator não esperava hidratação do AsyncStorage → causava
+  "esquecer sessão" ao reabrir app. Agora aguarda
+  `useAppStore.persist.hasHydrated()`.
+- Fallback do `api.ts` mobile estava com IP estático (192.168.10.203) —
+  agora `localhost:8000/api/v1`.
+
+**Mobile — paridade entregue:**
+- Tela Register (TUTOR) com login automático
+- Tela ForgotPassword (POST /auth/forgot-password/)
+- LanguageSwitcher (sheet modal nativo) — Login/Register/Forgot/Conta
+- Logotipo nas telas de Login/Register/Forgot
+- PetFormModal — criar pet (espécie/nome/raça/peso)
+- RecordFormModal — criar HealthRecord
+- AttachmentsList — lista anexos por record + upload via câmera/galeria
+  /documento (expo-image-picker + expo-document-picker)
+- VetAccessModal — vets com acesso ativo + revogar (filtra por petId
+  via /access/active/)
+- MembersModal — listar PetMember + convidar caretaker (cria User+Member
+  atomicamente) + remover + modal de credenciais
+
+**Web — seletor de idioma nas telas autenticadas:**
+- Adicionado em TutorDashboard, VetEntry, ClinicalView e AdminLayout
+  (já existia em Login/Register/Forgot/Reset/Conta)
+
+**Documentação criada:**
+- `ai-memory/PARIDADE-MOBILE-WEB.md` — matriz autoritativa do que tem
+  em cada plataforma. Atualizar sempre que entregar paridade.
+- `ai-memory/specs/17-notificacoes-mobile-push-preferencias.md` — spec
+  detalhada do sistema de notificações (mobile + web + backend).
+
+**Memory salva (decisão durável):**
+- "Paridade mobile ↔ web" — toda funcionalidade tem que existir nos dois
+  clientes (regra do Ali, 2026-05-01)
+
+**Commits desta sessão (em ordem):**
+1. `438e0c5` feat(mobile): cadastro, esqueci senha, idioma, fix persist
+2. `20b75fc` feat(ui): seletor idioma nas telas autenticadas + logo login
+3. `a477bb1` fix(mobile): seletor idioma respeita safe area
+4. `410273e` feat(mobile): adicionar registro clínico e anexar mídia
+5. `b20ff6a` feat(mobile): criar pet, vets com acesso e familiares
+
+🎯 **Marco da sessão 5:** mobile agora tem paridade essencial com o web.
+Pendências restantes catalogadas em PARIDADE-MOBILE-WEB.md +
+Spec 17 (notificações).
 
 ### Próxima sessão — TODO
 **Roadmap principal + Fases A-G → 100% completo!** ✨
