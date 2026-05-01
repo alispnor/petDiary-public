@@ -1,7 +1,7 @@
 # 📊 PROGRESSO — petDiary
 
 > **Arquivo vivo.** Atualize a cada sessão de trabalho.
-> Última atualização: **2026-05-01 (sessão 3 — Fase 5 backend completo: convidar/remover familiar)**
+> Última atualização: **2026-05-01 (sessão 3 — Fase 5.5 web /change-password com auto-redirect)**
 
 ---
 
@@ -352,6 +352,18 @@ Decisões do Ali registradas em memory: email+phone obrigatórios, CPF opcional,
   - Migration 0002 (estrutural) + 0003 (data: cada Pet existente vira PetMember OWNER com user=tutor)
   - Admin: PetMemberInline em Pet + PetMemberAdmin standalone
   - Verificado: 4 Pets → 4 PetMembers role=OWNER criados pra tutores corretos
+- ✅ **Fase 5.5** — Web: tela `/change-password` com auto-redirect:
+  - `pages/ChangePassword.tsx` (novo): form com `current_password` (oculto se forced) + `new_password` + `confirm_password` (validação que bate)
+  - Detecta `user.must_change_password` para alterar copy ("Defina sua senha" vs "Trocar senha")
+  - Após sucesso: aguarda 1.5s mostrando confirmação verde → logout local + `navigate("/login", state: { notice })`
+  - Mostra erros do backend campo a campo
+- ✅ **Fase 5.5 — guards e redirecionamento**:
+  - `App.tsx`: `RequireAuth` agora bloqueia acesso a qualquer rota (exceto `/change-password`) se `user.must_change_password=true` — força troca antes de qualquer outra coisa
+  - `HomeRedirect` também redireciona para `/change-password` se flag for true
+  - `Login.tsx`: após login bem-sucedido, se `must_change_password=true` → vai direto pra `/change-password`
+  - `Login.tsx`: exibe `notice` flash (verde) se vier de `/change-password` ("Senha alterada com sucesso. Faça login novamente.")
+- ✅ **`AuthUser`** estendido: `clinic_name?` e `must_change_password?` opcionais
+
 - ✅ **Fase 5.4** — Backend: endpoints `/members/` + restrições OWNER:
   - `pets/serializers.py`: `_MemberUserSummary`, `PetMemberSerializer`, `InviteMemberSerializer` (cadastra User novo + cria PetMember(CARETAKER) atomicamente, gera senha temporária + must_change_password=True)
   - `pets/member_views.py` (novo):

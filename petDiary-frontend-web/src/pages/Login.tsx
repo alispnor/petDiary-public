@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import axios from "axios";
 import api from "../services/api";
 import { useAuthStore, type AuthUser } from "../store/authStore";
@@ -7,6 +7,7 @@ import PasswordInput from "../components/PasswordInput";
 
 export default function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
   const setAuth = useAuthStore((s) => s.setAuth);
   const setKeepLogged = useAuthStore((s) => s.setKeepLogged);
   const initialKeepLogged = useAuthStore.getState().keepLogged;
@@ -15,6 +16,9 @@ export default function Login() {
   const [keepLogged, setKeepLoggedLocal] = useState(initialKeepLogged);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // Mensagem flash do redirecionamento (ex: vinda de /change-password)
+  const notice = (location.state as { notice?: string } | null)?.notice;
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -38,6 +42,12 @@ export default function Login() {
 
       setAuth(tokens.access, tokens.refresh, user);
 
+      // Caretaker recém-convidado → força tela de troca antes de qualquer coisa
+      if (user.must_change_password) {
+        navigate("/change-password", { replace: true });
+        return;
+      }
+
       navigate(user.role === "TUTOR" ? "/tutor" : "/vet", { replace: true });
     } catch (err) {
       if (axios.isAxiosError(err) && err.response?.status === 401) {
@@ -60,6 +70,12 @@ export default function Login() {
             Acesse sua conta de tutor ou veterinário
           </p>
         </div>
+
+        {notice && (
+          <p className="mb-4 rounded-md bg-green-50 px-4 py-2 text-sm text-green-700">
+            ✓ {notice}
+          </p>
+        )}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <input

@@ -18,6 +18,8 @@ export interface AuthUser {
   full_name: string;
   role: UserRole;
   crmv?: string;
+  clinic_name?: string;
+  must_change_password?: boolean;
 }
 
 interface AuthState {
