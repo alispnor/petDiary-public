@@ -12,6 +12,7 @@ Pasta com **specs/prompts versionadas** para módulos grandes que serão impleme
 | 04 | [Integrações OpenAI + AWS S3](./04-integracoes-openai-aws-s3.md) | Backend + Mobile + Web | Fase 7 (uploads) implementada |
 | 05 | [Captura de mídia (drag-drop, webcam, câmera, áudio, vídeo)](./05-captura-midia-web-mobile.md) | Web + Mobile | Fase 7 (infra de upload) — pode rodar junto |
 | 06 | [Fila de jobs assíncronos (Celery + Redis ou BullMQ)](./06-fila-jobs-bullmq-celery.md) | Backend + Infra | Pré-requisito para Specs 01 (webhook) e 04 (IA) em produção |
+| 07 | [WebSocket realtime (atualizações ao vivo)](./07-websocket-realtime.md) | Backend + Web + Mobile | Pode rodar junto com Spec 06 (compartilha Redis) |
 
 ## Ordem de execução recomendada
 

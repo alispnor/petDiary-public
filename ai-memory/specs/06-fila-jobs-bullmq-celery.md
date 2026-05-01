@@ -122,3 +122,156 @@ REDIS_PORT=6379
 - **Necessário** para rodar a Spec 01 (webhook de pagamento) e a Spec 04 (IA assíncrona) em produção
 - Não bloqueia desenvolvimento das outras specs (pode usar tasks síncronas em dev)
 - **Sugestão:** implementar logo antes da Spec 01 (Backend monetização) — Fase 7.5 do roadmap
+
+---
+
+## 📚 Referência REAL: como BullMQ está organizado no `guep-portaria-backend`
+
+> Adicionado em 2026-05-01 após Ali pedir pra capturar o padrão dele.
+
+O projeto Node `guep-portaria-backend` usa BullMQ com uma arquitetura limpa que vale **copiar diretamente** se decidirmos pelo Cenário B (Node). Localização original:
+
+```
+api/app/src/
+├── config/queue.ts             # connection Redis centralizada
+├── queues/
+│   ├── index.ts                # autoloader dinâmico (vê arquivos *Queue.ts)
+│   ├── ConvidadoQueue.ts       # 1 arquivo por domínio
+│   ├── EasyControlQueue.ts
+│   ├── SmsQueue.ts
+│   └── WhatsappQueue.ts
+└── workers/
+    ├── index.ts                # autoloader dinâmico (vê arquivos *Worker.ts)
+    ├── ConvidadoWorker.ts
+    ├── EasyControlWorker.ts
+    ├── SmsWorker.ts
+    └── WhatsappWorker.ts
+```
+
+### 1. Conexão Redis (config/queue.ts)
+```ts
+import { ConnectionOptions } from 'bullmq';
+import { environments } from './environments';
+
+export const connection: ConnectionOptions = {
+    host: environments.redis_host,
+    port: environments.redis_port,
+    password: environments.redis_password,
+};
+```
+
+### 2. Padrão de Queue (queues/ConvidadoQueue.ts)
+```ts
+import { Queue } from 'bullmq';
+import { connection } from '../config/queue';
+import { environments } from "../config/environments";
+
+export const convidadoQueue = new Queue('ConvidadoQueue', { connection });
+
+export const addConvidadoJob = async (
+  name: 'liberarConvidado' | 'removerConvidado',  // jobs tipados!
+  data: any
+) => {
+    await convidadoQueue.add(name, data, {
+        attempts: environments.convidado_queue_attempts,         // tentar N vezes
+        backoff: {
+            type: environments.convidado_queue_backoff_type,     // 'exponential'
+            delay: environments.convidado_queue_backoff_delay,   // delay base entre tentativas
+        }
+    });
+};
+```
+
+### 3. Padrão de Worker (workers/ConvidadoWorker.ts)
+```ts
+import { Worker, Job } from 'bullmq';
+import { connection } from '../config/queue';
+import { environments } from '../config/environments';
+import ConvidadoService from '../services/ConvidadoService';
+
+const convidadoService = new ConvidadoService();
+
+const worker = new Worker(
+    'ConvidadoQueue',  // mesmo nome da Queue
+    async (job: Job) => {
+        switch (job.name) {
+            case 'liberarConvidado':
+                const result = await convidadoService.liberarConvidado(...);
+                await job.log(JSON.stringify(result));   // log estruturado por job
+                break;
+            // ... outros casos
+            default:
+                throw new Error(`Job desconhecido: ${job.name}`);  // falha alta visibilidade
+        }
+    },
+    {
+        connection,
+        limiter: {
+            max: environments.convidado_worker_limiter_max,
+            duration: environments.convidado_worker_limiter_duration,
+        },
+        concurrency: environments.convidado_worker_concurrency,
+    }
+);
+
+worker.on('completed', (job) => console.log(`Job ${job.id} completo!`));
+worker.on('failed',    (job, err) => console.log(`Job ${job?.id} falhou: ${err.message}`));
+```
+
+### 4. Autoloader (queues/index.ts e workers/index.ts)
+
+Padrão genial — basta criar `<Nome>Queue.ts` e `<Nome>Worker.ts` e o autoloader importa dinamicamente. Não precisa registrar em lugar nenhum:
+
+```ts
+// queues/index.ts (resumo)
+const files = fs.readdirSync(__dirname);
+files.forEach((file) => {
+    if (file.endsWith('Queue.ts') || file.endsWith('Queue.js')) {
+        const module = require(path.join(__dirname, file));
+        Object.keys(module).forEach((exportName) => {
+            if (exportName.endsWith('Queue')) {
+                bullMqQueues.push(new BullMQAdapter(module[exportName]));  // pra Bull Board UI
+                queues[exportName] = module[exportName];
+            }
+        });
+    }
+});
+export { bullMqQueues };
+```
+
+### 5. Bull Board (UI de monitoramento)
+- Cada Queue automaticamente registrada no `bullMqQueues` via adapter
+- UI em rota tipo `/admin/queues` mostra jobs ativos, completados, falhados, com retry manual
+
+---
+
+## Como aplicar no petDiary
+
+### Se manter Django (Cenário A — Celery)
+- Replicar a **estrutura modular** do guep-portaria, mas em Python:
+  - `petdiary/celery.py` (config principal — equivalente ao `config/queue.ts`)
+  - `<app>/tasks.py` em cada Django app (equivalente aos arquivos `*Queue.ts`/`*Worker.ts` fundidos)
+  - Decorators tipados: `@shared_task(bind=True, max_retries=3, default_retry_delay=60)`
+  - Flower como UI (equivalente ao Bull Board)
+
+### Se migrar pra Node (Cenário B — BullMQ)
+- **Copiar literalmente** os 3 arquivos abaixo do guep-portaria como base:
+  - `config/queue.ts` (10 linhas, zero mudanças)
+  - `queues/index.ts` (autoloader, copy-paste)
+  - `workers/index.ts` (autoloader, copy-paste)
+- Padronizar nomes: `<Nome>Queue.ts` e `<Nome>Worker.ts`
+- Variáveis de ambiente seguindo o padrão dele:
+  ```
+  REDIS_HOST, REDIS_PORT, REDIS_PASSWORD
+  <NOME>_QUEUE_ATTEMPTS, <NOME>_QUEUE_BACKOFF_TYPE, <NOME>_QUEUE_BACKOFF_DELAY
+  <NOME>_WORKER_CONCURRENCY, <NOME>_WORKER_LIMITER_MAX, <NOME>_WORKER_LIMITER_DURATION
+  ```
+
+### Filas iniciais sugeridas para o petDiary
+| Fila | Jobs | Trigger |
+|---|---|---|
+| `WebhookQueue` | `processPaymentEvent`, `processSubscriptionEvent` | POST /webhooks/gateway/ enfileira |
+| `MediaQueue` | `extractTextFromImage`, `transcribeAudio`, `summarizeRecord` | Após upload pra S3 |
+| `EmailQueue` | `sendWelcome`, `sendPasswordReset`, `sendTicketConfirmation` | Sinais Django/Express |
+| `NotificationQueue` | `sendVaccineReminder`, `sendPinExpiringSoon` | Beat scheduler diário |
+| `CleanupQueue` | `purgeExpiredPins`, `anonymizeDeletedUsers` | Beat scheduler diário/horário |
