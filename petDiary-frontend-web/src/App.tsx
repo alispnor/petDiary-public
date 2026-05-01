@@ -6,6 +6,7 @@ import ChangePassword from "./pages/ChangePassword";
 import TutorDashboard from "./pages/TutorDashboard";
 import VetEntry from "./pages/VetEntry";
 import ClinicalView from "./pages/ClinicalView";
+import AccountSettings from "./pages/AccountSettings";
 
 function RequireAuth({
   children,
@@ -78,6 +79,15 @@ export default function App() {
           element={
             <RequireAuth>
               <ClinicalView />
+            </RequireAuth>
+          }
+        />
+
+        <Route
+          path="/conta"
+          element={
+            <RequireAuth>
+              <AccountSettings />
             </RequireAuth>
           }
         />

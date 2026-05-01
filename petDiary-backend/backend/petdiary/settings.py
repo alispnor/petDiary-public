@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     "health",
     "access",
     "audit",
+    "billing",
 ]
 
 MIDDLEWARE = [

@@ -18,11 +18,103 @@ class UserCreateView(generics.CreateAPIView):
     permission_classes = [permissions.AllowAny]
 
 
-class UserMeView(generics.RetrieveUpdateAPIView):
+class UserMeView(generics.RetrieveUpdateDestroyAPIView):
+    """GET / PUT / DELETE do próprio usuário.
+
+    DELETE aplica soft-delete LGPD-compliant: anonimiza dados pessoais,
+    promove caretaker mais antigo a OWNER nos pets afetados, cancela
+    Subscription PRO, blacklista refresh tokens, audita.
+    """
     serializer_class = UserSerializer
 
     def get_object(self):
         return self.request.user
+
+    def delete(self, request, *args, **kwargs):
+        from django.db import transaction
+        from rest_framework_simplejwt.token_blacklist.models import (
+            BlacklistedToken, OutstandingToken,
+        )
+        from pets.models import PetMember
+        from billing.models import Subscription
+        from audit.helpers import log_action
+        import uuid as uuid_mod
+
+        user = request.user
+
+        # Confirmação obrigatória via header (dupla confirmação no front)
+        confirm = request.headers.get("X-Confirm-Delete", "").lower()
+        if confirm not in ("yes", "true", "excluir"):
+            return Response(
+                {"detail": "Header X-Confirm-Delete obrigatório (digite 'EXCLUIR' no front)."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        with transaction.atomic():
+            # 1. Promover CARETAKERs em pets que user é OWNER
+            owned_memberships = PetMember.objects.filter(
+                user=user, role=PetMember.Role.OWNER,
+            ).select_related("pet")
+            for owner_m in owned_memberships:
+                next_owner = (
+                    PetMember.objects
+                    .filter(pet=owner_m.pet, role=PetMember.Role.CARETAKER)
+                    .order_by("added_at")
+                    .first()
+                )
+                if next_owner:
+                    next_owner.role = PetMember.Role.OWNER
+                    next_owner.save(update_fields=["role"])
+                    log_action(
+                        actor=user, action="UPDATE",
+                        entity=next_owner, pet=next_owner.pet,
+                        description=f"Promoveu {next_owner.user.full_name} para OWNER (saída do tutor)",
+                    )
+
+            # 2. Cancelar Subscription PRO ativa
+            sub = getattr(user, "subscription", None)
+            if sub and sub.plan_type == Subscription.Plan.PRO:
+                sub.cancel_at_period_end = True
+                sub.status = Subscription.Status.CANCELED
+                sub.save(update_fields=["cancel_at_period_end", "status", "updated_at"])
+
+            # 3. Blacklist todos os refresh tokens
+            for tok in OutstandingToken.objects.filter(user=user):
+                BlacklistedToken.objects.get_or_create(token=tok)
+
+            # 4. Auditoria ANTES de anonimizar (preserva nome real)
+            log_action(
+                actor=user, action="DELETE",
+                entity_type="User", entity_id=user.id,
+                description=f"Usuário {user.full_name} solicitou exclusão da conta (LGPD)",
+                request=request,
+            )
+
+            # 5. Anonimização LGPD
+            anon_suffix = uuid_mod.uuid4().hex[:8]
+            user.username = f"deleted_{anon_suffix}"
+            user.email = ""
+            user.full_name = "Usuário excluído"
+            user.phone = ""
+            user.whatsapp = False
+            user.document = ""
+            user.crmv = ""
+            user.clinic_name = ""
+            user.address_zip = ""
+            user.address_street = ""
+            user.address_number = ""
+            user.address_complement = ""
+            user.address_district = ""
+            user.address_city = ""
+            user.address_state = ""
+            user.is_active = False
+            user.set_unusable_password()
+            user.save()
+
+        return Response(
+            {"detail": "Sua conta foi excluída. Seus dados pessoais foram anonimizados conforme a LGPD."},
+            status=status.HTTP_200_OK,
+        )
 
 
 class ChangePasswordView(APIView):
