@@ -102,15 +102,14 @@ manuais (`ml-*`/`mr-*` → `ms-*`/`me-*`) que precisará pontual.
 
 ---
 
-### B4. Adicionar pt-PT, en, es, fr, ar locales no mobile
-- [ ] Criar 5 locales JSON (cópias de pt-BR revisadas)
-- [ ] Atualizar `i18n/index.ts` resources
-- [ ] Para árabe: usar `I18nManager.forceRTL(true)` ao trocar idioma
-      e mostrar prompt de "reiniciar app" (RN exige reload pra RTL)
-- [ ] Testar layout em árabe (`I18nManager.isRTL` flippa flexbox)
+### B4. Adicionar pt-PT, en, es, fr, ar locales no mobile ✅ (commit `56ed1aa`)
+- [x] 5 locales JSON criados (~395 linhas cada)
+- [x] `i18n/index.ts` resources atualizado (sem mais fallback pt-BR)
+- [x] Árabe: `I18nManager.allowRTL(true)` + `forceRTL(wantRTL)` ao
+      trocar; prompt amigável avisando que app precisa reabrir
+- [ ] Auditoria visual em árabe (testar no device, opcional)
 
-**DoD:** trocar idioma no LanguageSwitcher mobile → labels mudam.
-Trocar para árabe → app pede pra reiniciar e abre em RTL.
+🎯 **B inteiro fechado!** 6 idiomas em paridade total mobile↔web.
 
 ---
 

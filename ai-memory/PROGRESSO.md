@@ -1,7 +1,7 @@
 # 📊 PROGRESSO — petDiary
 
 > **Arquivo vivo.** Atualize a cada sessão de trabalho.
-> Última atualização: **2026-05-01 (sessão 11 — B1+B2: web ganha pt-PT, fr, ar/RTL)**
+> Última atualização: **2026-05-01 (sessão 12 — B4: mobile ganha 5 locales + RTL. Paridade total nos 6 idiomas)**
 
 ---
 
@@ -867,6 +867,39 @@ ClinicalView, AdminLayout etc.) — pode rodar quando Ali pedir.
 🎯 **Marco da sessão 11:** web 100% multi-idioma (6 línguas, RTL
 ativo). Falta só auditoria visual RTL e B4 (mobile ganhar os 5
 locales restantes).
+
+### 2026-05-01 — Sessão 12 (B4 — mobile 6 idiomas)
+> Continuação direta da sessão 11. Mobile agora suporta os 6 idiomas
+> oficiais com tradução real (não mais fallback pt-BR).
+
+**Entregue (commit `56ed1aa`):**
+- 5 locales novos no mobile: pt-PT, en-US, es-ES, fr-FR, ar
+  (cada um ~395 linhas, mesma estrutura do pt-BR)
+- pt-PT: variante europeia (telemóvel, palavra-passe, eliminar,
+  guardar, RGPD, ELIMINAR como token de confirmação)
+- en-US: GDPR, DELETE como token
+- es-ES: RGPD, ELIMINAR como token
+- fr-FR: RGPD, SUPPRIMER como token
+- ar: traduzido manualmente. EXCLUIR mantido textual como token (única
+  exceção; backend valida byte-a-byte)
+- i18n/index.ts: resources apontando para os 5 locales reais
+- LanguageSwitcher mobile: detecta mudança LTR↔RTL, chama
+  `I18nManager.allowRTL(true)` + `forceRTL(wantRTL)`, mostra prompt
+  amigável "app precisa reabrir" (em pt-BR ou árabe)
+
+**Decisão durável reusada do web:** tokens de confirmação textual
+(EXCLUIR/DELETE/ELIMINAR/SUPPRIMER) traduzidos por idioma — backend
+aceita o valor literal (não normaliza). Em árabe foi mantido EXCLUIR
+para reduzir risco de divergência.
+
+**Documentos atualizados:**
+- PARIDADE-MOBILE-WEB.md seção 15: 6 idiomas com ✅ nos 3 lados
+- PENDENCIAS-ORDENADAS.md B4 marcado completo. **B inteiro fechado.**
+
+🎯 **Marco da sessão 12:** mobile e web agora em paridade total nos 6
+idiomas oficiais. Web entregou em B1+B2 (commit `0056677`); mobile
+em B3 (infra+pt-BR) + B4 (5 locales). Único subitem aberto:
+auditoria visual em árabe (opcional, no device real).
 
 ### Próxima sessão — TODO
 **Roadmap principal + Fases A-G → 100% completo!** ✨

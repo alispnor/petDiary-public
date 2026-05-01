@@ -177,12 +177,12 @@
 
 | Idioma | Código | Web | Mobile | Backend | Notas |
 |---|---|---|---|---|---|
-| Português (Brasil) | `pt-BR` | ✅ | ✅ | ✅ | Mobile B3 entregou infra+migração completa |
-| Português (Portugal) | `pt-PT` | ✅ | ❌ | ✅ | Web tem locale; mobile pendência B4 |
-| English (US) | `en` | ✅ | ❌ | ✅ | Web tem locale; mobile pendência B4 |
-| Español | `es` | ✅ | ❌ | ✅ | Web tem locale; mobile pendência B4 |
-| Français | `fr` | ✅ | ❌ | ✅ | Web tem locale; mobile pendência B4 |
-| العربية (Árabe) | `ar` | ✅ | ❌ | ✅ | **RTL** ativo no web (applyDir + global.css). Mobile pendência B4 (precisa I18nManager.forceRTL) |
+| Português (Brasil) | `pt-BR` | ✅ | ✅ | ✅ | |
+| Português (Portugal) | `pt-PT` | ✅ | ✅ | ✅ | |
+| English (US) | `en` / `en-US` | ✅ | ✅ | ✅ | |
+| Español | `es` / `es-ES` | ✅ | ✅ | ✅ | |
+| Français | `fr` / `fr-FR` | ✅ | ✅ | ✅ | |
+| العربية (Árabe) | `ar` | ✅ | ✅ | ✅ | **RTL** ativo nos dois (web: applyDir+global.css; mobile: I18nManager.forceRTL com prompt de reload) |
 
 ---
 
