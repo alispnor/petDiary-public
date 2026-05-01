@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import api from "../services/api";
 import { useAuthStore } from "../store/authStore";
 import type { Attachment } from "../types";
+import WebcamCapture from "./WebcamCapture";
 
 interface Props {
   petId: string;
@@ -36,6 +37,8 @@ export default function AttachmentsList({ petId, recordId }: Props) {
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
+  const [dragOver, setDragOver] = useState(false);
+  const [showWebcam, setShowWebcam] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const load = async () => {
@@ -57,10 +60,7 @@ export default function AttachmentsList({ petId, recordId }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [petId, recordId]);
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
+  const uploadFile = async (file: File) => {
     setUploading(true);
     setError("");
     try {
@@ -79,6 +79,25 @@ export default function AttachmentsList({ petId, recordId }: Props) {
       setUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
     }
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    await uploadFile(file);
+  };
+
+  const handleDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOver(false);
+    const file = e.dataTransfer.files?.[0];
+    if (!file) return;
+    await uploadFile(file);
+  };
+
+  const handleWebcamCapture = async (file: File) => {
+    setShowWebcam(false);
+    await uploadFile(file);
   };
 
   /** Resolve URL autenticada → blob → window.open (view, download, print). */
@@ -128,25 +147,57 @@ export default function AttachmentsList({ petId, recordId }: Props) {
   };
 
   return (
-    <div className="mt-3 border-t border-gray-100 pt-2">
-      <div className="flex items-center justify-between mb-2">
+    <div
+      className={`mt-3 border-t border-gray-100 pt-2 transition-all ${
+        dragOver ? "bg-brand-teal/5 ring-2 ring-brand-teal rounded-lg" : ""
+      }`}
+      onDragOver={(e) => {
+        e.preventDefault();
+        setDragOver(true);
+      }}
+      onDragLeave={() => setDragOver(false)}
+      onDrop={handleDrop}
+    >
+      <div className="flex items-center justify-between mb-2 flex-wrap gap-1">
         <span className="text-xs text-gray-500">
           📎 {items.length} anexo{items.length !== 1 ? "s" : ""}
         </span>
-        <label className="cursor-pointer text-xs font-semibold text-brand-teal hover:underline">
-          + Anexar arquivo
-          <input
-            ref={fileInputRef}
-            type="file"
-            className="hidden"
-            onChange={handleFileChange}
+        <div className="flex items-center gap-2">
+          <label className="cursor-pointer text-xs font-semibold text-brand-teal hover:underline">
+            + Anexar
+            <input
+              ref={fileInputRef}
+              type="file"
+              className="hidden"
+              onChange={handleFileChange}
+              disabled={uploading}
+            />
+          </label>
+          <button
+            type="button"
+            onClick={() => setShowWebcam(true)}
             disabled={uploading}
-          />
-        </label>
+            className="text-xs font-semibold text-brand-teal hover:underline"
+          >
+            📷 Webcam
+          </button>
+        </div>
       </div>
 
+      {dragOver && (
+        <p className="text-xs text-brand-teal text-center py-2">
+          Solte o arquivo aqui para enviar
+        </p>
+      )}
       {uploading && <p className="text-xs text-gray-400">Enviando…</p>}
       {error && <p className="text-xs text-red-600">{error}</p>}
+
+      {showWebcam && (
+        <WebcamCapture
+          onCapture={handleWebcamCapture}
+          onClose={() => setShowWebcam(false)}
+        />
+      )}
 
       {loading ? null : (
         <ul className="flex flex-col gap-1">
