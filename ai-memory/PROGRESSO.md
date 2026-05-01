@@ -1,7 +1,7 @@
 # 📊 PROGRESSO — petDiary
 
 > **Arquivo vivo.** Atualize a cada sessão de trabalho.
-> Última atualização: **2026-05-01 (sessão 3 — Fases 1-7 todas completas, hora autônoma do Ali)**
+> Última atualização: **2026-05-01 (sessão 3 — Fases 1-7 + Specs 05/08/09/10/11 + mobile real)**
 
 ---
 
@@ -445,6 +445,55 @@ Decisões do Ali registradas em memory: email+phone obrigatórios, CPF opcional,
     - T7: luiza com current_password errada → 400 "Senha atual incorreta"
     - T8: luiza com current_password correta → 200
     - T9: senha revertida para não quebrar testes futuros
+
+### 2026-05-01 — Sessão "finalizar tarefas" (autônoma)
+> Ali pediu pra "finalizar as tarefas". Implementei tudo que dá pra fazer
+> sem credenciais externas (Asaas/Apple/Google).
+
+Sequência (6 commits):
+1. **Spec 11 — Logs técnicos**:
+   - Backend: `structlog` instalado, `logging_config.py` com console
+     (DEV) / JSON (PROD), `StructlogContextMiddleware` que adiciona
+     `request_id` + `user_id` + `role` automaticamente; integra com
+     `audit.signals.set_current_user`
+   - Web: `services/logger.ts` com debug/info/warn/error estruturado;
+     interceptor de api.ts loga `http_error` em qualquer falha HTTP
+2. **Spec 08 — `INSTALACAO-MACBOOK.md`** na raiz: pré-requisitos
+   (Homebrew, Docker, Node, Python, Expo Go), troubleshooting macOS
+   específico (Apple Silicon, porta 5432, lentidão VirtioFS, Expo
+   Wi-Fi), comandos cotidianos
+3. **Spec 09 — `PUBLICACAO-APPS.md`** na raiz: custos resumidos
+   (~R$1.500-3.000 ano 1), pré-requisitos LGPD/Apple/Google, app.json
+   com permissões iOS/Android, eas.json com profiles, TestFlight +
+   Internal Testing, submissão final, rejeições comuns Apple, ASO,
+   checklist final
+4. **Mobile real**:
+   - Tipos alinhados com backend (UPPERCASE Species/RecordType, etc)
+   - `useAppStore` com persist AsyncStorage (token+refreshToken+user)
+   - `services/api.ts` com base URL /api/v1 + interceptors
+   - `screens/Login.tsx` (NOVO) com toggle 👁/🙈 + KeyboardAvoidingView
+   - `screens/HomeTutor.tsx` reescrito: GET /pets/, RefreshControl,
+     empty/error/loading states, header com saudação + Sair
+   - `screens/PetDashboard.tsx` reescrito: GET /health-records/, PIN
+     real via POST /access/generate-pin/, Modal nativo com Clipboard
+   - `AppNavigator.tsx`: roteamento condicional por isAuthenticated
+   - **Bugs fechados**: #3 (mobile chamava endpoints inexistentes),
+     #4 (Math.random()), #10 (URL sem /api/v1)
+5. **Spec 10 — i18n web (parcial: pt-BR + es + en)**:
+   - `react-i18next` + `i18next` + `i18next-browser-languagedetector`
+   - `src/i18n/index.ts` com applyDir (preparado para árabe RTL)
+   - 3 locales JSON com 14 categorias de chaves (pluralização +
+     interpolação)
+   - `<LanguageSwitcher>` no canto da tela `/login`
+   - `Login.tsx` totalmente traduzido como referência; outras telas
+     são incrementais
+6. **Spec 05 — Captura mídia web (drag-drop + webcam)**:
+   - `<WebcamCapture>`: getUserMedia com facingMode environment,
+     canvas snapshot, JPEG 85%, cleanup obrigatório de tracks
+   - `<AttachmentsList>` ganhou drag-drop com ring visual + botão
+     "📷 Webcam" abrindo o modal
+   - Pendente da Spec 05 (mobile camera/áudio/vídeo) virá com Specs
+     mobile (expo-image-picker / expo-camera / expo-av)
 
 ### 2026-05-01 — Hora autônoma do Ali (almoço)
 > Ali deu autorização explícita pra trabalhar autônomo por 1h sem confirmação a cada fase.
