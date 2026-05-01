@@ -176,6 +176,20 @@ REST_FRAMEWORK = {
         "rest_framework.permissions.IsAuthenticated",
     ],
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    # Throttling — protege endpoints sensíveis de brute-force / abuso
+    "DEFAULT_THROTTLE_CLASSES": [
+        "rest_framework.throttling.ScopedRateThrottle",
+    ],
+    "DEFAULT_THROTTLE_RATES": {
+        # Auth — anônimos
+        "login": "10/min",                 # /auth/token/
+        "register": "5/min",               # /auth/register/
+        "forgot_password": "5/hour",       # /auth/forgot-password/ (anti-enumeração + flood)
+        "reset_password": "10/hour",       # /auth/reset-password/
+        "check_username": "30/min",        # /auth/check-username/ (autocomplete)
+        # Billing — autenticados
+        "apply_coupon": "20/hour",         # /billing/apply-coupon/
+    },
 }
 
 # SimpleJWT

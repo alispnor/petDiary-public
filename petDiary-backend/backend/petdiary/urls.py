@@ -9,7 +9,12 @@ from rest_framework_simplejwt.views import TokenRefreshView
 
 from accounts.views import PetDiaryTokenObtainPairView
 
+from .healthcheck import healthz, livez
+
 urlpatterns = [
+    # Saúde — sem versionamento, sem auth (uso por orquestrador)
+    path("livez/", livez, name="livez"),
+    path("healthz/", healthz, name="healthz"),
     path("admin/", admin.site.urls),
     # Auth (JWT) — custom view aplica login único para VET
     path("api/v1/auth/token/", PetDiaryTokenObtainPairView.as_view(), name="token_obtain_pair"),

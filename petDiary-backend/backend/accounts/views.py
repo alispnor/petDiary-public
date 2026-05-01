@@ -18,6 +18,7 @@ class UserCreateView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserCreateSerializer
     permission_classes = [permissions.AllowAny]
+    throttle_scope = "register"
 
 
 class UserMeView(generics.RetrieveUpdateDestroyAPIView):
@@ -177,6 +178,7 @@ class CheckUsernameView(APIView):
     """Endpoint público para verificar disponibilidade de username em tempo real."""
 
     permission_classes = [permissions.AllowAny]
+    throttle_scope = "check_username"
 
     def get(self, request):
         username = (request.query_params.get("username") or "").strip().lower()
@@ -200,6 +202,7 @@ class ForgotPasswordView(APIView):
     """
 
     permission_classes = [permissions.AllowAny]
+    throttle_scope = "forgot_password"
 
     def post(self, request):
         serializer = ForgotPasswordSerializer(data=request.data)
@@ -242,6 +245,7 @@ class ResetPasswordView(APIView):
     """
 
     permission_classes = [permissions.AllowAny]
+    throttle_scope = "reset_password"
 
     def post(self, request):
         serializer = ResetPasswordSerializer(data=request.data)
@@ -300,6 +304,8 @@ class PetDiaryTokenObtainPairView(TokenObtainPairView):
     A regra protege dados clínicos: em uma clínica com vários computadores,
     se alguém esquece a sessão aberta, o próximo login automaticamente derruba.
     """
+
+    throttle_scope = "login"
 
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)

@@ -5,7 +5,6 @@ from django.db import transaction
 from django.utils.translation import gettext_lazy as _
 from rest_framework import permissions, status
 from rest_framework.response import Response
-from rest_framework.throttling import UserRateThrottle
 from rest_framework.views import APIView
 
 from audit.helpers import log_action
@@ -138,7 +137,7 @@ class ApplyCouponView(APIView):
     Checa também se o user atual ainda pode usar (max_per_user).
     """
     permission_classes = [permissions.IsAuthenticated]
-    throttle_classes = [UserRateThrottle]
+    throttle_scope = "apply_coupon"
 
     def post(self, request):
         ser = ApplyCouponSerializer(data=request.data)

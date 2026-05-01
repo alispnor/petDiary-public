@@ -1,0 +1,72 @@
+# Pre-commit hooks do petDiary.
+#
+# Instalar uma vez:
+#   pip install pre-commit
+#   pre-commit install
+#
+# Rodar manualmente em todo o repo:
+#   pre-commit run --all-files
+#
+# Os hooks rodam em arquivos staged antes de cada `git commit`. Se algum
+# falhar (ex.: ruff reformatou), o commit é abortado — você revê, restage
+# e commita novamente.
+repos:
+  # ── Sanidade básica de arquivo (rápido, vale para tudo) ──────────────
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: \.svg$
+      - id: end-of-file-fixer
+        exclude: \.svg$
+      - id: check-yaml
+        args: [--allow-multiple-documents]
+      - id: check-toml
+      - id: check-json
+        # Os locales têm comentários ("// …"); deixar para o JSON-with-comments
+        # do react-i18next. Lint manual via prettier.
+        exclude: petDiary-frontend-(web|mobile)/src/i18n/locales/.*\.json$
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: [--maxkb=2000]
+      - id: detect-private-key
+      - id: mixed-line-ending
+        args: [--fix=lf]
+
+  # ── Python (backend) ─────────────────────────────────────────────────
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.8.6
+    hooks:
+      - id: ruff
+        name: ruff (lint)
+        args: [--fix]
+        files: ^petDiary-backend/.*\.py$
+      - id: ruff-format
+        name: ruff (format)
+        files: ^petDiary-backend/.*\.py$
+
+  # ── Frontend (web + mobile) ──────────────────────────────────────────
+  # Prettier roda só nos arquivos versionados que cobrimos com config.
+  # Deixar via `mirrors-prettier` evita instalar Node localmente para o hook.
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v4.0.0-alpha.8
+    hooks:
+      - id: prettier
+        files: ^petDiary-frontend-(web|mobile)/.*\.(ts|tsx|jsx|js|css|md)$
+        # prettier ainda não tem formatter consolidado para .json em react-i18next
+        # com comentários — manter padrão upstream do projeto
+
+  # ── Segredos vazados ─────────────────────────────────────────────────
+  # Roda rápido; bloqueia AWS keys, JWT, tokens GitHub, etc.
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.5.0
+    hooks:
+      - id: detect-secrets
+        args: ["--baseline", ".secrets.baseline"]
+        exclude: |
+          (?x)^(
+              .*\.lock$|
+              .*package-lock\.json$|
+              .*node_modules/.*|
+              \.secrets\.baseline$
+          )$

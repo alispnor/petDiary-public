@@ -1,0 +1,26 @@
+# Configuração compartilhada de ferramentas Python (ruff).
+# Não criamos um pacote Python aqui — só centralizamos lint/format.
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+extend-exclude = [
+    "**/migrations/**",
+    "**/node_modules/**",
+    ".venv",
+    "build",
+    "dist",
+]
+
+[tool.ruff.lint]
+# Conjunto pragmático: pyflakes (E/F), pycodestyle (W), import sort (I),
+# bugbear (B), comprehensions (C4), flake8-pie (PIE).
+select = ["E", "F", "W", "I", "B", "C4", "PIE", "UP"]
+ignore = [
+    "E501",   # line too long — ruff-format trata
+    "B008",   # function call default arg — DRF e Django usam intensivamente
+]
+
+[tool.ruff.lint.per-file-ignores]
+"**/settings.py" = ["E402"]      # imports após bootstrap structlog
+"**/__init__.py" = ["F401"]       # re-exports legítimos
