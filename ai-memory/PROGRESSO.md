@@ -1,7 +1,7 @@
 # 📊 PROGRESSO — petDiary
 
 > **Arquivo vivo.** Atualize a cada sessão de trabalho.
-> Última atualização: **2026-05-01 (sessão 1.3 — push de 9 commits para origin/master)**
+> Última atualização: **2026-05-01 (sessão 2 — Fase 1 cadastro completo concluída)**
 
 ---
 
@@ -265,12 +265,26 @@ Nasce como **Prontuário Médico Inteligente** (Fase 1) e evolui para **Rede Soc
   9. `chore(mobile): regerar splash com bg da paleta oficial`
 - ❌ **Não commitados** (ficaram untracked): `CLAUDE.md` e `frontend-guidelines.md` — são templates do projeto Guep CRM que o Ali deixou como referência, não fazem parte do petDiary
 
+### 2026-05-01 — Sessão 2 (Fase 1: cadastro completo)
+Plano consolidado de melhorias dividido em 6 fases (PROGRESSO atualizado).
+Decisões do Ali registradas em memory: email+phone obrigatórios, CPF opcional, endereço estruturado (CEP+rua+nº+complemento+bairro+cidade+UF), ViaCEP permitido, revogação remove vet da lista mas preserva HealthRecords, auditoria só de mutações, caretakers não geram PIN.
+
+- ✅ **Fase 1.1** — User model estendido (phone, whatsapp, document, clinic_name + 7 campos de endereço); admin com fieldsets; migration 0002 aplicada
+- ✅ **Fase 1.2** — UserSerializer/UserCreateSerializer atualizados; email+phone required; validação por role (VET exige crmv + clinic_name); 5 testes E2E via curl OK
+- ✅ **Fase 1.3** — Web: PasswordInput (toggle 👁), masks.ts (CPF/phone/CEP), viaCep.ts (auto-completa endereço), usernameCheck.ts (debounced), Register reescrito 2 colunas, Login com PasswordInput, Nunito via <link> (warning de @import resolvido)
+- ✅ **Fase 1.4** — Validação E2E completa via curl (T1-T7 todos OK); 2 commits separados (backend / frontend) e push para origin/master
+
+🎯 **Marco da Fase 1:** cadastro real funciona ponta-a-ponta com validação ao vivo, máscaras BR, integração ViaCEP, toggle de senha, endereço estruturado.
+
 ### Próxima sessão — TODO
-- Testar manualmente no browser (criar conta, fluxo completo) e ajustar UX se algo travar
-- Migrar mobile para o novo padrão (Login → API real → MOCK_PETS substituído)
-- Padronizar `EXPO_PUBLIC_API_URL` (bug #10)
-- Endpoint `POST /access/<id>/revoke/` (tutor revoga PIN)
-- Decidir se `CLAUDE.md` e `frontend-guidelines.md` devem ser removidos da raiz ou movidos para `ai-memory/refs/`
+**Continuar plano consolidado:**
+- Fase 2: Login UX — checkbox "manter conectado" (mostrar senha já feito na 1.3)
+- Fase 3: Acessos bidirecionais vet ↔ pet (claimed_at, endpoints revoke/active/history, sidebar de pets visitados pro vet, lista de vets pro tutor com botão revogar)
+- Fase 4: Login único do veterinário (token blacklist)
+- Fase 5: Co-tutores / família (PetMember CARETAKER, sem permissão de gerar PIN)
+- Fase 6: Auditoria (AuditLog, só mutações)
+- Fase 7: Uploads/download/print (adiada)
+- **Etapa final** (após Fase 6): preparação para produção — domínio, hospedagem em nuvem, PRODUCAO.md com requisitos para iOS/Android e LGPD
 
 ---
 
