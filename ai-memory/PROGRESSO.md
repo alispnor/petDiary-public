@@ -1,7 +1,7 @@
 # 📊 PROGRESSO — petDiary
 
 > **Arquivo vivo.** Atualize a cada sessão de trabalho.
-> Última atualização: **2026-05-01 (sessão 10 — B3 inteiro fechado: mobile 100% i18n-ready em pt-BR)**
+> Última atualização: **2026-05-01 (sessão 11 — B1+B2: web ganha pt-PT, fr, ar/RTL)**
 
 ---
 
@@ -838,6 +838,35 @@ zero.
 🎯 **Marco da sessão 10:** mobile completamente i18n-ready em pt-BR.
 Próximo lógico é B4 (criar pt-PT, en-US, es-ES, fr-FR, ar com RTL)
 ou B1+B2 (web — pt-PT, fr, ar/RTL). Ali decide.
+
+### 2026-05-01 — Sessão 11 (B1+B2 — web 6 idiomas)
+> Continuação direta da sessão 10. Web agora suporta os 6 idiomas
+> oficiais do projeto.
+
+**Entregue (commit `0056677`):**
+- 3 locales novos no web: pt-PT, fr, ar (cada um ~395 linhas, mesma
+  estrutura de namespaces do pt-BR)
+- pt-PT: variante europeia (telemóvel, palavra-passe, eliminar, RGPD,
+  NIF, freguesia, distrito, ELIMINAR como token de confirmação)
+- fr: tradução francesa padrão, SUPPRIMER como token
+- ar: tradução manual dos 14 namespaces, com EXCLUIR mantido textual
+  (vinculado ao backend e UX do delete LGPD)
+- i18n/index.ts: resources + supportedLngs + LANGUAGES dropdown com
+  6 entradas
+- styles/global.css: bloco RTL pontual (text-align right + .rtl-flip)
+- Tailwind 4 já trata text-left/right como logical → flip automático
+
+**Pendência aberta:** auditoria visual em RTL (Login, TutorDashboard,
+ClinicalView, AdminLayout etc.) — pode rodar quando Ali pedir.
+
+**Documentos atualizados:**
+- PARIDADE-MOBILE-WEB.md seção 15: web ✅ nos 6 idiomas; mobile só
+  pt-BR (resto na pendência B4)
+- PENDENCIAS-ORDENADAS.md B1+B2 marcados completos
+
+🎯 **Marco da sessão 11:** web 100% multi-idioma (6 línguas, RTL
+ativo). Falta só auditoria visual RTL e B4 (mobile ganhar os 5
+locales restantes).
 
 ### Próxima sessão — TODO
 **Roadmap principal + Fases A-G → 100% completo!** ✨

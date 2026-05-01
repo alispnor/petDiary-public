@@ -177,12 +177,12 @@
 
 | Idioma | Código | Web | Mobile | Backend | Notas |
 |---|---|---|---|---|---|
-| Português (Brasil) | `pt-BR` | ✅ | 🟡 | ✅ | Mobile UI hardcoded; só Accept-Language muda |
-| Português (Portugal) | `pt-PT` | ❌ | ❌ | ✅ | Pendência B1 |
-| English (US) | `en` | ✅ | ❌ | ✅ | Web pronto; mobile pendência B3+B4 |
-| Español | `es` | ✅ | ❌ | ✅ | Web pronto; mobile pendência B3+B4 |
-| Français | `fr` | ❌ | ❌ | ✅ | Pendência B1 |
-| العربية (Árabe) | `ar` | ❌ | ❌ | ✅ | **RTL** — pendência B2 (web) + B4 (mobile). Exige inverter layout |
+| Português (Brasil) | `pt-BR` | ✅ | ✅ | ✅ | Mobile B3 entregou infra+migração completa |
+| Português (Portugal) | `pt-PT` | ✅ | ❌ | ✅ | Web tem locale; mobile pendência B4 |
+| English (US) | `en` | ✅ | ❌ | ✅ | Web tem locale; mobile pendência B4 |
+| Español | `es` | ✅ | ❌ | ✅ | Web tem locale; mobile pendência B4 |
+| Français | `fr` | ✅ | ❌ | ✅ | Web tem locale; mobile pendência B4 |
+| العربية (Árabe) | `ar` | ✅ | ❌ | ✅ | **RTL** ativo no web (applyDir + global.css). Mobile pendência B4 (precisa I18nManager.forceRTL) |
 
 ---
 

@@ -43,40 +43,33 @@
 
 ## 🟢 PRIORIDADE B — Internacionalização (i18n)
 
-### B1. Adicionar pt-PT e fr ao web (locale JSON novos)
-- [ ] `frontend-web/src/i18n/locales/pt-PT.json` (cópia de pt-BR
-      revisada com particularidades de Portugal: "telemóvel" vs
-      "celular", "ecrã" vs "tela", "registar" vs "registrar")
-- [ ] `frontend-web/src/i18n/locales/fr.json`
-- [ ] Atualizar `i18n/index.ts` resources + supportedLngs + LANGUAGES
-- [ ] Adicionar dropdown options no LanguageSwitcher
+### B1. Adicionar pt-PT e fr ao web ✅ (commit `0056677`)
+- [x] `frontend-web/src/i18n/locales/pt-PT.json` (variante europeia
+      completa: telemóvel, palavra-passe, eliminar, RGPD, NIF,
+      freguesia, ELIMINAR como token de confirmação)
+- [x] `frontend-web/src/i18n/locales/fr.json` (SUPPRIMER como token,
+      RGPD)
+- [x] `i18n/index.ts` atualizado: resources + supportedLngs + LANGUAGES
+- [x] LanguageSwitcher mostra os 6 idiomas
 
-**DoD:** trocar idioma → telas Login/Register/TutorDashboard mostram
-strings traduzidas. Testar via curl na backend (Accept-Language) e
-visualmente no browser.
-
----
-
-### B2. Adicionar ar (árabe + RTL) ao web
-- [ ] `frontend-web/src/i18n/locales/ar.json`
-- [ ] Atualizar `i18n/index.ts` (`applyDir()` já tem suporte RTL)
-- [ ] **Auditoria visual em RTL:**
+### B2. Adicionar ar (árabe + RTL) ao web ✅ (commit `0056677`)
+- [x] `frontend-web/src/i18n/locales/ar.json` (tradução manual dos 14
+      namespaces; EXCLUIR mantido como token textual)
+- [x] `i18n/index.ts` registra ar; `applyDir()` flippa via attribute
+- [x] `global.css` adiciona regras RTL pontuais (`html[dir="rtl"] body
+      text-align right` + util `.rtl-flip`)
+- [ ] **Auditoria visual em RTL** (próxima sessão se Ali pedir):
   - [ ] Login, Register, ForgotPassword, ResetPassword,
         ChangePassword
-  - [ ] TutorDashboard (header invertido, cards de pets, modais)
-  - [ ] VetEntry + AccessHistorySidebar (sidebar deve ficar à
-        direita)
+  - [ ] TutorDashboard (header invertido, cards, modais)
+  - [ ] VetEntry + AccessHistorySidebar (sidebar invertida)
   - [ ] ClinicalView (timeline + aside)
-  - [ ] AdminLayout (sidebar deve ficar à direita)
-  - [ ] AccountSettings
-  - [ ] Notifications (Fase 5d)
-- [ ] Setas de "voltar" → invertem para "avançar visualmente" (não
-      é necessário — manter ←)
-- [ ] Testar paddings/margens com classes Tailwind logical
-      properties (ms-/me- em vez de ml-/mr-)
+  - [ ] AdminLayout (sidebar invertida)
+  - [ ] AccountSettings, Notifications
 
-**DoD:** trocar idioma para árabe → todo layout flippa. Sem
-sobreposições nem cortes.
+**Tailwind 4** já trata `text-left/right` como logical em modo RTL,
+então a maior parte do trabalho é automática. Só auditoria de margens
+manuais (`ml-*`/`mr-*` → `ms-*`/`me-*`) que precisará pontual.
 
 ---
 
