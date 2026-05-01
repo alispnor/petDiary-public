@@ -10,6 +10,8 @@ Pasta com **specs/prompts versionadas** para módulos grandes que serão impleme
 | 02 | [Mobile — Cobrança + Gestão de Conta](./02-mobile-cobranca-conta.md) | Expo / RN | Spec 01 implementada |
 | 03 | [Mobile — Central de Ajuda](./03-mobile-central-ajuda.md) | Expo / RN | Endpoint `/support/tickets/` da Spec 01 |
 | 04 | [Integrações OpenAI + AWS S3](./04-integracoes-openai-aws-s3.md) | Backend + Mobile + Web | Fase 7 (uploads) implementada |
+| 05 | [Captura de mídia (drag-drop, webcam, câmera, áudio, vídeo)](./05-captura-midia-web-mobile.md) | Web + Mobile | Fase 7 (infra de upload) — pode rodar junto |
+| 06 | [Fila de jobs assíncronos (Celery + Redis ou BullMQ)](./06-fila-jobs-bullmq-celery.md) | Backend + Infra | Pré-requisito para Specs 01 (webhook) e 04 (IA) em produção |
 
 ## Ordem de execução recomendada
 

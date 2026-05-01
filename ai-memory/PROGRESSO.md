@@ -1,7 +1,7 @@
 # 📊 PROGRESSO — petDiary
 
 > **Arquivo vivo.** Atualize a cada sessão de trabalho.
-> Última atualização: **2026-05-01 (sessão 3 — Fases 2 completa + 3.1 backend de acessos)**
+> Última atualização: **2026-05-01 (sessão 3 — Fases 2 + 3.1 + 3.2 + specs 05/06)**
 
 ---
 
@@ -315,6 +315,14 @@ Decisões do Ali registradas em memory: email+phone obrigatórios, CPF opcional,
   - `last_visit` = MAX(health_records.created_at WHERE author=vet AND pet=this) com fallback `claimed_at`
   - Validado E2E (12 testes via curl):
     1. ✅ pet criado · 2. ✅ PIN gerado · 3. ✅ claim seta claimed_at · 4. ✅ tutor vê vet ativo · 5. ✅ nota criada · 6. ✅ vet vê status ACTIVE · 7. ✅ tutor revoga · 8. ✅ active fica vazio · 9. ✅ history mostra REVOKED · 10. ✅ vet 404 no pet revogado · 11. ✅ nota do vet preservada (auditoria) · 12. ✅ vet não pode revogar (403)
+- ✅ **Fase 3.2** — Web Tutor: vets com acesso + botão revogar:
+  - Tipos novos em `types.ts`: `PetSummary`, `VetSummary`, `TutorSummary`, `AccessStatus`, `ActiveAccess`, `AccessHistory`
+  - Componente `<VetAccessSection>` reutilizável: collapse com lista de vets ativos por pet, modal de confirmação de revogação com cores vermelhas, mensagem clara "registros já adicionados continuam no histórico"
+  - `TutorDashboard` busca `/access/active/` em paralelo aos pets (Promise.all em `loadAll()`); filtra por petId no card; refetch após revogar
+  - HMR sem erros, /tutor HTTP 200
+- ✅ **Specs 05 e 06** salvas em `ai-memory/specs/`:
+  - 05: Captura de mídia (drag-drop + webcam web; câmera/galeria/áudio/vídeo/doc mobile) — pedido do Ali no detalhamento da Fase 7
+  - 06: Fila de jobs (Celery+Redis recomendado, BullMQ alternativa) — pré-requisito para Specs 01 (webhook) e 04 (IA assíncrona)
 
 ### Próxima sessão — TODO
 - Fase 3.2: Web Tutor — seção "Vets com acesso" no card de pet + modal de revogação

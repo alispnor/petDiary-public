@@ -2,7 +2,8 @@ import { useEffect, useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../services/api";
 import { useAuthStore } from "../store/authStore";
-import type { Pet, Species, VetAccessToken } from "../types";
+import type { ActiveAccess, Pet, Species, VetAccessToken } from "../types";
+import VetAccessSection from "../components/VetAccessSection";
 
 const SPECIES_OPTIONS: { value: Species; label: string; emoji: string }[] = [
   { value: "DOG", label: "Cachorro", emoji: "🐕" },
@@ -24,6 +25,7 @@ export default function TutorDashboard() {
   const logout = useAuthStore((s) => s.logout);
 
   const [pets, setPets] = useState<Pet[]>([]);
+  const [accesses, setAccesses] = useState<ActiveAccess[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -37,21 +39,34 @@ export default function TutorDashboard() {
   const [pinResult, setPinResult] = useState<VetAccessToken | null>(null);
   const [generatingPin, setGeneratingPin] = useState<string | null>(null);
 
-  const loadPets = async () => {
+  const loadAll = async () => {
     setLoading(true);
     setError("");
     try {
-      const { data } = await api.get<Pet[]>("/pets/");
-      setPets(data);
+      const [petsRes, accRes] = await Promise.all([
+        api.get<Pet[]>("/pets/"),
+        api.get<ActiveAccess[]>("/access/active/"),
+      ]);
+      setPets(petsRes.data);
+      setAccesses(accRes.data);
     } catch {
-      setError("Não foi possível carregar seus pets.");
+      setError("Não foi possível carregar seus dados.");
     } finally {
       setLoading(false);
     }
   };
 
+  const refetchAccesses = async () => {
+    try {
+      const { data } = await api.get<ActiveAccess[]>("/access/active/");
+      setAccesses(data);
+    } catch {
+      // silencia — não bloqueia a tela
+    }
+  };
+
   useEffect(() => {
-    loadPets();
+    loadAll();
   }, []);
 
   const handleCreatePet = async (e: FormEvent) => {
@@ -69,7 +84,7 @@ export default function TutorDashboard() {
       setBreed("");
       setWeight("");
       setShowCreate(false);
-      await loadPets();
+      await loadAll();
     } catch {
       setError("Erro ao criar pet.");
     } finally {
@@ -217,6 +232,12 @@ export default function TutorDashboard() {
                     {generatingPin === pet.id ? "Gerando…" : "🔑 Gerar PIN para vet"}
                   </button>
                 </div>
+
+                <VetAccessSection
+                  petId={pet.id}
+                  accesses={accesses}
+                  onRevoked={refetchAccesses}
+                />
               </div>
             ))}
           </div>
