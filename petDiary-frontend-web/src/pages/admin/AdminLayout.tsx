@@ -1,7 +1,9 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuthStore } from "../../store/authStore";
 
 export default function AdminLayout() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
   const logout = useAuthStore((s) => s.logout);
@@ -12,10 +14,10 @@ export default function AdminLayout() {
   };
 
   const items = [
-    { to: "/admin", label: "📊 Resumo", end: true },
-    { to: "/admin/users", label: "👥 Usuários" },
-    { to: "/admin/coupons", label: "💰 Cupons" },
-    { to: "/admin/tickets", label: "💬 Suporte" },
+    { to: "/admin", label: t("admin.menu.dashboard"), end: true },
+    { to: "/admin/users", label: t("admin.menu.users") },
+    { to: "/admin/coupons", label: t("admin.menu.coupons") },
+    { to: "/admin/tickets", label: t("admin.menu.tickets") },
   ];
 
   return (
@@ -24,7 +26,7 @@ export default function AdminLayout() {
         <div className="mb-6">
           <div className="text-lg font-extrabold text-gradient">PetDiary</div>
           <div className="text-xs text-gray-400 uppercase tracking-wider">
-            Admin
+            {t("admin.sidebar_label")}
           </div>
         </div>
 

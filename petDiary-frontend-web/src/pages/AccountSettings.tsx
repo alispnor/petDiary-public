@@ -1,4 +1,5 @@
 import { useEffect, useState, type FormEvent } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import api from "../services/api";
@@ -54,6 +55,7 @@ function loadFromUser(u: AuthUser | null): ProfileForm {
 }
 
 export default function AccountSettings() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
   const setUser = useAuthStore((s) => s.setUser);
@@ -69,9 +71,9 @@ export default function AccountSettings() {
             onClick={() => navigate(-1)}
             className="rounded-md bg-gray-100 px-3 py-1 text-sm hover:bg-gray-200"
           >
-            ← Voltar
+            {t("clinical_extra.back")}
           </button>
-          <h1 className="text-lg font-bold text-gradient">⚙️ Minha Conta</h1>
+          <h1 className="text-lg font-bold text-gradient">⚙️ {t("account.title")}</h1>
         </div>
         <LanguageSwitcher />
       </header>
@@ -79,18 +81,18 @@ export default function AccountSettings() {
       <div className="mx-auto max-w-4xl p-6">
         <div className="mb-6 flex gap-1 border-b border-gray-200 flex-wrap">
           <TabBtn active={tab === "profile"} onClick={() => setTab("profile")}>
-            👤 Perfil
+            {t("account.tabs.profile")}
           </TabBtn>
           {user?.role === "TUTOR" && (
             <TabBtn active={tab === "family"} onClick={() => setTab("family")}>
-              👨‍👩‍👧 Familiares
+              {t("account.tabs.family")}
             </TabBtn>
           )}
           <TabBtn active={tab === "subscription"} onClick={() => setTab("subscription")}>
-            💳 Assinatura
+            {t("account.tabs.subscription")}
           </TabBtn>
           <TabBtn active={tab === "security"} onClick={() => setTab("security")}>
-            🔐 Segurança
+            {t("account.tabs.security")}
           </TabBtn>
         </div>
 
@@ -128,6 +130,7 @@ function TabBtn({ active, onClick, children }: any) {
 // =================================================
 
 function ProfileTab({ user, setUser }: { user: AuthUser; setUser: (u: AuthUser) => void }) {
+  const { t } = useTranslation();
   const [form, setForm] = useState<ProfileForm>(loadFromUser(user));
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -174,7 +177,7 @@ function ProfileTab({ user, setUser }: { user: AuthUser; setUser: (u: AuthUser) 
           setError(String(d));
         }
       } else {
-        setError("Erro ao salvar.");
+        setError(t("account.profile.error"));
       }
     } finally {
       setSaving(false);
@@ -183,7 +186,7 @@ function ProfileTab({ user, setUser }: { user: AuthUser; setUser: (u: AuthUser) 
 
   return (
     <form onSubmit={handleSubmit} className="card flex flex-col gap-4">
-      <h2 className="text-lg font-bold text-gray-800">Dados pessoais</h2>
+      <h2 className="text-lg font-bold text-gray-800">{t("account.profile.title")}</h2>
 
       <div className="grid gap-3 md:grid-cols-2">
         <input type="text" placeholder="Nome completo *" value={form.full_name}
@@ -223,7 +226,7 @@ function ProfileTab({ user, setUser }: { user: AuthUser; setUser: (u: AuthUser) 
         </label>
       </div>
 
-      <h2 className="mt-2 text-lg font-bold text-gray-800">Endereço</h2>
+      <h2 className="mt-2 text-lg font-bold text-gray-800">{t("account.profile.address_title")}</h2>
 
       <div className="flex gap-2">
         <input type="text" placeholder="CEP" value={form.address_zip}
@@ -263,10 +266,10 @@ function ProfileTab({ user, setUser }: { user: AuthUser; setUser: (u: AuthUser) 
       </div>
 
       {error && <p className="whitespace-pre-line rounded-md bg-red-50 px-4 py-2 text-xs text-red-600">{error}</p>}
-      {success && <p className="rounded-md bg-green-50 px-4 py-2 text-sm text-green-700">✓ Dados atualizados com sucesso</p>}
+      {success && <p className="rounded-md bg-green-50 px-4 py-2 text-sm text-green-700">{t("account.profile.success")}</p>}
 
       <button type="submit" disabled={saving} className="btn-primary mt-2 self-start px-8">
-        {saving ? "Salvando…" : "Salvar alterações"}
+        {saving ? t("account.profile.saving") : "{t("account.profile.save")}"}
       </button>
     </form>
   );
@@ -277,6 +280,7 @@ function ProfileTab({ user, setUser }: { user: AuthUser; setUser: (u: AuthUser) 
 // =================================================
 
 function FamilyTab({ currentUserId }: { currentUserId: string }) {
+  const { t } = useTranslation();
   const [pets, setPets] = useState<Pet[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -291,7 +295,7 @@ function FamilyTab({ currentUserId }: { currentUserId: string }) {
   if (pets.length === 0) {
     return (
       <div className="card text-center text-gray-500">
-        Você não tem pets cadastrados ainda. Cadastre um pet para poder convidar familiares.
+        {t("account.family.no_pets")}
       </div>
     );
   }
@@ -299,9 +303,9 @@ function FamilyTab({ currentUserId }: { currentUserId: string }) {
   return (
     <div className="flex flex-col gap-4">
       <div className="card bg-brand-teal/5 border-l-4 border-brand-teal">
-        <h2 className="font-bold text-gray-800">👨‍👩‍👧 Familiares com acesso aos seus pets</h2>
+        <h2 className="font-bold text-gray-800">{t("account.tabs.family")} com acesso aos seus pets</h2>
         <p className="mt-2 text-sm text-gray-600">
-          Adicione membros da família para que possam ver e adicionar registros aos prontuários.
+          {t("account.family.subtitle")}
         </p>
         <p className="mt-2 text-xs text-brand-teal font-medium">
           ✨ Familiares convidados <b>compartilham sua assinatura PRO</b> sem pagar separado.
@@ -333,6 +337,7 @@ function FamilyTab({ currentUserId }: { currentUserId: string }) {
 // =================================================
 
 function SubscriptionTab() {
+  const { t } = useTranslation();
   const [sub, setSub] = useState<Subscription | null>(null);
   const [loading, setLoading] = useState(true);
   const [confirmCancel, setConfirmCancel] = useState(false);
@@ -376,7 +381,7 @@ function SubscriptionTab() {
   };
 
   if (loading) return <p className="text-center text-gray-400">Carregando…</p>;
-  if (!sub) return <p className="text-center text-gray-400">Assinatura não encontrada.</p>;
+  if (!sub) return <p className="text-center text-gray-400">{t("account.subscription.not_found")}</p>;
 
   const isPro = sub.is_pro_active;
 
@@ -384,7 +389,7 @@ function SubscriptionTab() {
     <div className="card">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-bold text-gray-800">Plano atual</h2>
+          <h2 className="text-lg font-bold text-gray-800">{t("account.subscription.title")}</h2>
           <p className="mt-2 text-3xl font-extrabold text-gradient">
             {sub.plan_type === "PRO" ? "PRO 🎉" : "FREE"}
           </p>
@@ -415,14 +420,14 @@ function SubscriptionTab() {
             onClick={handleSubscribe}
             className="mt-4 w-full rounded-pill bg-brand-orange py-3 text-sm font-bold text-white hover:opacity-90"
           >
-            🚀 Assinar PRO
+            🚀 {t("account.subscription.subscribe")}
           </button>
         </div>
       ) : (
         <div className="mt-6">
           {sub.current_period_end && (
             <p className="mb-4 text-sm text-gray-600">
-              Próxima cobrança: <b>{new Date(sub.current_period_end).toLocaleDateString("pt-BR")}</b>
+              {t("account.subscription.next_billing")}: <b>{new Date(sub.current_period_end).toLocaleDateString("pt-BR")}</b>
             </p>
           )}
           {!sub.cancel_at_period_end && (
@@ -431,7 +436,7 @@ function SubscriptionTab() {
               onClick={() => setConfirmCancel(true)}
               className="rounded-pill border border-red-300 px-6 py-2 text-sm font-medium text-red-600 hover:bg-red-50"
             >
-              Cancelar assinatura
+              {t("account.subscription.cancel")}
             </button>
           )}
         </div>
@@ -444,22 +449,22 @@ function SubscriptionTab() {
           <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-xl"
                onClick={(e) => e.stopPropagation()}>
             <h2 className="mb-2 text-center text-xl font-bold text-gray-800">
-              Cancelar assinatura?
+              {t("account.subscription.cancel")}?
             </h2>
             <p className="mb-2 text-center text-sm text-gray-600">
-              Você continuará com acesso PRO até o final do período já pago.
+              {t("account.subscription.confirm_cancel_text")}
             </p>
             <p className="mb-6 text-center text-xs text-gray-400">
-              ✓ Pode reativar a qualquer momento antes do vencimento.
+              {t("account.subscription.confirm_cancel_note")}
             </p>
             <div className="flex gap-3">
               <button type="button" onClick={() => setConfirmCancel(false)} disabled={canceling}
                 className="flex-1 rounded-pill border-2 border-gray-300 py-2.5 text-sm font-semibold text-gray-600 hover:bg-gray-50 disabled:opacity-50">
-                Voltar
+                {t("account.subscription.go_back")}
               </button>
               <button type="button" onClick={handleCancel} disabled={canceling}
                 className="flex-1 rounded-pill bg-red-600 py-2.5 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-50">
-                {canceling ? "Cancelando…" : "Confirmar cancelamento"}
+                {canceling ? t("account.subscription.canceling") : "{t("account.subscription.confirm_btn")}"}
               </button>
             </div>
           </div>
@@ -474,6 +479,7 @@ function SubscriptionTab() {
 // =================================================
 
 function SecurityTab({ onAfterDelete }: { onAfterDelete: () => void }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [step, setStep] = useState<0 | 1 | 2>(0);
   // Step 0 = nada · 1 = primeiro aviso · 2 = digitar EXCLUIR + senha
@@ -484,11 +490,11 @@ function SecurityTab({ onAfterDelete }: { onAfterDelete: () => void }) {
 
   const handleDelete = async () => {
     if (confirmText.trim().toUpperCase() !== "EXCLUIR") {
-      setError("Digite EXCLUIR para confirmar.");
+      setError("{t("account.security.error_type_excluir")}");
       return;
     }
     if (!password) {
-      setError("Informe sua senha.");
+      setError("{t("account.security.error_no_password")}");
       return;
     }
     setDeleting(true);
@@ -504,9 +510,9 @@ function SecurityTab({ onAfterDelete }: { onAfterDelete: () => void }) {
       onAfterDelete();
     } catch (err) {
       if (axios.isAxiosError(err) && err.response?.status === 401) {
-        setError("Senha incorreta.");
+        setError("{t("account.security.error_password")}");
       } else {
-        setError("Erro ao excluir conta.");
+        setError("{t("account.security.error_delete")}");
       }
     } finally {
       setDeleting(false);
@@ -517,24 +523,24 @@ function SecurityTab({ onAfterDelete }: { onAfterDelete: () => void }) {
     <div className="card flex flex-col gap-6">
       {/* Trocar senha */}
       <div className="border-b border-gray-100 pb-6">
-        <h2 className="text-lg font-bold text-gray-800">Alterar senha</h2>
+        <h2 className="text-lg font-bold text-gray-800">{t("account.security.change_password_title")}</h2>
         <p className="mt-1 text-sm text-gray-500">
-          Você precisará informar sua senha atual.
+          {t("account.security.change_password_text")}
         </p>
         <button
           type="button"
           onClick={() => navigate("/change-password")}
           className="mt-4 rounded-pill border-2 border-brand-teal px-6 py-2 text-sm font-semibold text-brand-teal hover:bg-brand-teal hover:text-white"
         >
-          🔑 Trocar senha
+          🔑 {t("account.security.change_password_btn")}
         </button>
       </div>
 
       {/* Excluir conta */}
       <div>
-        <h2 className="text-lg font-bold text-red-600">Excluir minha conta</h2>
+        <h2 className="text-lg font-bold text-red-600">{t("account.security.delete_title")}</h2>
         <p className="mt-1 text-sm text-gray-500">
-          Esta ação anonimiza seus dados pessoais conforme a LGPD. <b>Não pode ser desfeita.</b>
+          {t("account.security.delete_subtitle")}
         </p>
 
         {step === 0 && (
@@ -543,13 +549,13 @@ function SecurityTab({ onAfterDelete }: { onAfterDelete: () => void }) {
             onClick={() => setStep(1)}
             className="mt-4 rounded-pill border border-red-300 px-6 py-2 text-sm font-medium text-red-600 hover:bg-red-50"
           >
-            🗑 Excluir minha conta
+            🗑 {t("account.security.delete_title")}
           </button>
         )}
 
         {step === 1 && (
           <div className="mt-4 rounded-lg border border-red-200 bg-red-50 p-4">
-            <h3 className="font-bold text-red-800">⚠ Você tem certeza?</h3>
+            <h3 className="font-bold text-red-800">{t("account.security.warn_title")}</h3>
             <ul className="mt-2 space-y-1 text-sm text-gray-700">
               <li>• Seu acesso será encerrado imediatamente</li>
               <li>• Seus dados pessoais serão anonimizados (LGPD)</li>
@@ -565,7 +571,7 @@ function SecurityTab({ onAfterDelete }: { onAfterDelete: () => void }) {
               </button>
               <button type="button" onClick={() => setStep(2)}
                 className="flex-1 rounded-pill bg-red-600 py-2 text-sm font-semibold text-white hover:bg-red-700">
-                Continuar
+                {t("account.security.continue")}
               </button>
             </div>
           </div>
@@ -573,19 +579,19 @@ function SecurityTab({ onAfterDelete }: { onAfterDelete: () => void }) {
 
         {step === 2 && (
           <div className="mt-4 rounded-lg border-2 border-red-300 bg-red-50 p-4">
-            <h3 className="font-bold text-red-800">Confirmação final</h3>
+            <h3 className="font-bold text-red-800">{t("account.security.final_title")}</h3>
             <p className="mt-2 text-sm text-gray-700">
-              Para confirmar, digite <b>EXCLUIR</b> e informe sua senha atual:
+              {t("account.security.final_text")}
             </p>
             <input
               type="text"
-              placeholder="Digite EXCLUIR"
+              placeholder=t("account.security.type_excluir")
               value={confirmText}
               onChange={(e) => setConfirmText(e.target.value)}
               className="mt-3 w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm uppercase tracking-wider focus:border-red-500 focus:outline-none"
             />
             <PasswordInput
-              placeholder="Sua senha"
+              placeholder=t("account.security.your_password")
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="mt-3"
@@ -600,7 +606,7 @@ function SecurityTab({ onAfterDelete }: { onAfterDelete: () => void }) {
               <button type="button" onClick={handleDelete}
                 disabled={deleting || confirmText.trim().toUpperCase() !== "EXCLUIR" || !password}
                 className="flex-1 rounded-pill bg-red-600 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-50">
-                {deleting ? "Excluindo…" : "🗑 Excluir definitivamente"}
+                {deleting ? t("account.security.deleting") : "🗑 {t("account.security.delete_definitively")}"}
               </button>
             </div>
           </div>
