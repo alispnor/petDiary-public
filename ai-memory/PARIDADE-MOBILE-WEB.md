@@ -143,7 +143,7 @@
 | Marcar como lida | ✅ | ✅ | ✅ | |
 | Marcar todas como lidas | ✅ | ✅ | ✅ | |
 | Badge de unread no header | ✅ | ✅ | ✅ | Web: `<NotificationsBell />` em Tutor/Vet/Admin com polling 60s |
-| Lembretes (vacina/retorno) automáticos | ➖ | ➖ | ❌ | Spec 17 Fase 5b — modelo Reminder + tasks (pendência A2) |
+| Lembretes (vacina/retorno) automáticos | ✅ | ✅ | ✅ | Modelo Reminder + task Celery diária. Tipos: VACCINE/VET_RETURN/CUSTOM |
 
 ## 13. IA aplicada (Spec 04 — gated PRO)
 
@@ -164,6 +164,16 @@
 > **Decisão durável (Ali, 2026-05-01):** 6 idiomas oficiais.
 > Ver memory `project_idiomas_petdiary.md` para diretrizes.
 > Pendências detalhadas em `PENDENCIAS-ORDENADAS.md` seção B.
+>
+> **Regra durável (Ali, 2026-05-01):** todo componente novo deve usar
+> `t("chave")` desde o primeiro commit (memory `feedback_i18n_first.md`).
+>
+> **Débito técnico de i18n** — componentes entregues recentemente com
+> strings hardcoded em pt-BR (precisam migrar quando rodar B1/B3):
+> - Web: `RemindersSection`, `NotificationsTab` em AccountSettings, parte
+>   de `Notifications.tsx` (cabeçalho), `MembersSection`,
+>   `VetAccessSection`, `AttachmentsList`, `AuditTimeline`
+> - Mobile: tudo (pendência B3 — react-i18next ainda não instalado)
 
 | Idioma | Código | Web | Mobile | Backend | Notas |
 |---|---|---|---|---|---|

@@ -28,21 +28,16 @@
 
 ---
 
-### A2. Spec 17 Fase 5b — Lembretes (Reminder) automáticos
-- [ ] Modelo `Reminder` (pet, type, title, description, date_due,
-      notified_at, dismissed_at) + migrations
-- [ ] Endpoints CRUD: GET/POST `/pets/<id>/reminders/`,
-      POST `/reminders/<id>/dismiss/`, DELETE
-- [ ] Task Celery `check_reminders_task` (beat 1x/dia) que dispara
-      notify() para reminders com `date_due <= now+7 dias` e
-      `notified_at IS NULL`
-- [ ] Web: form de criar reminder em ClinicalView (campo opcional ao
-      criar HealthRecord ou seção própria)
-- [ ] Mobile: form de criar reminder em PetDashboard ou no
-      RecordFormModal (toggle "Lembrar em N dias")
+### A2. Spec 17 Fase 5b — Lembretes (Reminder) automáticos ✅ (commit `8f32860`)
+- [x] Modelo Reminder + migrations
+- [x] Endpoints CRUD + dismiss
+- [x] Task Celery `check_reminders_task` (beat 1x/dia)
+- [x] Web: `<RemindersSection />` no TutorDashboard
+- [x] Mobile: `<RemindersModal />` no PetDashboard
+- [x] Validação E2E (criar → task eager → notif gerada → dismiss →
+      task de novo não re-notifica → delete)
 
-**DoD:** criar reminder com date_due = hoje+5d, rodar task em modo
-eager → notif "VACCINE" cai no /notifications/ do tutor.
+🎯 **Spec 17 inteira fechada** (Fases 5a + 5b + 5c + 5d).
 
 ---
 

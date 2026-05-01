@@ -1,7 +1,7 @@
 # 📊 PROGRESSO — petDiary
 
 > **Arquivo vivo.** Atualize a cada sessão de trabalho.
-> Última atualização: **2026-05-01 (sessão 7 — Spec 17 Fase 5d: notificações web + paridade total mobile↔web)**
+> Última atualização: **2026-05-01 (sessão 8 — Spec 17 Fase 5b fecha a spec inteira: lembretes Reminder + nova regra durável i18n-first)**
 
 ---
 
@@ -723,6 +723,54 @@ in-app + preferências. Falta web (Fase 5d) e lembretes automáticos
 
 🎯 **Marco da sessão 7:** notificações em paridade total mobile↔web.
 Falta só lembretes automáticos (Reminder) para fechar a Spec 17 inteira.
+
+### 2026-05-01 — Sessão 8 (Spec 17 Fase 5b — Reminders fecha a spec)
+> Continuação direta da sessão 7. A2 do PENDENCIAS-ORDENADAS executada.
+
+**Backend (commit `8f32860`):**
+- App `health/`: modelo Reminder (pet, type VACCINE/VET_RETURN/CUSTOM,
+  title, description, date_due, notified_at, dismissed_at, created_by)
+  + 2 índices + migration 0003
+- ReminderSerializer (read-only em pet/notified_at/dismissed_at)
+- 3 views: ListCreate aninhada, Detail (DELETE), Dismiss (POST)
+- Permissão: membros leem; só membros criam (vet com acesso ativo
+  apenas lê)
+- tasks.check_reminders_task: beat 1x/dia, varre date_due em até 7d,
+  notifica todos OWNERs do pet, marca notified_at (idempotente)
+- Beat schedule check-reminders-daily
+
+**Web:** components/RemindersSection.tsx (collapsible no card do pet)
+plugado no TutorDashboard
+
+**Mobile:** components/RemindersModal.tsx (page-sheet) + 3º botão
+"🔔 Lembretes" no PetDashboard
+
+**Validação E2E (curl):**
+- T1 criar reminder → 201 · T2 list → 1 · T3 task eager → notified=1
+- T4 ana recebeu notif "V10 anual — em 2 dias" automaticamente
+- T5 dismiss → dismissed_at preenchido
+- T6 task de novo → notified=0 (idempotente)
+- T7 DELETE → 204
+
+**Nova regra durável** — `feedback_i18n_first.md`:
+> Ali pediu: "usao i18n no frontend que sistema multi lingua garava
+> este rega para refazer o trablho". Toda string nova precisa passar
+> por `t("chave")` desde o primeiro commit. Componentes entregues
+> recentemente com strings hardcoded estão listados em
+> PARIDADE-MOBILE-WEB.md como débito técnico para migrar quando rodar
+> B1/B3 (Spec 10 i18n).
+
+**Documentos atualizados:**
+- PARIDADE-MOBILE-WEB.md: linha "Lembretes automáticos" agora ✅ nas 3
+  camadas; nota de débito técnico i18n adicionada na seção 15
+- PENDENCIAS-ORDENADAS.md A2 marcado completo
+
+**Spec 17 — 100% concluída** (commits `926c836` 5a · `c950e9a` 5c ·
+`13bfbb9` 5d · `8f32860` 5b).
+
+🎯 **Marco da sessão 8:** sistema completo de notificações + lembretes
+(in-app + push expo + web push) em paridade total mobile↔web. Falta só
+VAPID keys (PENDENCIAS-HUMANAS item 14) para push real em produção.
 
 ### Próxima sessão — TODO
 **Roadmap principal + Fases A-G → 100% completo!** ✨
