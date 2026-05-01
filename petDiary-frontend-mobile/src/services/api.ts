@@ -27,8 +27,17 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    // Token expirado/inválido: desloga (interceptor não precisa mostrar
+    // alerta — RootStack troca pra Login automaticamente)
     if (error.response?.status === 401) {
       useAppStore.getState().logout();
+    }
+    // Network errors (timeout, sem internet, DNS): error.response é
+    // undefined. Não derruba a UI; cada caller decide se mostra Alert.
+    // Logamos para diagnóstico.
+    if (!error.response) {
+      // eslint-disable-next-line no-console
+      console.warn("[api] network error:", error.message);
     }
     return Promise.reject(error);
   }

@@ -17,6 +17,7 @@ import AdminUsers from "./pages/admin/AdminUsers";
 import AdminCoupons from "./pages/admin/AdminCoupons";
 import AdminTickets from "./pages/admin/AdminTickets";
 import Notifications from "./pages/Notifications";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 function RequireAuth({
   children,
@@ -69,7 +70,8 @@ export default function App() {
   }, [token, user]);
 
   return (
-    <BrowserRouter>
+    <ErrorBoundary>
+      <BrowserRouter>
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -148,5 +150,6 @@ export default function App() {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
+    </ErrorBoundary>
   );
 }
