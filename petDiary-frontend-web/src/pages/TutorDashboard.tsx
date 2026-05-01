@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import api from "../services/api";
 import { useAuthStore } from "../store/authStore";
 import type { Pet, Species, VetAccessToken } from "../types";
@@ -202,13 +202,21 @@ export default function TutorDashboard() {
                     </p>
                   </div>
                 </div>
-                <button
-                  onClick={() => handleGeneratePin(pet.id)}
-                  disabled={generatingPin === pet.id}
-                  className="w-full rounded-pill border-2 border-brand-orange bg-white py-2 text-sm font-semibold text-brand-orange transition hover:bg-brand-orange hover:text-white disabled:opacity-50"
-                >
-                  {generatingPin === pet.id ? "Gerando…" : "🔑 Gerar PIN para vet"}
-                </button>
+                <div className="flex flex-col gap-2">
+                  <Link
+                    to={`/clinical/${pet.id}`}
+                    className="w-full rounded-pill bg-brand-teal py-2 text-center text-sm font-semibold text-white transition hover:opacity-90"
+                  >
+                    📋 Ver prontuário
+                  </Link>
+                  <button
+                    onClick={() => handleGeneratePin(pet.id)}
+                    disabled={generatingPin === pet.id}
+                    className="w-full rounded-pill border-2 border-brand-orange bg-white py-2 text-sm font-semibold text-brand-orange transition hover:bg-brand-orange hover:text-white disabled:opacity-50"
+                  >
+                    {generatingPin === pet.id ? "Gerando…" : "🔑 Gerar PIN para vet"}
+                  </button>
+                </div>
               </div>
             ))}
           </div>
