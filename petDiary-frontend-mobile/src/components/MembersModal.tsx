@@ -13,6 +13,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
+import { useTranslation } from "react-i18next";
 import api from "../services/api";
 import type { PetMember } from "../types";
 import { colors, radii, spacing, fontSize, fontWeight } from "../theme";
@@ -39,6 +40,7 @@ type Props = {
 };
 
 export function MembersModal({ visible, petId, onClose }: Props) {
+  const { t } = useTranslation();
   const [members, setMembers] = useState<PetMember[]>([]);
   const [loading, setLoading] = useState(true);
   const [removingId, setRemovingId] = useState<string | null>(null);
@@ -89,10 +91,7 @@ export function MembersModal({ visible, petId, onClose }: Props) {
       !phone.trim() ||
       tempPwd.length < 8
     ) {
-      Alert.alert(
-        "Atenção",
-        "Preencha nome, usuário (≥3), email, telefone. Senha temporária ≥ 8."
-      );
+      Alert.alert(t("common.warning"), t("members.form_required"));
       return;
     }
     setInviting(true);
@@ -121,8 +120,8 @@ export function MembersModal({ visible, petId, onClose }: Props) {
                   `${k}: ${Array.isArray(v) ? v.join(", ") : String(v)}`
               )
               .join("\n")
-          : "Não foi possível convidar o familiar.";
-      Alert.alert("Erro", msg);
+          : t("members.invite_failed");
+      Alert.alert(t("common.error"), msg);
     } finally {
       setInviting(false);
     }
@@ -130,12 +129,12 @@ export function MembersModal({ visible, petId, onClose }: Props) {
 
   const handleRemove = (m: PetMember) => {
     Alert.alert(
-      "Remover familiar?",
-      `${m.user.full_name} perderá acesso ao prontuário deste pet.`,
+      t("members.remove_confirm_title"),
+      t("members.remove_confirm_text", { name: m.user.full_name }),
       [
-        { text: "Cancelar", style: "cancel" },
+        { text: t("common.cancel"), style: "cancel" },
         {
-          text: "Remover",
+          text: t("common.remove"),
           style: "destructive",
           onPress: async () => {
             setRemovingId(m.id);
@@ -143,7 +142,7 @@ export function MembersModal({ visible, petId, onClose }: Props) {
               await api.delete(`/pets/${petId}/members/${m.id}/`);
               await load();
             } catch {
-              Alert.alert("Erro", "Não foi possível remover.");
+              Alert.alert(t("common.error"), t("members.remove_failed"));
             } finally {
               setRemovingId(null);
             }
@@ -156,9 +155,9 @@ export function MembersModal({ visible, petId, onClose }: Props) {
   const copyCredentials = () => {
     if (!credentials) return;
     Clipboard.setString(
-      `Usuário: ${credentials.username}\nSenha: ${credentials.password}\n\nAcesse petdiary.com.br`
+      `${t("members.credentials_username")}: ${credentials.username}\n${t("members.credentials_password")}: ${credentials.password}\n\n${t("members.credentials_copy_hint")}`
     );
-    Alert.alert("Copiado!", "Credenciais copiadas.");
+    Alert.alert(t("common.copied"), t("members.credentials_copied"));
   };
 
   return (
@@ -174,12 +173,14 @@ export function MembersModal({ visible, petId, onClose }: Props) {
       >
         <View style={styles.header}>
           <TouchableOpacity onPress={onClose}>
-            <Text style={styles.cancelText}>Fechar</Text>
+            <Text style={styles.cancelText}>{t("common.close")}</Text>
           </TouchableOpacity>
-          <Text style={styles.title}>👨‍👩‍👧 Familiares</Text>
+          <Text style={styles.title}>{t("members.modal_title")}</Text>
           <TouchableOpacity onPress={() => setShowInvite((v) => !v)}>
             <Text style={styles.actionText}>
-              {showInvite ? "Cancelar" : "+ Convidar"}
+              {showInvite
+                ? t("members.invite_toggle_close")
+                : t("members.invite_toggle_open")}
             </Text>
           </TouchableOpacity>
         </View>
@@ -187,20 +188,21 @@ export function MembersModal({ visible, petId, onClose }: Props) {
         <ScrollView contentContainerStyle={styles.content}>
           {showInvite && (
             <View style={styles.formCard}>
-              <Text style={styles.formTitle}>Convidar familiar</Text>
-              <Text style={styles.formHint}>
-                Vamos criar uma conta CARETAKER para esta pessoa. Ela receberá
-                a senha abaixo e poderá trocá-la depois.
-              </Text>
+              <Text style={styles.formTitle}>{t("members.form_title")}</Text>
+              <Text style={styles.formHint}>{t("members.form_hint")}</Text>
 
-              <Text style={styles.label}>Nome completo *</Text>
+              <Text style={styles.label}>
+                {t("members.form_name")} {t("common.required")}
+              </Text>
               <TextInput
                 style={styles.input}
                 value={fullName}
                 onChangeText={setFullName}
               />
 
-              <Text style={styles.label}>Usuário *</Text>
+              <Text style={styles.label}>
+                {t("members.form_username")} {t("common.required")}
+              </Text>
               <TextInput
                 style={styles.input}
                 value={username}
@@ -210,7 +212,9 @@ export function MembersModal({ visible, petId, onClose }: Props) {
                 autoCapitalize="none"
               />
 
-              <Text style={styles.label}>Email *</Text>
+              <Text style={styles.label}>
+                {t("members.form_email")} {t("common.required")}
+              </Text>
               <TextInput
                 style={styles.input}
                 value={email}
@@ -219,7 +223,9 @@ export function MembersModal({ visible, petId, onClose }: Props) {
                 keyboardType="email-address"
               />
 
-              <Text style={styles.label}>Telefone *</Text>
+              <Text style={styles.label}>
+                {t("members.form_phone")} {t("common.required")}
+              </Text>
               <TextInput
                 style={styles.input}
                 value={phone}
@@ -227,7 +233,9 @@ export function MembersModal({ visible, petId, onClose }: Props) {
                 keyboardType="phone-pad"
               />
 
-              <Text style={styles.label}>Senha temporária *</Text>
+              <Text style={styles.label}>
+                {t("members.form_temp_password")} {t("common.required")}
+              </Text>
               <View style={styles.pwdRow}>
                 <TextInput
                   style={[styles.input, { flex: 1 }]}
@@ -249,7 +257,9 @@ export function MembersModal({ visible, petId, onClose }: Props) {
                 disabled={inviting}
               >
                 <Text style={styles.btnPrimaryText}>
-                  {inviting ? "Enviando…" : "Convidar"}
+                  {inviting
+                    ? t("members.form_submit_loading")
+                    : t("members.form_submit")}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -262,7 +272,7 @@ export function MembersModal({ visible, petId, onClose }: Props) {
               style={{ marginTop: 24 }}
             />
           ) : members.length === 0 ? (
-            <Text style={styles.empty}>Nenhum familiar cadastrado.</Text>
+            <Text style={styles.empty}>{t("members.empty")}</Text>
           ) : (
             members.map((m) => (
               <View key={m.id} style={styles.memberCard}>
@@ -274,7 +284,9 @@ export function MembersModal({ visible, petId, onClose }: Props) {
                     <Text style={styles.memberName}>{m.user.full_name}</Text>
                     <Text style={styles.memberMeta}>
                       @{m.user.username} ·{" "}
-                      {m.role === "OWNER" ? "Tutor" : "Familiar"}
+                      {m.role === "OWNER"
+                        ? t("members.owner_label")
+                        : t("members.caretaker_label")}
                     </Text>
                     <Text style={styles.memberMeta}>{m.user.email}</Text>
                   </View>
@@ -289,7 +301,9 @@ export function MembersModal({ visible, petId, onClose }: Props) {
                     disabled={removingId === m.id}
                   >
                     <Text style={styles.removeText}>
-                      {removingId === m.id ? "Removendo…" : "🗑 Remover"}
+                      {removingId === m.id
+                        ? t("members.remove_loading")
+                        : `🗑 ${t("common.remove")}`}
                     </Text>
                   </TouchableOpacity>
                 )}
@@ -307,30 +321,29 @@ export function MembersModal({ visible, petId, onClose }: Props) {
         >
           <View style={styles.overlay}>
             <View style={styles.credCard}>
-              <Text style={styles.credTitle}>✅ Familiar convidado!</Text>
+              <Text style={styles.credTitle}>{t("members.credentials_title")}</Text>
               <Text style={styles.credSubtitle}>
-                Compartilhe estas credenciais com a pessoa. Ela deverá trocar a
-                senha no primeiro login.
+                {t("members.credentials_subtitle")}
               </Text>
               <View style={styles.credBox}>
                 <Text style={styles.credLine}>
-                  Usuário:{" "}
+                  {t("members.credentials_username")}:{" "}
                   <Text style={styles.credValue}>{credentials?.username}</Text>
                 </Text>
                 <Text style={styles.credLine}>
-                  Senha:{" "}
+                  {t("members.credentials_password")}:{" "}
                   <Text style={styles.credValue}>{credentials?.password}</Text>
                 </Text>
               </View>
               <View style={styles.credActions}>
                 <TouchableOpacity style={styles.copyBtn} onPress={copyCredentials}>
-                  <Text style={styles.copyText}>Copiar</Text>
+                  <Text style={styles.copyText}>{t("common.copy")}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.closeBtn}
                   onPress={() => setCredentials(null)}
                 >
-                  <Text style={styles.closeText}>Fechar</Text>
+                  <Text style={styles.closeText}>{t("common.close")}</Text>
                 </TouchableOpacity>
               </View>
             </View>

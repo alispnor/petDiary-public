@@ -11,6 +11,7 @@ import {
   TextInput,
   Platform,
 } from "react-native";
+import { useTranslation } from "react-i18next";
 import api from "../services/api";
 import { colors, radii, spacing, fontSize, fontWeight, shadows } from "../theme";
 
@@ -39,13 +40,13 @@ interface PricingInfo {
   currency: string;
 }
 
-const PRO_BENEFITS = [
-  "Pets ilimitados",
-  "IA para extração de prescrições e exames",
-  "Transcrição de áudio (Whisper)",
-  "Acesso compartilhado com co-tutores",
-  "Histórico clínico ilimitado",
-  "Suporte prioritário",
+const PRO_BENEFIT_KEYS = [
+  "subscription.benefit_unlimited_pets",
+  "subscription.benefit_ai_extract",
+  "subscription.benefit_audio",
+  "subscription.benefit_shared",
+  "subscription.benefit_unlimited_history",
+  "subscription.benefit_priority_support",
 ];
 
 function formatBRL(value: number) {
@@ -56,6 +57,7 @@ function formatBRL(value: number) {
 }
 
 export function SubscriptionDashboard() {
+  const { t } = useTranslation();
   const [sub, setSub] = useState<Subscription | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -75,7 +77,7 @@ export function SubscriptionDashboard() {
       const { data } = await api.get<Subscription>("/billing/subscription/");
       setSub(data);
     } catch {
-      setError("Não foi possível carregar a assinatura.");
+      setError(t("subscription.load_failed"));
     } finally {
       setLoading(false);
     }
@@ -97,7 +99,10 @@ export function SubscriptionDashboard() {
       });
       setPricing(data);
     } catch {
-      Alert.alert("Cupom inválido", "Esse cupom não existe ou já foi usado por você.");
+      Alert.alert(
+        t("subscription.coupon_invalid_title"),
+        t("subscription.coupon_invalid_text")
+      );
       setCoupon("");
       setPricing(null);
     } finally {
@@ -120,7 +125,7 @@ export function SubscriptionDashboard() {
       setCheckoutOpen(false);
       setPixModal(data.checkout);
     } catch {
-      Alert.alert("Erro", "Não foi possível iniciar a assinatura.");
+      Alert.alert(t("common.error"), t("subscription.subscribe_failed"));
     } finally {
       setSubmitting(false);
     }
@@ -128,20 +133,20 @@ export function SubscriptionDashboard() {
 
   const handleCancel = () => {
     Alert.alert(
-      "Cancelar assinatura?",
-      "Você manterá o PRO até o fim do período já pago.",
+      t("subscription.cancel_confirm_title"),
+      t("subscription.cancel_confirm_text"),
       [
-        { text: "Manter PRO", style: "cancel" },
+        { text: t("subscription.cancel_keep"), style: "cancel" },
         {
-          text: "Cancelar assinatura",
+          text: t("subscription.cancel_yes"),
           style: "destructive",
           onPress: async () => {
             try {
               const { data } = await api.post<Subscription>("/billing/cancel/", {});
               setSub(data);
-              Alert.alert("✓", "Assinatura será cancelada ao fim do período.");
+              Alert.alert("✓", t("subscription.cancel_done"));
             } catch {
-              Alert.alert("Erro", "Não foi possível cancelar agora.");
+              Alert.alert(t("common.error"), t("subscription.cancel_failed"));
             }
           },
         },
@@ -149,15 +154,12 @@ export function SubscriptionDashboard() {
     );
   };
 
-  const copyPix = (text: string) => {
+  const copyPix = (txt: string) => {
     if (Platform.OS === "web" && typeof navigator !== "undefined" && navigator.clipboard) {
-      navigator.clipboard.writeText(text);
-      Alert.alert("✓", "Código PIX copiado.");
+      navigator.clipboard.writeText(txt);
+      Alert.alert("✓", t("subscription.pix_copied"));
     } else {
-      Alert.alert(
-        "Copiar PIX",
-        "Pressione e segure no código abaixo para selecionar e copiar.",
-      );
+      Alert.alert(t("subscription.pix_copy"), t("subscription.pix_copy_native_hint"));
     }
   };
 
@@ -172,9 +174,9 @@ export function SubscriptionDashboard() {
   if (error || !sub) {
     return (
       <View style={[styles.container, styles.center]}>
-        <Text style={styles.errorText}>{error || "Erro ao carregar."}</Text>
+        <Text style={styles.errorText}>{error || t("common.error")}</Text>
         <TouchableOpacity style={styles.btnPrimary} onPress={load}>
-          <Text style={styles.btnPrimaryText}>Tentar novamente</Text>
+          <Text style={styles.btnPrimaryText}>{t("common.retry")}</Text>
         </TouchableOpacity>
       </View>
     );
@@ -187,28 +189,30 @@ export function SubscriptionDashboard() {
       {/* Card status */}
       <View style={[styles.statusCard, isPro ? styles.statusPro : styles.statusFree]}>
         <Text style={styles.planBadge}>
-          {isPro ? "PRO 🎉" : "FREE"}
+          {isPro ? t("subscription.header_pro") : t("subscription.header_free")}
         </Text>
-        <Text style={styles.statusLabel}>Status: {sub.status}</Text>
+        <Text style={styles.statusLabel}>
+          {t("subscription.status_label", { status: sub.status })}
+        </Text>
         {sub.cancel_at_period_end && (
-          <Text style={styles.cancelWarn}>
-            ⚠ Cancelamento agendado para o fim do período.
-          </Text>
+          <Text style={styles.cancelWarn}>{t("subscription.cancel_warn")}</Text>
         )}
         {sub.current_period_end && (
           <Text style={styles.periodInfo}>
-            Próxima cobrança: {new Date(sub.current_period_end).toLocaleDateString("pt-BR")}
+            {t("subscription.next_charge", {
+              date: new Date(sub.current_period_end).toLocaleDateString(),
+            })}
           </Text>
         )}
       </View>
 
       {!isPro ? (
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>O que vem com o PRO</Text>
-          {PRO_BENEFITS.map((b) => (
-            <View key={b} style={styles.benefitRow}>
+          <Text style={styles.sectionTitle}>{t("subscription.benefits_title")}</Text>
+          {PRO_BENEFIT_KEYS.map((k) => (
+            <View key={k} style={styles.benefitRow}>
               <Text style={styles.checkIcon}>✓</Text>
-              <Text style={styles.benefitText}>{b}</Text>
+              <Text style={styles.benefitText}>{t(k)}</Text>
             </View>
           ))}
           <TouchableOpacity
@@ -219,20 +223,18 @@ export function SubscriptionDashboard() {
               setCheckoutOpen(true);
             }}
           >
-            <Text style={styles.btnPrimaryText}>Assinar PRO</Text>
+            <Text style={styles.btnPrimaryText}>{t("subscription.subscribe_btn")}</Text>
           </TouchableOpacity>
         </View>
       ) : (
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Gerenciar assinatura</Text>
+          <Text style={styles.sectionTitle}>{t("subscription.manage_title")}</Text>
           {!sub.cancel_at_period_end ? (
             <TouchableOpacity style={styles.btnDanger} onPress={handleCancel}>
-              <Text style={styles.btnDangerText}>Cancelar assinatura</Text>
+              <Text style={styles.btnDangerText}>{t("subscription.cancel_btn")}</Text>
             </TouchableOpacity>
           ) : (
-            <Text style={styles.note}>
-              Sua assinatura será cancelada automaticamente. Para retomar, contate o suporte.
-            </Text>
+            <Text style={styles.note}>{t("subscription.cancelled_note")}</Text>
           )}
         </View>
       )}
@@ -241,21 +243,19 @@ export function SubscriptionDashboard() {
       <Modal visible={checkoutOpen} transparent animationType="slide">
         <View style={styles.modalOverlay}>
           <View style={styles.modalCard}>
-            <Text style={styles.modalTitle}>Assinar PetDiary PRO</Text>
-            <Text style={styles.modalText}>
-              Pagamento via PIX. O QR Code aparece após confirmar.
-            </Text>
+            <Text style={styles.modalTitle}>{t("subscription.checkout_title")}</Text>
+            <Text style={styles.modalText}>{t("subscription.checkout_text")}</Text>
 
-            <Text style={styles.label}>Cupom (opcional)</Text>
+            <Text style={styles.label}>{t("subscription.coupon_label")}</Text>
             <View style={{ flexDirection: "row" }}>
               <TextInput
                 style={[styles.input, { flex: 1 }]}
                 value={coupon}
-                onChangeText={(t) => {
-                  setCoupon(t.toUpperCase());
+                onChangeText={(txt) => {
+                  setCoupon(txt.toUpperCase());
                   setPricing(null);
                 }}
-                placeholder="Ex.: PRIMEIROMES"
+                placeholder={t("subscription.coupon_placeholder")}
                 autoCapitalize="characters"
               />
               <TouchableOpacity
@@ -264,7 +264,7 @@ export function SubscriptionDashboard() {
                 disabled={!coupon || validating}
               >
                 <Text style={styles.btnGhostText}>
-                  {validating ? "…" : "Aplicar"}
+                  {validating ? "…" : t("subscription.coupon_apply")}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -272,15 +272,21 @@ export function SubscriptionDashboard() {
             {pricing && (
               <View style={styles.pricingBox}>
                 <Text style={styles.pricingLine}>
-                  Preço base: {formatBRL(pricing.base_price)}
+                  {t("subscription.pricing_base", {
+                    price: formatBRL(pricing.base_price),
+                  })}
                 </Text>
                 {pricing.discount_percent > 0 && (
                   <Text style={[styles.pricingLine, { color: "#16a34a" }]}>
-                    Desconto: -{pricing.discount_percent}%
+                    {t("subscription.pricing_discount", {
+                      percent: pricing.discount_percent,
+                    })}
                   </Text>
                 )}
                 <Text style={styles.pricingFinal}>
-                  Total: {formatBRL(pricing.final_price)}
+                  {t("subscription.pricing_total", {
+                    price: formatBRL(pricing.final_price),
+                  })}
                 </Text>
               </View>
             )}
@@ -290,7 +296,7 @@ export function SubscriptionDashboard() {
                 style={[styles.btnSecondary, { flex: 1, marginRight: spacing[2] }]}
                 onPress={() => setCheckoutOpen(false)}
               >
-                <Text style={styles.btnSecondaryText}>Cancelar</Text>
+                <Text style={styles.btnSecondaryText}>{t("common.cancel")}</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[
@@ -302,7 +308,9 @@ export function SubscriptionDashboard() {
                 disabled={submitting}
               >
                 <Text style={styles.btnPrimaryText}>
-                  {submitting ? "Gerando…" : "Gerar PIX"}
+                  {submitting
+                    ? t("subscription.generating_pix")
+                    : t("subscription.generate_pix")}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -314,10 +322,8 @@ export function SubscriptionDashboard() {
       <Modal visible={!!pixModal} transparent animationType="fade">
         <View style={styles.modalOverlay}>
           <View style={styles.modalCard}>
-            <Text style={styles.modalTitle}>PIX gerado ✓</Text>
-            <Text style={styles.modalText}>
-              Copie o código abaixo no seu app do banco. A confirmação é automática.
-            </Text>
+            <Text style={styles.modalTitle}>{t("subscription.pix_title")}</Text>
+            <Text style={styles.modalText}>{t("subscription.pix_text")}</Text>
             <View style={styles.pixBox}>
               <Text style={styles.pixText} selectable numberOfLines={3}>
                 {pixModal?.pix_copy_paste}
@@ -327,7 +333,7 @@ export function SubscriptionDashboard() {
               style={styles.btnPrimary}
               onPress={() => pixModal?.pix_copy_paste && copyPix(pixModal.pix_copy_paste)}
             >
-              <Text style={styles.btnPrimaryText}>Copiar código PIX</Text>
+              <Text style={styles.btnPrimaryText}>{t("subscription.pix_copy")}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.btnSecondary}
@@ -336,7 +342,7 @@ export function SubscriptionDashboard() {
                 load();
               }}
             >
-              <Text style={styles.btnSecondaryText}>Fechar</Text>
+              <Text style={styles.btnSecondaryText}>{t("common.close")}</Text>
             </TouchableOpacity>
           </View>
         </View>

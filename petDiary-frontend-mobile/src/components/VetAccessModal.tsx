@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   Alert,
 } from "react-native";
+import { useTranslation } from "react-i18next";
 import api from "../services/api";
 import type { ActiveAccess } from "../types";
 import { colors, radii, spacing, fontSize, fontWeight } from "../theme";
@@ -20,6 +21,7 @@ type Props = {
 };
 
 export function VetAccessModal({ visible, petId, onClose }: Props) {
+  const { t } = useTranslation();
   const [items, setItems] = useState<ActiveAccess[]>([]);
   const [loading, setLoading] = useState(true);
   const [revokingId, setRevokingId] = useState<string | null>(null);
@@ -42,12 +44,15 @@ export function VetAccessModal({ visible, petId, onClose }: Props) {
 
   const handleRevoke = (access: ActiveAccess) => {
     Alert.alert(
-      "Revogar acesso?",
-      `${access.vet.full_name} (${access.vet.crmv}) perderá acesso ao prontuário. Os registros já adicionados continuam no histórico.`,
+      t("vets.revoke_confirm_title"),
+      t("vets.revoke_confirm_text", {
+        name: access.vet.full_name,
+        crmv: access.vet.crmv,
+      }),
       [
-        { text: "Cancelar", style: "cancel" },
+        { text: t("common.cancel"), style: "cancel" },
         {
-          text: "Revogar",
+          text: t("vets.revoke_btn").replace("🚫 ", ""),
           style: "destructive",
           onPress: async () => {
             setRevokingId(access.id);
@@ -55,7 +60,7 @@ export function VetAccessModal({ visible, petId, onClose }: Props) {
               await api.post(`/access/tokens/${access.id}/revoke/`);
               await load();
             } catch {
-              Alert.alert("Erro", "Não foi possível revogar o acesso.");
+              Alert.alert(t("common.error"), t("vets.revoke_failed"));
             } finally {
               setRevokingId(null);
             }
@@ -75,9 +80,9 @@ export function VetAccessModal({ visible, petId, onClose }: Props) {
       <View style={styles.container}>
         <View style={styles.header}>
           <TouchableOpacity onPress={onClose}>
-            <Text style={styles.cancelText}>Fechar</Text>
+            <Text style={styles.cancelText}>{t("common.close")}</Text>
           </TouchableOpacity>
-          <Text style={styles.title}>🩺 Veterinários com acesso</Text>
+          <Text style={styles.title}>{t("vets.modal_title")}</Text>
           <View style={{ width: 50 }} />
         </View>
 
@@ -89,10 +94,7 @@ export function VetAccessModal({ visible, petId, onClose }: Props) {
               style={{ marginTop: 32 }}
             />
           ) : items.length === 0 ? (
-            <Text style={styles.empty}>
-              Nenhum veterinário com acesso ativo no momento. Use “🔑 Gerar PIN”
-              para conceder acesso temporário.
-            </Text>
+            <Text style={styles.empty}>{t("vets.empty")}</Text>
           ) : (
             items.map((access) => (
               <View key={access.id} style={styles.card}>
@@ -109,13 +111,15 @@ export function VetAccessModal({ visible, petId, onClose }: Props) {
                   </View>
                 </View>
                 <Text style={styles.dateLine}>
-                  Acessou em:{" "}
-                  {new Date(access.claimed_at).toLocaleDateString("pt-BR")}
+                  {t("vets.accessed_at", {
+                    date: new Date(access.claimed_at).toLocaleDateString(),
+                  })}
                 </Text>
                 {access.last_visit && (
                   <Text style={styles.dateLine}>
-                    Última visita:{" "}
-                    {new Date(access.last_visit).toLocaleDateString("pt-BR")}
+                    {t("vets.last_visit", {
+                      date: new Date(access.last_visit).toLocaleDateString(),
+                    })}
                   </Text>
                 )}
                 <TouchableOpacity
@@ -127,7 +131,9 @@ export function VetAccessModal({ visible, petId, onClose }: Props) {
                   disabled={revokingId === access.id}
                 >
                   <Text style={styles.revokeText}>
-                    {revokingId === access.id ? "Revogando…" : "🚫 Revogar acesso"}
+                    {revokingId === access.id
+                      ? t("vets.revoke_loading")
+                      : t("vets.revoke_btn")}
                   </Text>
                 </TouchableOpacity>
               </View>

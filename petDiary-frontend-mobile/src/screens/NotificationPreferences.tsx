@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   Alert,
 } from "react-native";
+import { useTranslation } from "react-i18next";
 import api from "../services/api";
 import { registerForPushNotificationsAsync } from "../services/notifications";
 import type { NotificationPreferences } from "../types";
@@ -15,52 +16,18 @@ import { colors, radii, spacing, fontSize, fontWeight } from "../theme";
 
 type ToggleKey = keyof NotificationPreferences;
 
-const ROWS: { key: ToggleKey; icon: string; label: string; hint: string }[] = [
-  {
-    key: "push_vaccine",
-    icon: "💉",
-    label: "Vacinação",
-    hint: "Lembretes de vacinas próximas ou em atraso",
-  },
-  {
-    key: "push_vet_return",
-    icon: "🏥",
-    label: "Retorno ao veterinário",
-    hint: "Lembretes de consultas marcadas",
-  },
-  {
-    key: "push_payment_due",
-    icon: "💳",
-    label: "Vencimento de pagamento",
-    hint: "Aviso 3 dias antes da renovação PRO",
-  },
-  {
-    key: "push_payment_ok",
-    icon: "✅",
-    label: "Pagamento confirmado",
-    hint: "Recibo quando o PIX cair",
-  },
-  {
-    key: "push_pin_generated",
-    icon: "🔑",
-    label: "PIN criado",
-    hint: "Confirmação após gerar PIN para o vet",
-  },
-  {
-    key: "push_vet_access_claimed",
-    icon: "🩺",
-    label: "Vet acessou prontuário",
-    hint: "Quando o vet usa o PIN para abrir os dados",
-  },
-  {
-    key: "push_system",
-    icon: "📢",
-    label: "Avisos do sistema",
-    hint: "Manutenções, novidades e mudanças importantes",
-  },
+const ROWS: { key: ToggleKey; icon: string; labelKey: string; hintKey: string }[] = [
+  { key: "push_vaccine", icon: "💉", labelKey: "notifications.type_vaccine_label", hintKey: "notifications.type_vaccine_hint" },
+  { key: "push_vet_return", icon: "🏥", labelKey: "notifications.type_vet_return_label", hintKey: "notifications.type_vet_return_hint" },
+  { key: "push_payment_due", icon: "💳", labelKey: "notifications.type_payment_due_label", hintKey: "notifications.type_payment_due_hint" },
+  { key: "push_payment_ok", icon: "✅", labelKey: "notifications.type_payment_ok_label", hintKey: "notifications.type_payment_ok_hint" },
+  { key: "push_pin_generated", icon: "🔑", labelKey: "notifications.type_pin_label", hintKey: "notifications.type_pin_hint" },
+  { key: "push_vet_access_claimed", icon: "🩺", labelKey: "notifications.type_vet_access_label", hintKey: "notifications.type_vet_access_hint" },
+  { key: "push_system", icon: "📢", labelKey: "notifications.type_system_label", hintKey: "notifications.type_system_hint" },
 ];
 
 export function NotificationPreferencesScreen() {
+  const { t } = useTranslation();
   const [prefs, setPrefs] = useState<NotificationPreferences | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -73,7 +40,7 @@ export function NotificationPreferencesScreen() {
       );
       setPrefs(data);
     } catch {
-      Alert.alert("Erro", "Não foi possível carregar suas preferências.");
+      Alert.alert(t("common.error"), t("notifications.prefs_load_failed"));
     } finally {
       setLoading(false);
     }
@@ -91,9 +58,8 @@ export function NotificationPreferencesScreen() {
     try {
       await api.put("/notifications/preferences/", next);
     } catch {
-      // reverte em caso de erro
       setPrefs(prefs);
-      Alert.alert("Erro", "Não foi possível salvar.");
+      Alert.alert(t("common.error"), t("notifications.prefs_save_failed"));
     } finally {
       setSaving(false);
     }
@@ -102,11 +68,11 @@ export function NotificationPreferencesScreen() {
   const handleEnableSystemPush = async () => {
     const token = await registerForPushNotificationsAsync();
     if (token) {
-      Alert.alert("✓", "Notificações ativadas neste dispositivo.");
+      Alert.alert("✓", t("notifications.prefs_permission_ok"));
     } else {
       Alert.alert(
-        "Permissão negada",
-        "Você desativou notificações deste app no sistema. Vá em Ajustes do iPhone/Android para reativar."
+        t("notifications.prefs_permission_denied_title"),
+        t("notifications.prefs_permission_denied_text")
       );
     }
   };
@@ -125,13 +91,13 @@ export function NotificationPreferencesScreen() {
       contentContainerStyle={{ paddingBottom: spacing[10] }}
     >
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Receber notificações sobre</Text>
+        <Text style={styles.sectionTitle}>{t("notifications.prefs_section")}</Text>
         {ROWS.map((row) => (
           <View key={row.key} style={styles.row}>
             <Text style={styles.rowIcon}>{row.icon}</Text>
             <View style={{ flex: 1 }}>
-              <Text style={styles.rowLabel}>{row.label}</Text>
-              <Text style={styles.rowHint}>{row.hint}</Text>
+              <Text style={styles.rowLabel}>{t(row.labelKey)}</Text>
+              <Text style={styles.rowHint}>{t(row.hintKey)}</Text>
             </View>
             <Switch
               value={!!prefs[row.key]}
@@ -145,13 +111,10 @@ export function NotificationPreferencesScreen() {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Permissão do dispositivo</Text>
-        <Text style={styles.note}>
-          O sistema operacional (iOS/Android) também precisa permitir push.
-          Toque para ativar nesta instalação.
-        </Text>
+        <Text style={styles.sectionTitle}>{t("notifications.prefs_permission_section")}</Text>
+        <Text style={styles.note}>{t("notifications.prefs_permission_text")}</Text>
         <Text style={styles.btnGhost} onPress={handleEnableSystemPush}>
-          Ativar notificações neste dispositivo
+          {t("notifications.prefs_permission_btn")}
         </Text>
       </View>
     </ScrollView>

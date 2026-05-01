@@ -10,6 +10,7 @@ import {
   Alert,
 } from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { useTranslation } from "react-i18next";
 import api from "../services/api";
 import type { RootStackParamList } from "../navigation/AppNavigator";
 import type { AppNotification, NotificationType } from "../types";
@@ -27,20 +28,22 @@ const TYPE_ICON: Record<NotificationType, string> = {
   SYSTEM: "📢",
 };
 
-function formatRelative(iso: string): string {
-  const created = new Date(iso).getTime();
-  const diffMs = Date.now() - created;
-  const min = Math.floor(diffMs / 60000);
-  if (min < 1) return "agora";
-  if (min < 60) return `há ${min} min`;
-  const h = Math.floor(min / 60);
-  if (h < 24) return `há ${h} h`;
-  const d = Math.floor(h / 24);
-  if (d < 7) return `há ${d} d`;
-  return new Date(iso).toLocaleDateString("pt-BR");
-}
-
 export function NotificationsScreen({ navigation }: Props) {
+  const { t } = useTranslation();
+
+  const formatRelative = (iso: string): string => {
+    const created = new Date(iso).getTime();
+    const diffMs = Date.now() - created;
+    const min = Math.floor(diffMs / 60000);
+    if (min < 1) return t("reminders.due_today");
+    if (min < 60) return `${min} min`;
+    const h = Math.floor(min / 60);
+    if (h < 24) return `${h} h`;
+    const d = Math.floor(h / 24);
+    if (d < 7) return `${d} d`;
+    return new Date(iso).toLocaleDateString();
+  };
+
   const [items, setItems] = useState<AppNotification[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -105,17 +108,17 @@ export function NotificationsScreen({ navigation }: Props) {
   };
 
   const handleDelete = (n: AppNotification) => {
-    Alert.alert("Excluir notificação?", n.title, [
-      { text: "Cancelar", style: "cancel" },
+    Alert.alert(t("notifications.delete_title"), n.title, [
+      { text: t("common.cancel"), style: "cancel" },
       {
-        text: "Excluir",
+        text: t("common.delete"),
         style: "destructive",
         onPress: async () => {
           try {
             await api.delete(`/notifications/${n.id}/`);
             setItems((prev) => prev.filter((it) => it.id !== n.id));
           } catch {
-            Alert.alert("Erro", "Não foi possível excluir.");
+            Alert.alert(t("common.error"), t("notifications.delete_failed"));
           }
         },
       },
@@ -124,19 +127,19 @@ export function NotificationsScreen({ navigation }: Props) {
 
   const handleClearAll = () => {
     Alert.alert(
-      "Limpar todas?",
-      "Todas as notificações serão removidas. Esta ação não pode ser desfeita.",
+      t("notifications.delete_title"),
+      t("notifications.clear_confirm"),
       [
-        { text: "Cancelar", style: "cancel" },
+        { text: t("common.cancel"), style: "cancel" },
         {
-          text: "Limpar tudo",
+          text: t("notifications.clear_btn"),
           style: "destructive",
           onPress: async () => {
             try {
               await api.delete("/notifications/clear-all/");
               setItems([]);
             } catch {
-              Alert.alert("Erro", "Não foi possível limpar.");
+              Alert.alert(t("common.error"), t("notifications.clear_failed"));
             }
           },
         },
@@ -185,7 +188,9 @@ export function NotificationsScreen({ navigation }: Props) {
               disabled={markingAll}
             >
               <Text style={styles.actionText}>
-                {markingAll ? "Marcando…" : "✓ Marcar todas lidas"}
+                {markingAll
+                  ? t("notifications.marking_all")
+                  : t("notifications.mark_all")}
               </Text>
             </TouchableOpacity>
           )}
@@ -195,7 +200,7 @@ export function NotificationsScreen({ navigation }: Props) {
               style={[styles.actionBtn, styles.actionBtnDanger]}
             >
               <Text style={[styles.actionText, styles.actionTextDanger]}>
-                🗑 Limpar tudo
+                {t("notifications.clear_all")}
               </Text>
             </TouchableOpacity>
           )}
@@ -209,11 +214,8 @@ export function NotificationsScreen({ navigation }: Props) {
       ) : items.length === 0 ? (
         <View style={styles.center}>
           <Text style={styles.emptyEmoji}>🔔</Text>
-          <Text style={styles.emptyTitle}>Sem notificações</Text>
-          <Text style={styles.emptyText}>
-            Você verá aqui lembretes de vacina, retorno ao vet, vencimento de
-            pagamento e quando algum vet acessar o prontuário.
-          </Text>
+          <Text style={styles.emptyTitle}>{t("notifications.empty_title")}</Text>
+          <Text style={styles.emptyText}>{t("notifications.empty_text")}</Text>
         </View>
       ) : (
         <FlatList

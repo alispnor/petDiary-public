@@ -8,66 +8,16 @@ import {
   Linking,
   Alert,
 } from "react-native";
+import { useTranslation } from "react-i18next";
 import { colors, radii, spacing, fontSize, fontWeight, shadows } from "../theme";
 
-interface FAQ {
-  q: string;
-  a: string;
-}
-
-const FAQS: FAQ[] = [
-  {
-    q: "Como compartilho o histórico do meu pet com um veterinário?",
-    a:
-      "Abra o pet, toque em \"Compartilhar com vet\" e gere um código de acesso temporário. " +
-      "O veterinário usa esse código no portal web (vet.petdiary.com.br) e tem acesso " +
-      "por 24 horas. Você pode revogar a qualquer momento na tela do pet.",
-  },
-  {
-    q: "Quem mais pode acessar a conta do meu pet?",
-    a:
-      "Você pode convidar familiares como co-tutores na seção \"Familiares\" da conta " +
-      "(disponível no portal web). Eles recebem acesso completo ao pet e ao plano PRO " +
-      "(se você tiver um), mas não podem excluir a conta principal.",
-  },
-  {
-    q: "Como funciona o plano PRO?",
-    a:
-      "O PRO custa R$ 14,90/mês via PIX. Inclui pets ilimitados, IA para extrair " +
-      "informações de prescrições e exames, transcrição de áudio (Whisper), " +
-      "co-tutores ilimitados e suporte prioritário. Cancele quando quiser.",
-  },
-  {
-    q: "Como cancelo minha assinatura?",
-    a:
-      "Vá em Conta > Assinatura > Cancelar assinatura. Você mantém o PRO até o fim " +
-      "do período pago. Não há multa.",
-  },
-  {
-    q: "Posso excluir minha conta?",
-    a:
-      "Sim. Vá em Conta > Excluir minha conta. Os dados pessoais (nome, email, " +
-      "telefone, CPF, endereço) são anonimizados conforme a LGPD. O histórico " +
-      "clínico dos pets é preservado para co-tutores e veterinários autorizados.",
-  },
-  {
-    q: "Esqueci minha senha. O que faço?",
-    a:
-      "Faça logout e na tela de login toque em \"Esqueci minha senha\" — você receberá " +
-      "um link por email (válido por 30 minutos) para criar uma nova.",
-  },
-  {
-    q: "A IA está errando informações. Posso corrigir?",
-    a:
-      "Sim. Toda extração da IA pode ser editada manualmente no registro. A IA serve " +
-      "para acelerar o cadastro, mas você é a fonte de verdade.",
-  },
-];
+const FAQ_KEYS = [1, 2, 3, 4, 5, 6, 7];
 
 const SUPPORT_EMAIL = "suporte@petdiary.com.br";
 const SUPPORT_WHATSAPP = "5511999999999"; // mock — atualizar quando tiver número real
 
 export function HelpCenter() {
+  const { t } = useTranslation();
   const [openIdx, setOpenIdx] = useState<number | null>(null);
 
   const handleEmail = async () => {
@@ -76,7 +26,10 @@ export function HelpCenter() {
     if (can) {
       Linking.openURL(url);
     } else {
-      Alert.alert("Email", `Envie sua dúvida para:\n${SUPPORT_EMAIL}`);
+      Alert.alert(
+        t("help.contact_email_dialog_title"),
+        t("help.contact_email_dialog_text", { email: SUPPORT_EMAIL })
+      );
     }
   };
 
@@ -86,7 +39,7 @@ export function HelpCenter() {
     if (can) {
       Linking.openURL(url);
     } else {
-      Alert.alert("WhatsApp", "Não foi possível abrir o WhatsApp neste dispositivo.");
+      Alert.alert(t("help.contact_whatsapp_label"), t("help.contact_whatsapp_failed"));
     }
   };
 
@@ -98,19 +51,17 @@ export function HelpCenter() {
       {/* Hero */}
       <View style={styles.hero}>
         <Text style={styles.heroEmoji}>💬</Text>
-        <Text style={styles.heroTitle}>Como podemos ajudar?</Text>
-        <Text style={styles.heroSubtitle}>
-          Confira as perguntas frequentes ou fale direto com nosso suporte.
-        </Text>
+        <Text style={styles.heroTitle}>{t("help.hero_title")}</Text>
+        <Text style={styles.heroSubtitle}>{t("help.hero_subtitle")}</Text>
       </View>
 
       {/* Contato */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Fale com a gente</Text>
+        <Text style={styles.sectionTitle}>{t("help.section_contact")}</Text>
         <TouchableOpacity style={styles.contactRow} onPress={handleEmail}>
           <Text style={styles.contactEmoji}>📧</Text>
           <View style={{ flex: 1 }}>
-            <Text style={styles.contactLabel}>Email</Text>
+            <Text style={styles.contactLabel}>{t("help.contact_email_label")}</Text>
             <Text style={styles.contactValue}>{SUPPORT_EMAIL}</Text>
           </View>
           <Text style={styles.chevron}>›</Text>
@@ -118,8 +69,8 @@ export function HelpCenter() {
         <TouchableOpacity style={styles.contactRow} onPress={handleWhatsApp}>
           <Text style={styles.contactEmoji}>💬</Text>
           <View style={{ flex: 1 }}>
-            <Text style={styles.contactLabel}>WhatsApp</Text>
-            <Text style={styles.contactValue}>Resposta em até 1 dia útil</Text>
+            <Text style={styles.contactLabel}>{t("help.contact_whatsapp_label")}</Text>
+            <Text style={styles.contactValue}>{t("help.contact_whatsapp_hint")}</Text>
           </View>
           <Text style={styles.chevron}>›</Text>
         </TouchableOpacity>
@@ -127,26 +78,26 @@ export function HelpCenter() {
 
       {/* FAQ */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Perguntas frequentes</Text>
-        {FAQS.map((faq, idx) => {
+        <Text style={styles.sectionTitle}>{t("help.section_faq")}</Text>
+        {FAQ_KEYS.map((n, idx) => {
           const open = openIdx === idx;
           return (
-            <View key={idx} style={styles.faqItem}>
+            <View key={n} style={styles.faqItem}>
               <TouchableOpacity
                 style={styles.faqHeader}
                 onPress={() => setOpenIdx(open ? null : idx)}
                 activeOpacity={0.7}
               >
-                <Text style={styles.faqQ}>{faq.q}</Text>
+                <Text style={styles.faqQ}>{t(`help.faq_q${n}`)}</Text>
                 <Text style={styles.faqToggle}>{open ? "−" : "+"}</Text>
               </TouchableOpacity>
-              {open && <Text style={styles.faqA}>{faq.a}</Text>}
+              {open && <Text style={styles.faqA}>{t(`help.faq_a${n}`)}</Text>}
             </View>
           );
         })}
       </View>
 
-      <Text style={styles.footer}>PetDiary · v1.0</Text>
+      <Text style={styles.footer}>{t("help.footer_version")}</Text>
     </ScrollView>
   );
 }

@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import * as DocumentPicker from "expo-document-picker";
+import { useTranslation } from "react-i18next";
 import api from "../services/api";
 import type { Attachment } from "../types";
 import { colors, radii, spacing, fontSize, fontWeight } from "../theme";
@@ -38,6 +39,7 @@ type Props = {
 };
 
 export function AttachmentsList({ petId, recordId }: Props) {
+  const { t } = useTranslation();
   const [items, setItems] = useState<Attachment[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
@@ -78,7 +80,7 @@ export function AttachmentsList({ petId, recordId }: Props) {
       );
       await load();
     } catch {
-      Alert.alert("Erro", "Não foi possível enviar o arquivo.");
+      Alert.alert(t("common.error"), t("attachments.upload_failed"));
     } finally {
       setUploading(false);
     }
@@ -87,7 +89,10 @@ export function AttachmentsList({ petId, recordId }: Props) {
   const pickFromCamera = async () => {
     const perm = await ImagePicker.requestCameraPermissionsAsync();
     if (!perm.granted) {
-      Alert.alert("Permissão negada", "Acesso à câmera não autorizado.");
+      Alert.alert(
+        t("attachments.permission_denied"),
+        t("attachments.permission_camera_denied")
+      );
       return;
     }
     const result = await ImagePicker.launchCameraAsync({
@@ -104,7 +109,10 @@ export function AttachmentsList({ petId, recordId }: Props) {
   const pickFromGallery = async () => {
     const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!perm.granted) {
-      Alert.alert("Permissão negada", "Acesso à galeria não autorizado.");
+      Alert.alert(
+        t("attachments.permission_denied"),
+        t("attachments.permission_gallery_denied")
+      );
       return;
     }
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -132,7 +140,12 @@ export function AttachmentsList({ petId, recordId }: Props) {
   };
 
   const showPicker = () => {
-    const options = ["📷 Tirar foto", "🖼 Galeria", "📄 Documento", "Cancelar"];
+    const options = [
+      t("attachments.picker_camera"),
+      t("attachments.picker_gallery"),
+      t("attachments.picker_document"),
+      t("common.cancel"),
+    ];
     if (Platform.OS === "ios") {
       ActionSheetIOS.showActionSheetWithOptions(
         { options, cancelButtonIndex: 3 },
@@ -143,27 +156,27 @@ export function AttachmentsList({ petId, recordId }: Props) {
         }
       );
     } else {
-      Alert.alert("Anexar arquivo", "Escolha uma opção", [
-        { text: "📷 Câmera", onPress: pickFromCamera },
-        { text: "🖼 Galeria", onPress: pickFromGallery },
-        { text: "📄 Documento", onPress: pickDocument },
-        { text: "Cancelar", style: "cancel" },
+      Alert.alert(t("attachments.picker_title"), t("attachments.picker_choose"), [
+        { text: t("attachments.picker_camera_short"), onPress: pickFromCamera },
+        { text: t("attachments.picker_gallery"), onPress: pickFromGallery },
+        { text: t("attachments.picker_document"), onPress: pickDocument },
+        { text: t("common.cancel"), style: "cancel" },
       ]);
     }
   };
 
   const handleDelete = (att: Attachment) => {
-    Alert.alert("Remover anexo?", att.file_name, [
-      { text: "Cancelar", style: "cancel" },
+    Alert.alert(t("attachments.delete_confirm_title"), att.file_name, [
+      { text: t("common.cancel"), style: "cancel" },
       {
-        text: "Remover",
+        text: t("common.remove"),
         style: "destructive",
         onPress: async () => {
           try {
             await api.delete(`/attachments/${att.id}/`);
             await load();
           } catch {
-            Alert.alert("Erro", "Não foi possível remover.");
+            Alert.alert(t("common.error"), t("attachments.delete_failed"));
           }
         },
       },
@@ -174,21 +187,23 @@ export function AttachmentsList({ petId, recordId }: Props) {
     const base = api.defaults.baseURL?.replace(/\/api\/v1\/?$/, "") ?? "";
     const url = `${base}${att.view_url}`;
     Linking.openURL(url).catch(() =>
-      Alert.alert("Erro", "Não foi possível abrir o arquivo.")
+      Alert.alert(t("common.error"), t("attachments.open_failed"))
     );
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.headerRow}>
-        <Text style={styles.title}>📎 Anexos ({items.length})</Text>
+        <Text style={styles.title}>
+          {t("attachments.title_count", { count: items.length })}
+        </Text>
         <TouchableOpacity
           style={[styles.addBtn, uploading && styles.disabled]}
           onPress={showPicker}
           disabled={uploading}
         >
           <Text style={styles.addBtnText}>
-            {uploading ? "Enviando…" : "+ Anexar"}
+            {uploading ? t("attachments.uploading") : t("attachments.add_btn")}
           </Text>
         </TouchableOpacity>
       </View>
@@ -196,9 +211,7 @@ export function AttachmentsList({ petId, recordId }: Props) {
       {loading ? (
         <ActivityIndicator size="small" color={colors.brand.teal} />
       ) : items.length === 0 ? (
-        <Text style={styles.empty}>
-          Nenhum anexo. Use o botão acima para enviar foto, documento ou laudo.
-        </Text>
+        <Text style={styles.empty}>{t("attachments.empty")}</Text>
       ) : (
         items.map((att) => (
           <View key={att.id} style={styles.row}>

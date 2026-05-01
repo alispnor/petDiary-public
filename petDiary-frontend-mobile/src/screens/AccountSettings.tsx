@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import axios from "axios";
+import { useTranslation } from "react-i18next";
 import api from "../services/api";
 import { useAppStore } from "../store/useAppStore";
 import { LanguageSwitcher } from "../components/LanguageSwitcher";
@@ -22,6 +23,7 @@ import { colors, radii, spacing, fontSize, fontWeight, shadows } from "../theme"
 type Props = NativeStackScreenProps<RootStackParamList, "AccountSettings">;
 
 export function AccountSettings({ navigation }: Props) {
+  const { t } = useTranslation();
   const user = useAppStore((s) => s.user);
   const setAuth = useAppStore((s) => s.setAuth);
   const logout = useAppStore((s) => s.logout);
@@ -52,9 +54,9 @@ export function AccountSettings({ navigation }: Props) {
         phone,
       });
       if (token && refreshToken) setAuth(token, refreshToken, data);
-      Alert.alert("✓", "Perfil atualizado.");
+      Alert.alert("✓", t("account.profile_saved"));
     } catch {
-      Alert.alert("Erro", "Não foi possível salvar. Tente novamente.");
+      Alert.alert(t("common.error"), t("account.profile_failed"));
     } finally {
       setSavingProfile(false);
     }
@@ -62,11 +64,11 @@ export function AccountSettings({ navigation }: Props) {
 
   const handleChangePassword = async () => {
     if (newPwd.length < 8) {
-      Alert.alert("Atenção", "A nova senha precisa ter ao menos 8 caracteres.");
+      Alert.alert(t("common.warning"), t("account.change_password_min"));
       return;
     }
     if (!currentPwd && !user?.must_change_password) {
-      Alert.alert("Atenção", "Informe sua senha atual.");
+      Alert.alert(t("common.warning"), t("account.change_password_current_required"));
       return;
     }
     setSavingPwd(true);
@@ -78,15 +80,15 @@ export function AccountSettings({ navigation }: Props) {
       setPasswordModal(false);
       setCurrentPwd("");
       setNewPwd("");
-      Alert.alert("✓", "Senha alterada. Faça login novamente.", [
-        { text: "OK", onPress: () => logout() },
+      Alert.alert("✓", t("account.change_password_done"), [
+        { text: t("common.ok"), onPress: () => logout() },
       ]);
     } catch (err) {
       const msg =
         axios.isAxiosError(err) && err.response?.data?.current_password
-          ? "Senha atual incorreta."
-          : "Não foi possível alterar a senha.";
-      Alert.alert("Erro", msg);
+          ? t("account.change_password_current_wrong")
+          : t("account.change_password_failed");
+      Alert.alert(t("common.error"), msg);
     } finally {
       setSavingPwd(false);
     }
@@ -94,16 +96,15 @@ export function AccountSettings({ navigation }: Props) {
 
   const handleDelete = async () => {
     if (confirmText.trim().toUpperCase() !== "EXCLUIR") {
-      Alert.alert("Atenção", 'Digite EXCLUIR para confirmar.');
+      Alert.alert(t("common.warning"), t("account.delete_warn_word"));
       return;
     }
     if (!confirmPwd) {
-      Alert.alert("Atenção", "Confirme sua senha.");
+      Alert.alert(t("common.warning"), t("account.delete_warn_password"));
       return;
     }
     setDeleting(true);
     try {
-      // Revalida senha antes (segurança extra: backend exige header dedicado)
       await api.post("/auth/token/", {
         username: user?.username,
         password: confirmPwd,
@@ -112,15 +113,15 @@ export function AccountSettings({ navigation }: Props) {
         headers: { "X-Confirm-Delete": "EXCLUIR" },
       });
       Alert.alert(
-        "Conta excluída",
-        "Seus dados foram anonimizados conforme a LGPD.",
-        [{ text: "OK", onPress: () => logout() }],
+        t("account.delete_done_title"),
+        t("account.delete_done_text"),
+        [{ text: t("common.ok"), onPress: () => logout() }],
       );
     } catch (err) {
       if (axios.isAxiosError(err) && err.response?.status === 401) {
-        Alert.alert("Erro", "Senha incorreta.");
+        Alert.alert(t("common.error"), t("account.delete_password_wrong"));
       } else {
-        Alert.alert("Erro", "Não foi possível excluir a conta.");
+        Alert.alert(t("common.error"), t("account.delete_failed"));
       }
     } finally {
       setDeleting(false);
@@ -142,30 +143,30 @@ export function AccountSettings({ navigation }: Props) {
 
       {/* Editar perfil */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Perfil</Text>
-        <Text style={styles.label}>Nome completo</Text>
+        <Text style={styles.sectionTitle}>{t("account.section_profile")}</Text>
+        <Text style={styles.label}>{t("account.field_full_name")}</Text>
         <TextInput
           style={styles.input}
           value={fullName}
           onChangeText={setFullName}
-          placeholder="Seu nome"
+          placeholder={t("account.field_full_name_placeholder")}
         />
-        <Text style={styles.label}>Email</Text>
+        <Text style={styles.label}>{t("account.field_email")}</Text>
         <TextInput
           style={styles.input}
           value={email}
           onChangeText={setEmail}
           autoCapitalize="none"
           keyboardType="email-address"
-          placeholder="email@exemplo.com"
+          placeholder={t("account.field_email_placeholder")}
         />
-        <Text style={styles.label}>Telefone</Text>
+        <Text style={styles.label}>{t("account.field_phone")}</Text>
         <TextInput
           style={styles.input}
           value={phone}
           onChangeText={setPhone}
           keyboardType="phone-pad"
-          placeholder="(11) 99999-9999"
+          placeholder={t("account.field_phone_placeholder")}
         />
         <TouchableOpacity
           style={[styles.btnPrimary, savingProfile && styles.btnDisabled]}
@@ -173,27 +174,27 @@ export function AccountSettings({ navigation }: Props) {
           disabled={savingProfile}
         >
           <Text style={styles.btnPrimaryText}>
-            {savingProfile ? "Salvando…" : "Salvar alterações"}
+            {savingProfile ? t("account.saving_profile") : t("account.save_profile")}
           </Text>
         </TouchableOpacity>
       </View>
 
       {/* Idioma */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Idioma</Text>
+        <Text style={styles.sectionTitle}>{t("account.section_language")}</Text>
         <LanguageSwitcher variant="row" />
       </View>
 
       {/* Atalhos */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Mais</Text>
+        <Text style={styles.sectionTitle}>{t("account.section_more")}</Text>
 
         <TouchableOpacity
           style={styles.row}
           onPress={() => navigation.navigate("SubscriptionDashboard")}
         >
           <Text style={styles.rowEmoji}>💳</Text>
-          <Text style={styles.rowLabel}>Assinatura</Text>
+          <Text style={styles.rowLabel}>{t("account.menu_subscription")}</Text>
           <Text style={styles.rowChevron}>›</Text>
         </TouchableOpacity>
 
@@ -202,7 +203,7 @@ export function AccountSettings({ navigation }: Props) {
           onPress={() => navigation.navigate("HelpCenter")}
         >
           <Text style={styles.rowEmoji}>❓</Text>
-          <Text style={styles.rowLabel}>Central de ajuda</Text>
+          <Text style={styles.rowLabel}>{t("account.menu_help")}</Text>
           <Text style={styles.rowChevron}>›</Text>
         </TouchableOpacity>
 
@@ -211,7 +212,7 @@ export function AccountSettings({ navigation }: Props) {
           onPress={() => navigation.navigate("NotificationPreferences")}
         >
           <Text style={styles.rowEmoji}>🔔</Text>
-          <Text style={styles.rowLabel}>Notificações</Text>
+          <Text style={styles.rowLabel}>{t("account.menu_notifications")}</Text>
           <Text style={styles.rowChevron}>›</Text>
         </TouchableOpacity>
 
@@ -220,45 +221,43 @@ export function AccountSettings({ navigation }: Props) {
           onPress={() => setPasswordModal(true)}
         >
           <Text style={styles.rowEmoji}>🔒</Text>
-          <Text style={styles.rowLabel}>Trocar senha</Text>
+          <Text style={styles.rowLabel}>{t("account.menu_change_password")}</Text>
           <Text style={styles.rowChevron}>›</Text>
         </TouchableOpacity>
       </View>
 
       {/* Zona de risco */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Sessão</Text>
+        <Text style={styles.sectionTitle}>{t("account.section_session")}</Text>
         <TouchableOpacity
           style={styles.btnSecondary}
           onPress={() =>
-            Alert.alert("Sair", "Deseja realmente sair?", [
-              { text: "Cancelar", style: "cancel" },
-              { text: "Sair", style: "destructive", onPress: () => logout() },
+            Alert.alert(t("common.logout"), t("account.logout_confirm"), [
+              { text: t("common.cancel"), style: "cancel" },
+              { text: t("common.logout"), style: "destructive", onPress: () => logout() },
             ])
           }
         >
-          <Text style={styles.btnSecondaryText}>Sair da conta</Text>
+          <Text style={styles.btnSecondaryText}>{t("account.logout_btn")}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.btnDanger}
           onPress={() => setDeleteModal(true)}
         >
-          <Text style={styles.btnDangerText}>🗑 Excluir minha conta</Text>
+          <Text style={styles.btnDangerText}>{t("account.delete_btn")}</Text>
         </TouchableOpacity>
-        <Text style={styles.dangerHint}>
-          Os dados pessoais serão anonimizados conforme a LGPD. Ação irreversível.
-        </Text>
+        <Text style={styles.dangerHint}>{t("account.delete_hint")}</Text>
       </View>
 
       {/* Modal trocar senha */}
       <Modal visible={passwordModal} transparent animationType="fade">
         <View style={styles.modalOverlay}>
           <View style={styles.modalCard}>
-            <Text style={styles.modalTitle}>Trocar senha</Text>
+            <Text style={styles.modalTitle}>{t("account.change_password_title")}</Text>
             {!user?.must_change_password && (
               <>
-                <Text style={styles.label}>Senha atual</Text>
+                <Text style={styles.label}>{t("account.current_password")}</Text>
                 <TextInput
                   style={styles.input}
                   secureTextEntry
@@ -268,7 +267,7 @@ export function AccountSettings({ navigation }: Props) {
                 />
               </>
             )}
-            <Text style={styles.label}>Nova senha (mín. 8)</Text>
+            <Text style={styles.label}>{t("account.new_password")}</Text>
             <TextInput
               style={styles.input}
               secureTextEntry
@@ -285,7 +284,7 @@ export function AccountSettings({ navigation }: Props) {
                   setNewPwd("");
                 }}
               >
-                <Text style={styles.btnSecondaryText}>Cancelar</Text>
+                <Text style={styles.btnSecondaryText}>{t("common.cancel")}</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[
@@ -297,7 +296,7 @@ export function AccountSettings({ navigation }: Props) {
                 disabled={savingPwd}
               >
                 <Text style={styles.btnPrimaryText}>
-                  {savingPwd ? "Salvando…" : "Alterar"}
+                  {savingPwd ? t("common.saving") : t("common.confirm")}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -309,13 +308,9 @@ export function AccountSettings({ navigation }: Props) {
       <Modal visible={deleteModal} transparent animationType="fade">
         <View style={styles.modalOverlay}>
           <View style={styles.modalCard}>
-            <Text style={styles.modalTitle}>Excluir conta</Text>
-            <Text style={styles.modalText}>
-              Esta ação é permanente. Seus dados pessoais serão anonimizados conforme a LGPD.
-              Histórico clínico dos seus pets é preservado para co-tutores e veterinários
-              que já tinham acesso.
-            </Text>
-            <Text style={styles.label}>Digite "EXCLUIR" para confirmar</Text>
+            <Text style={styles.modalTitle}>{t("account.delete_modal_title")}</Text>
+            <Text style={styles.modalText}>{t("account.delete_modal_text")}</Text>
+            <Text style={styles.label}>{t("account.delete_confirm_label")}</Text>
             <TextInput
               style={styles.input}
               autoCapitalize="characters"
@@ -323,7 +318,7 @@ export function AccountSettings({ navigation }: Props) {
               onChangeText={setConfirmText}
               placeholder="EXCLUIR"
             />
-            <Text style={styles.label}>Confirme sua senha</Text>
+            <Text style={styles.label}>{t("account.delete_password_label")}</Text>
             <TextInput
               style={styles.input}
               secureTextEntry
@@ -340,7 +335,7 @@ export function AccountSettings({ navigation }: Props) {
                   setConfirmPwd("");
                 }}
               >
-                <Text style={styles.btnSecondaryText}>Cancelar</Text>
+                <Text style={styles.btnSecondaryText}>{t("common.cancel")}</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[
@@ -354,7 +349,7 @@ export function AccountSettings({ navigation }: Props) {
                 {deleting ? (
                   <ActivityIndicator color="#fff" />
                 ) : (
-                  <Text style={styles.btnDangerText}>Excluir</Text>
+                  <Text style={styles.btnDangerText}>{t("common.delete")}</Text>
                 )}
               </TouchableOpacity>
             </View>

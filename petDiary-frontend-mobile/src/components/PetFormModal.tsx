@@ -11,15 +11,16 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
+import { useTranslation } from "react-i18next";
 import api from "../services/api";
 import type { Pet, Species } from "../types";
 import { colors, radii, spacing, fontSize, fontWeight } from "../theme";
 
-const SPECIES: { code: Species; label: string; icon: string }[] = [
-  { code: "DOG", label: "Cachorro", icon: "🐕" },
-  { code: "CAT", label: "Gato", icon: "🐱" },
-  { code: "BIRD", label: "Ave", icon: "🐦" },
-  { code: "OTHER", label: "Outro", icon: "🐾" },
+const SPECIES: { code: Species; key: string; icon: string }[] = [
+  { code: "DOG", key: "pet.species_dog", icon: "🐕" },
+  { code: "CAT", key: "pet.species_cat", icon: "🐱" },
+  { code: "BIRD", key: "pet.species_bird", icon: "🐦" },
+  { code: "OTHER", key: "pet.species_other", icon: "🐾" },
 ];
 
 type Props = {
@@ -29,6 +30,7 @@ type Props = {
 };
 
 export function PetFormModal({ visible, onClose, onCreated }: Props) {
+  const { t } = useTranslation();
   const [name, setName] = useState("");
   const [species, setSpecies] = useState<Species>("DOG");
   const [breed, setBreed] = useState("");
@@ -44,7 +46,7 @@ export function PetFormModal({ visible, onClose, onCreated }: Props) {
 
   const handleSubmit = async () => {
     if (!name.trim()) {
-      Alert.alert("Atenção", "Informe o nome do pet.");
+      Alert.alert(t("common.warning"), t("pet.name_required"));
       return;
     }
     setSaving(true);
@@ -57,7 +59,7 @@ export function PetFormModal({ visible, onClose, onCreated }: Props) {
       if (weight.trim()) {
         const w = weight.replace(",", ".");
         if (!/^\d+(\.\d{1,2})?$/.test(w)) {
-          Alert.alert("Atenção", "Peso inválido (use ponto, ex.: 12.5).");
+          Alert.alert(t("common.warning"), t("pet.weight_invalid"));
           setSaving(false);
           return;
         }
@@ -68,7 +70,7 @@ export function PetFormModal({ visible, onClose, onCreated }: Props) {
       reset();
       onClose();
     } catch {
-      Alert.alert("Erro", "Não foi possível criar o pet.");
+      Alert.alert(t("common.error"), t("pet.create_failed"));
     } finally {
       setSaving(false);
     }
@@ -87,9 +89,9 @@ export function PetFormModal({ visible, onClose, onCreated }: Props) {
       >
         <View style={styles.header}>
           <TouchableOpacity onPress={onClose}>
-            <Text style={styles.cancelText}>Cancelar</Text>
+            <Text style={styles.cancelText}>{t("common.cancel")}</Text>
           </TouchableOpacity>
-          <Text style={styles.title}>Novo pet</Text>
+          <Text style={styles.title}>{t("pet.form_title")}</Text>
           <TouchableOpacity
             onPress={handleSubmit}
             disabled={saving || !name.trim()}
@@ -100,13 +102,13 @@ export function PetFormModal({ visible, onClose, onCreated }: Props) {
                 (saving || !name.trim()) && styles.disabled,
               ]}
             >
-              {saving ? "Salvando…" : "Salvar"}
+              {saving ? t("common.saving") : t("common.save")}
             </Text>
           </TouchableOpacity>
         </View>
 
         <ScrollView contentContainerStyle={styles.content}>
-          <Text style={styles.label}>Espécie</Text>
+          <Text style={styles.label}>{t("pet.species")}</Text>
           <View style={styles.row}>
             {SPECIES.map((s) => {
               const active = s.code === species;
@@ -123,37 +125,39 @@ export function PetFormModal({ visible, onClose, onCreated }: Props) {
                       active && styles.chipLabelActive,
                     ]}
                   >
-                    {s.label}
+                    {t(s.key)}
                   </Text>
                 </TouchableOpacity>
               );
             })}
           </View>
 
-          <Text style={styles.label}>Nome *</Text>
+          <Text style={styles.label}>
+            {t("pet.name")} {t("common.required")}
+          </Text>
           <TextInput
             style={styles.input}
             value={name}
             onChangeText={setName}
-            placeholder="Ex.: Thor, Mel, Pipoca…"
+            placeholder={t("pet.name_placeholder")}
             maxLength={60}
           />
 
-          <Text style={styles.label}>Raça</Text>
+          <Text style={styles.label}>{t("pet.breed")}</Text>
           <TextInput
             style={styles.input}
             value={breed}
             onChangeText={setBreed}
-            placeholder="Labrador, SRD…"
+            placeholder={t("pet.breed_placeholder")}
             maxLength={60}
           />
 
-          <Text style={styles.label}>Peso (kg)</Text>
+          <Text style={styles.label}>{t("pet.weight")}</Text>
           <TextInput
             style={styles.input}
             value={weight}
             onChangeText={setWeight}
-            placeholder="Ex.: 12.5"
+            placeholder={t("pet.weight_placeholder")}
             keyboardType="decimal-pad"
             maxLength={6}
           />

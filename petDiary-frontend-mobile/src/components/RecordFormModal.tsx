@@ -11,16 +11,17 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
+import { useTranslation } from "react-i18next";
 import api from "../services/api";
 import type { HealthRecord, RecordType } from "../types";
 import { colors, radii, spacing, fontSize, fontWeight } from "../theme";
 
-const TYPES: { code: RecordType; label: string; icon: string }[] = [
-  { code: "NOTE", label: "Nota", icon: "📝" },
-  { code: "VACCINE", label: "Vacina", icon: "💉" },
-  { code: "EXAM", label: "Exame", icon: "🔬" },
-  { code: "PRESCRIPTION", label: "Receita", icon: "💊" },
-  { code: "SURGERY", label: "Cirurgia", icon: "🏥" },
+const TYPES: { code: RecordType; key: string; icon: string }[] = [
+  { code: "NOTE", key: "records.type_note", icon: "📝" },
+  { code: "VACCINE", key: "records.type_vaccine", icon: "💉" },
+  { code: "EXAM", key: "records.type_exam", icon: "🔬" },
+  { code: "PRESCRIPTION", key: "records.type_prescription", icon: "💊" },
+  { code: "SURGERY", key: "records.type_surgery", icon: "🏥" },
 ];
 
 function todayISO(): string {
@@ -35,6 +36,7 @@ type Props = {
 };
 
 export function RecordFormModal({ visible, petId, onClose, onCreated }: Props) {
+  const { t } = useTranslation();
   const [type, setType] = useState<RecordType>("NOTE");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -50,11 +52,11 @@ export function RecordFormModal({ visible, petId, onClose, onCreated }: Props) {
 
   const handleSubmit = async () => {
     if (!title.trim()) {
-      Alert.alert("Atenção", "Informe um título para o registro.");
+      Alert.alert(t("common.warning"), t("records.title_required"));
       return;
     }
     if (!/^\d{4}-\d{2}-\d{2}$/.test(dateOccurred)) {
-      Alert.alert("Atenção", "Data deve estar no formato AAAA-MM-DD.");
+      Alert.alert(t("common.warning"), t("records.date_invalid"));
       return;
     }
     setSaving(true);
@@ -72,7 +74,7 @@ export function RecordFormModal({ visible, petId, onClose, onCreated }: Props) {
       reset();
       onClose();
     } catch {
-      Alert.alert("Erro", "Não foi possível criar o registro.");
+      Alert.alert(t("common.error"), t("records.create_failed"));
     } finally {
       setSaving(false);
     }
@@ -91,9 +93,9 @@ export function RecordFormModal({ visible, petId, onClose, onCreated }: Props) {
       >
         <View style={styles.header}>
           <TouchableOpacity onPress={onClose}>
-            <Text style={styles.cancelText}>Cancelar</Text>
+            <Text style={styles.cancelText}>{t("common.cancel")}</Text>
           </TouchableOpacity>
-          <Text style={styles.title}>Novo registro</Text>
+          <Text style={styles.title}>{t("records.form_title")}</Text>
           <TouchableOpacity
             onPress={handleSubmit}
             disabled={saving || !title.trim()}
@@ -104,57 +106,59 @@ export function RecordFormModal({ visible, petId, onClose, onCreated }: Props) {
                 (saving || !title.trim()) && styles.disabled,
               ]}
             >
-              {saving ? "Salvando…" : "Salvar"}
+              {saving ? t("common.saving") : t("common.save")}
             </Text>
           </TouchableOpacity>
         </View>
 
         <ScrollView contentContainerStyle={styles.content}>
-          <Text style={styles.label}>Tipo</Text>
+          <Text style={styles.label}>{t("records.type_label")}</Text>
           <View style={styles.typeRow}>
-            {TYPES.map((t) => {
-              const active = t.code === type;
+            {TYPES.map((it) => {
+              const active = it.code === type;
               return (
                 <TouchableOpacity
-                  key={t.code}
+                  key={it.code}
                   style={[styles.typeBtn, active && styles.typeBtnActive]}
-                  onPress={() => setType(t.code)}
+                  onPress={() => setType(it.code)}
                 >
-                  <Text style={styles.typeIcon}>{t.icon}</Text>
+                  <Text style={styles.typeIcon}>{it.icon}</Text>
                   <Text
                     style={[
                       styles.typeLabel,
                       active && styles.typeLabelActive,
                     ]}
                   >
-                    {t.label}
+                    {t(it.key)}
                   </Text>
                 </TouchableOpacity>
               );
             })}
           </View>
 
-          <Text style={styles.label}>Título *</Text>
+          <Text style={styles.label}>
+            {t("records.title_label")} {t("common.required")}
+          </Text>
           <TextInput
             style={styles.input}
             value={title}
             onChangeText={setTitle}
-            placeholder="Ex.: Vacina V10, Hemograma, Cirurgia castração…"
+            placeholder={t("records.title_placeholder")}
             maxLength={120}
           />
 
-          <Text style={styles.label}>Descrição</Text>
+          <Text style={styles.label}>{t("records.description_label")}</Text>
           <TextInput
             style={[styles.input, styles.textArea]}
             value={description}
             onChangeText={setDescription}
-            placeholder="Detalhes, observações, posologia…"
+            placeholder={t("records.description_placeholder")}
             multiline
             numberOfLines={4}
             textAlignVertical="top"
           />
 
-          <Text style={styles.label}>Data (AAAA-MM-DD)</Text>
+          <Text style={styles.label}>{t("records.date_label")}</Text>
           <TextInput
             style={styles.input}
             value={dateOccurred}
@@ -164,10 +168,7 @@ export function RecordFormModal({ visible, petId, onClose, onCreated }: Props) {
             maxLength={10}
           />
 
-          <Text style={styles.hint}>
-            Após salvar, você poderá anexar fotos, documentos e laudos a este
-            registro.
-          </Text>
+          <Text style={styles.hint}>{t("records.after_save_hint")}</Text>
         </ScrollView>
       </KeyboardAvoidingView>
     </Modal>

@@ -12,32 +12,33 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
+import { useTranslation } from "react-i18next";
 import api from "../services/api";
 import type { Reminder, ReminderType } from "../types";
 import { colors, radii, spacing, fontSize, fontWeight } from "../theme";
 
-const TYPE_META: { code: ReminderType; icon: string; label: string }[] = [
-  { code: "VACCINE", icon: "💉", label: "Vacina" },
-  { code: "VET_RETURN", icon: "🏥", label: "Retorno" },
-  { code: "CUSTOM", icon: "📌", label: "Outro" },
+const TYPE_META: { code: ReminderType; icon: string; key: string }[] = [
+  { code: "VACCINE", icon: "💉", key: "reminders.type_vaccine" },
+  { code: "VET_RETURN", icon: "🏥", key: "reminders.type_vet_return" },
+  { code: "CUSTOM", icon: "📌", key: "reminders.type_custom" },
 ];
 
 function todayISO(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
-function formatDue(dateISO: string): string {
+function getDueLabelKey(dateISO: string): { key: string; count: number } | null {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const due = new Date(dateISO + "T00:00:00");
   const diff = Math.round(
     (due.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
   );
-  if (diff < 0) return `venceu há ${Math.abs(diff)} d`;
-  if (diff === 0) return "hoje";
-  if (diff === 1) return "amanhã";
-  if (diff <= 7) return `em ${diff} dias`;
-  return new Date(dateISO).toLocaleDateString("pt-BR");
+  if (diff < 0) return { key: "reminders.due_overdue", count: Math.abs(diff) };
+  if (diff === 0) return { key: "reminders.due_today", count: 0 };
+  if (diff === 1) return { key: "reminders.due_tomorrow", count: 0 };
+  if (diff <= 7) return { key: "reminders.due_in_days", count: diff };
+  return null; // formato data padrão
 }
 
 type Props = {
@@ -48,7 +49,14 @@ type Props = {
 };
 
 export function RemindersModal({ visible, petId, petName, onClose }: Props) {
+  const { t } = useTranslation();
   const [items, setItems] = useState<Reminder[]>([]);
+
+  const formatDue = (dateISO: string): string => {
+    const info = getDueLabelKey(dateISO);
+    if (!info) return new Date(dateISO).toLocaleDateString();
+    return t(info.key, { count: info.count });
+  };
   const [loading, setLoading] = useState(true);
 
   const [showForm, setShowForm] = useState(false);
@@ -86,11 +94,11 @@ export function RemindersModal({ visible, petId, petName, onClose }: Props) {
 
   const handleSubmit = async () => {
     if (!title.trim()) {
-      Alert.alert("Atenção", "Informe um título.");
+      Alert.alert(t("common.warning"), t("reminders.title_required"));
       return;
     }
     if (!/^\d{4}-\d{2}-\d{2}$/.test(dateDue)) {
-      Alert.alert("Atenção", "Data deve estar no formato AAAA-MM-DD.");
+      Alert.alert(t("common.warning"), t("reminders.date_invalid"));
       return;
     }
     setSaving(true);
@@ -104,23 +112,23 @@ export function RemindersModal({ visible, petId, petName, onClose }: Props) {
       reset();
       await load();
     } catch {
-      Alert.alert("Erro", "Não foi possível criar o lembrete.");
+      Alert.alert(t("common.error"), t("reminders.create_failed"));
     } finally {
       setSaving(false);
     }
   };
 
   const handleDismiss = (r: Reminder) => {
-    Alert.alert("Marcar como resolvido?", r.title, [
-      { text: "Cancelar", style: "cancel" },
+    Alert.alert(t("reminders.dismiss_confirm_title"), r.title, [
+      { text: t("common.cancel"), style: "cancel" },
       {
-        text: "Resolvido",
+        text: t("reminders.dismiss_confirm_btn"),
         onPress: async () => {
           try {
             await api.post(`/reminders/${r.id}/dismiss/`);
             await load();
           } catch {
-            Alert.alert("Erro", "Não foi possível.");
+            Alert.alert(t("common.error"), t("reminders.dismiss_failed"));
           }
         },
       },
@@ -128,17 +136,17 @@ export function RemindersModal({ visible, petId, petName, onClose }: Props) {
   };
 
   const handleDelete = (r: Reminder) => {
-    Alert.alert("Excluir lembrete?", r.title, [
-      { text: "Cancelar", style: "cancel" },
+    Alert.alert(t("reminders.delete_confirm_title"), r.title, [
+      { text: t("common.cancel"), style: "cancel" },
       {
-        text: "Excluir",
+        text: t("common.delete"),
         style: "destructive",
         onPress: async () => {
           try {
             await api.delete(`/reminders/${r.id}/`);
             setItems((prev) => prev.filter((it) => it.id !== r.id));
           } catch {
-            Alert.alert("Erro", "Não foi possível excluir.");
+            Alert.alert(t("common.error"), t("reminders.delete_failed"));
           }
         },
       },
@@ -158,12 +166,12 @@ export function RemindersModal({ visible, petId, petName, onClose }: Props) {
       >
         <View style={styles.header}>
           <TouchableOpacity onPress={onClose}>
-            <Text style={styles.cancelText}>Fechar</Text>
+            <Text style={styles.cancelText}>{t("common.close")}</Text>
           </TouchableOpacity>
-          <Text style={styles.title}>🔔 Lembretes</Text>
+          <Text style={styles.title}>{t("reminders.modal_title")}</Text>
           <TouchableOpacity onPress={() => setShowForm((v) => !v)}>
             <Text style={styles.actionText}>
-              {showForm ? "Cancelar" : "+ Novo"}
+              {showForm ? t("common.cancel") : t("reminders.new_btn")}
             </Text>
           </TouchableOpacity>
         </View>
@@ -171,42 +179,46 @@ export function RemindersModal({ visible, petId, petName, onClose }: Props) {
         <ScrollView contentContainerStyle={styles.content}>
           {showForm && (
             <View style={styles.formCard}>
-              <Text style={styles.formTitle}>Novo lembrete</Text>
+              <Text style={styles.formTitle}>{t("reminders.form_title_section")}</Text>
               <View style={styles.typeRow}>
-                {TYPE_META.map((t) => {
-                  const active = t.code === type;
+                {TYPE_META.map((meta) => {
+                  const active = meta.code === type;
                   return (
                     <TouchableOpacity
-                      key={t.code}
+                      key={meta.code}
                       style={[
                         styles.typeBtn,
                         active && styles.typeBtnActive,
                       ]}
-                      onPress={() => setType(t.code)}
+                      onPress={() => setType(meta.code)}
                     >
-                      <Text style={styles.typeIcon}>{t.icon}</Text>
+                      <Text style={styles.typeIcon}>{meta.icon}</Text>
                       <Text
                         style={[
                           styles.typeLabel,
                           active && styles.typeLabelActive,
                         ]}
                       >
-                        {t.label}
+                        {t(meta.key)}
                       </Text>
                     </TouchableOpacity>
                   );
                 })}
               </View>
 
-              <Text style={styles.label}>Título *</Text>
+              <Text style={styles.label}>
+                {t("reminders.form_title")} {t("common.required")}
+              </Text>
               <TextInput
                 style={styles.input}
                 value={title}
                 onChangeText={setTitle}
-                placeholder="V10 anual, retorno do exame…"
+                placeholder={t("reminders.form_title_placeholder")}
                 maxLength={140}
               />
-              <Text style={styles.label}>Data (AAAA-MM-DD) *</Text>
+              <Text style={styles.label}>
+                {t("reminders.form_date")} {t("common.required")}
+              </Text>
               <TextInput
                 style={styles.input}
                 value={dateDue}
@@ -215,12 +227,12 @@ export function RemindersModal({ visible, petId, petName, onClose }: Props) {
                 keyboardType="numbers-and-punctuation"
                 maxLength={10}
               />
-              <Text style={styles.label}>Descrição</Text>
+              <Text style={styles.label}>{t("reminders.form_description")}</Text>
               <TextInput
                 style={[styles.input, { minHeight: 60 }]}
                 value={description}
                 onChangeText={setDescription}
-                placeholder="Detalhes opcionais"
+                placeholder={t("reminders.form_description_placeholder")}
                 multiline
                 textAlignVertical="top"
               />
@@ -230,7 +242,7 @@ export function RemindersModal({ visible, petId, petName, onClose }: Props) {
                 disabled={saving}
               >
                 <Text style={styles.btnPrimaryText}>
-                  {saving ? "Salvando…" : "Salvar"}
+                  {saving ? t("common.saving") : t("common.save")}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -244,12 +256,11 @@ export function RemindersModal({ visible, petId, petName, onClose }: Props) {
             />
           ) : items.length === 0 ? (
             <Text style={styles.empty}>
-              Nenhum lembrete para {petName}. Toque em “+ Novo” para agendar
-              uma vacina, retorno ao vet ou outro evento.
+              {t("reminders.empty", { name: petName })}
             </Text>
           ) : (
             items.map((r) => {
-              const meta = TYPE_META.find((t) => t.code === r.type);
+              const meta = TYPE_META.find((m) => m.code === r.type);
               const dimmed = !r.is_active;
               return (
                 <View
@@ -261,16 +272,16 @@ export function RemindersModal({ visible, petId, petName, onClose }: Props) {
                     <Text style={styles.cardTitle}>{r.title}</Text>
                     <Text style={styles.cardMeta}>
                       {formatDue(r.date_due)} ·{" "}
-                      {new Date(r.date_due).toLocaleDateString("pt-BR")}
+                      {new Date(r.date_due).toLocaleDateString()}
                     </Text>
                     {r.description ? (
                       <Text style={styles.cardDesc}>{r.description}</Text>
                     ) : null}
                     {r.notified_at && (
-                      <Text style={styles.cardOk}>✓ Notificação enviada</Text>
+                      <Text style={styles.cardOk}>{t("reminders.notif_sent")}</Text>
                     )}
                     {r.dismissed_at && (
-                      <Text style={styles.cardDone}>✓ Resolvido</Text>
+                      <Text style={styles.cardDone}>{t("reminders.resolved")}</Text>
                     )}
                   </View>
                   <View style={styles.actions}>
