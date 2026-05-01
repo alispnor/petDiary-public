@@ -168,12 +168,13 @@
 > **Regra durável (Ali, 2026-05-01):** todo componente novo deve usar
 > `t("chave")` desde o primeiro commit (memory `feedback_i18n_first.md`).
 >
-> **Débito técnico de i18n** — componentes entregues recentemente com
-> strings hardcoded em pt-BR (precisam migrar quando rodar B1/B3):
-> - Web: `RemindersSection`, `NotificationsTab` em AccountSettings, parte
->   de `Notifications.tsx` (cabeçalho), `MembersSection`,
->   `VetAccessSection`, `AttachmentsList`, `AuditTimeline`
-> - Mobile: tudo (pendência B3 — react-i18next ainda não instalado)
+> **Débito técnico de i18n** — strings hardcoded a migrar em pendências:
+> - Web (B1): `RemindersSection`, `NotificationsTab` em AccountSettings,
+>   parte de `Notifications.tsx`, `MembersSection`, `VetAccessSection`,
+>   `AttachmentsList`, `AuditTimeline`
+> - Mobile (B3.2): AccountSettings, Subscription, HelpCenter,
+>   Notifications, NotificationPreferences, todos os 7 modais. Infra
+>   i18n (B3.1) **já entregue** — falta apenas substituir strings.
 
 | Idioma | Código | Web | Mobile | Backend | Notas |
 |---|---|---|---|---|---|

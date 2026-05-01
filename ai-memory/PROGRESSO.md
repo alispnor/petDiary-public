@@ -1,7 +1,7 @@
 # 📊 PROGRESSO — petDiary
 
 > **Arquivo vivo.** Atualize a cada sessão de trabalho.
-> Última atualização: **2026-05-01 (sessão 8 — Spec 17 Fase 5b fecha a spec inteira: lembretes Reminder + nova regra durável i18n-first)**
+> Última atualização: **2026-05-01 (sessão 9 — B3.1: infra i18n mobile + 5 telas migradas + Spec 18 admin/suporte salva)**
 
 ---
 
@@ -771,6 +771,47 @@ plugado no TutorDashboard
 🎯 **Marco da sessão 8:** sistema completo de notificações + lembretes
 (in-app + push expo + web push) em paridade total mobile↔web. Falta só
 VAPID keys (PENDENCIAS-HUMANAS item 14) para push real em produção.
+
+### 2026-05-01 — Sessão 9 (B3.1 — i18n mobile parcial + Spec 18)
+> Continuação direta da sessão 8. B3.1 entregue, B3.2 aberta.
+
+**Entregue (commit `6433d1c`):**
+- Libs: `i18next`, `react-i18next`, `expo-localization`
+- Infra `src/i18n/index.ts`: 6 locales registrados (pt-BR como fonte;
+  pt-PT/en-US/es-ES/fr-FR/ar fallback até B4); `detectInitial()` via
+  expo-localization; helper `isRTL()` pronto
+- `pt-BR.json` completo: 14 namespaces (common, auth, home, pet,
+  records, attachments, vets, members, reminders, notifications,
+  account, subscription, help, preferences, username_check)
+- App.tsx importa i18n no boot
+- AppNavigator reaplica idioma persistido após hidratação
+- Tipo Language expandido para 6 códigos
+- Telas migradas (5/9): Login, Register, ForgotPassword, HomeTutor,
+  PetDashboard
+- LanguageSwitcher: 6 idiomas + chama i18n.changeLanguage
+
+**Spec 18 salva** (commit `6433d1c`):
+- Pedido do Ali: login admin + troca senha + páginas admin web E
+  mobile + suporte real (tickets) com chat
+- Decisão durável: admin no mobile **read-only** (KPIs + lista
+  tickets); edição só no web
+- Adicionada ao índice de specs
+
+**Pendência aberta — B3.2:**
+- AccountSettings, SubscriptionDashboard, HelpCenter, Notifications,
+  NotificationPreferences + 7 modais (Pet/Record/Vet/Members/Reminders/
+  Attachments)
+- pt-BR.json **já tem todas as chaves** — trabalho mecânico de
+  substituir strings
+
+**Documentos atualizados:**
+- PARIDADE-MOBILE-WEB.md: nota de débito técnico atualizada (B3.1
+  entregue, B3.2 aberto)
+- PENDENCIAS-ORDENADAS.md: B3 dividido em B3.1 (✅) e B3.2 (pendente)
+
+🎯 **Marco da sessão 9:** infra i18n pronta + 5 telas em pt-BR via
+`t()`. Para fechar B3 inteiro falta apenas migração mecânica das
+telas restantes (B3.2). Depois B4 cria os 5 outros locales.
 
 ### Próxima sessão — TODO
 **Roadmap principal + Fases A-G → 100% completo!** ✨
