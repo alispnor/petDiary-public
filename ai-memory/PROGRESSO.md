@@ -1,7 +1,7 @@
 # 📊 PROGRESSO — petDiary
 
 > **Arquivo vivo.** Atualize a cada sessão de trabalho.
-> Última atualização: **2026-05-01 (sessão 3 — Fases 2 + 3.1 + 3.2 + specs 05/06)**
+> Última atualização: **2026-05-01 (sessão 3 — Fase 3 completa + specs 05/06/07)**
 
 ---
 
@@ -320,14 +320,25 @@ Decisões do Ali registradas em memory: email+phone obrigatórios, CPF opcional,
   - Componente `<VetAccessSection>` reutilizável: collapse com lista de vets ativos por pet, modal de confirmação de revogação com cores vermelhas, mensagem clara "registros já adicionados continuam no histórico"
   - `TutorDashboard` busca `/access/active/` em paralelo aos pets (Promise.all em `loadAll()`); filtra por petId no card; refetch após revogar
   - HMR sem erros, /tutor HTTP 200
-- ✅ **Specs 05 e 06** salvas em `ai-memory/specs/`:
-  - 05: Captura de mídia (drag-drop + webcam web; câmera/galeria/áudio/vídeo/doc mobile) — pedido do Ali no detalhamento da Fase 7
-  - 06: Fila de jobs (Celery+Redis recomendado, BullMQ alternativa) — pré-requisito para Specs 01 (webhook) e 04 (IA assíncrona)
+- ✅ **Specs 05, 06 e 07** salvas em `ai-memory/specs/`:
+  - 05: Captura de mídia (drag-drop + webcam web; câmera/galeria/áudio/vídeo/doc mobile)
+  - 06: Fila de jobs (Celery+Redis recomendado, BullMQ alternativa) com **referência REAL** capturada do guep-portaria-backend (5 queues + workers + autoloader + Bull Board)
+  - 07: WebSocket realtime com **referência REAL** capturada do guep-crm (`socket.io` + Redis adapter + auth JWT no handshake + presença multi-tab safe + emitters tipados)
+- ✅ **Fase 3.3** — Web Vet: sidebar de pets visitados:
+  - Componente `<AccessHistorySidebar>` reutilizável: lista cards do `/access/history/`, ícone por espécie, info do tutor, badge de status (verde ACTIVE / cinza EXPIRED / vermelho REVOKED), última visita formatada
+  - Click em card ATIVO → navega pra `/clinical/<petId>`; status não-ativo mostra alerta explicando motivo
+  - Layout split: sidebar 320px à esquerda + main centralizada com PinInput
+  - Header agora mostra `clinic_name` do vet
+  - Refresh do histórico após cada claim bem-sucedido
+- ✅ **Fase 3 — completa** (3.1 backend + 3.2 web tutor + 3.3 web vet)
 
 ### Próxima sessão — TODO
-- Fase 3.2: Web Tutor — seção "Vets com acesso" no card de pet + modal de revogação
-- Fase 3.3: Web Vet — sidebar split com pets visitados + status badge
-- Fases 4-7: login único vet, co-tutores, auditoria, uploads
+- Fase 4: Login único do veterinário (token blacklist via `simplejwt[token_blacklist]`, derruba sessões anteriores)
+- Fase 5: Co-tutores / família (PetMember CARETAKER, sem permissão de gerar PIN)
+- Fase 6: Auditoria (AuditLog, só mutações)
+- Fase 7: Uploads/download/print + spec 05 (captura de mídia)
+- Fase 7.5: Spec 06 (filas) — pré-requisito para webhooks/IA
+- Fase 7.7: Spec 07 (WebSocket realtime) — pode rodar junto com 7.5 (compartilha Redis)
 - Fases 8-10 (specs salvas): assinaturas/suporte/deleção LGPD
 - Etapa final: produção
 
