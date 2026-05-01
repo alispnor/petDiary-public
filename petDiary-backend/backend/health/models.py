@@ -51,3 +51,43 @@ class HealthRecord(models.Model):
 
     def __str__(self):
         return f"{self.title} ({self.pet.name})"
+
+
+class HealthRecordAttachment(models.Model):
+    """Arquivo anexado a um HealthRecord (foto de receita, PDF de exame, etc.).
+
+    O conteúdo é salvo via storage abstrato (`health.services.storage`) — local
+    no MVP, S3 com presigned URLs em produção (Spec 04).
+    """
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    record = models.ForeignKey(
+        HealthRecord,
+        on_delete=models.CASCADE,
+        related_name="attachments",
+        verbose_name=_("registro de saúde"),
+    )
+    storage_key = models.CharField(
+        _("chave do storage"), max_length=512,
+        help_text=_("Caminho/ID do arquivo no backend de storage."),
+    )
+    file_name = models.CharField(_("nome do arquivo"), max_length=255)
+    description = models.CharField(_("descrição"), max_length=500, blank=True, default="")
+    mime_type = models.CharField(_("tipo MIME"), max_length=120, blank=True, default="")
+    file_size = models.PositiveIntegerField(_("tamanho (bytes)"), default=0)
+    uploaded_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True, blank=True,
+        related_name="uploaded_attachments",
+        verbose_name=_("enviado por"),
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = _("anexo")
+        verbose_name_plural = _("anexos")
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.file_name} ({self.record.title})"

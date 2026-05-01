@@ -112,6 +112,13 @@ LOCALE_PATHS = [
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
+# Media (uploads de attachments)
+MEDIA_URL = "media/"
+MEDIA_ROOT = BASE_DIR / "media"
+
+# Backend de storage para attachments — "local" (default) ou "s3" (futuro)
+ATTACHMENT_STORAGE_BACKEND = config("ATTACHMENT_STORAGE_BACKEND", default="local")
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # DRF

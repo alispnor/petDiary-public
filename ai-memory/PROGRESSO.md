@@ -1,7 +1,7 @@
 # 📊 PROGRESSO — petDiary
 
 > **Arquivo vivo.** Atualize a cada sessão de trabalho.
-> Última atualização: **2026-05-01 (sessão 3 — Fase 6 completa: auditoria backend + UI)**
+> Última atualização: **2026-05-01 (sessão 3 — Fase 7.1 attachments backend completo)**
 
 ---
 
@@ -312,6 +312,20 @@ Decisões do Ali registradas em memory: email+phone obrigatórios, CPF opcional,
   - Integrado em TutorDashboard via `<MembersSection>` em cada card
 - ✅ **Fase 5 — completa** (5.1+5.2+5.3+5.4 backend + 5.5+5.6 web)
 - ✅ **Specs 12 (Cupons) e 13 (Admin Dashboard)** salvas em `ai-memory/specs/`
+- ✅ **Fase 7.1 (backend)** — Modelo HealthRecordAttachment + storage abstrato + endpoints:
+  - `health/services/storage.py`: classe abstrata `StorageBackend` (save, open, delete, get_url) + `LocalStorageBackend` (default) + `S3StorageBackend` (stub para Spec 04). `make_storage_key(pet_id, record_id, filename)` gera UUID-key evitando conflitos
+  - Modelo `HealthRecordAttachment`: id UUID, record FK, storage_key, file_name, description, mime_type, file_size, uploaded_by FK SET_NULL, created_at
+  - Settings: `MEDIA_URL`, `MEDIA_ROOT`, `ATTACHMENT_STORAGE_BACKEND` (default "local")
+  - Migration 0002 aplicada
+  - `attachment_views.py` com 3 views:
+    - `RecordAttachmentListCreateView`: GET lista anexos do record / POST upload (multipart com file + file_name + description)
+    - `AttachmentDetailView`: DELETE remove do storage + DB
+    - `AttachmentServeView`: GET /<id>/<mode>/ com mode in {view, download} — `view` retorna inline (PDF/imagem no browser), `download` força Content-Disposition attachment
+  - URLs aninhadas em `pets/<pet_pk>/health-records/<record_pk>/attachments/`; serve em `/attachments/<id>/<mode>/` (sem nesting porque attachment_id é UUID único)
+  - Permissão: helper `_user_can_access_pet` reutilizando `pet.has_member` ou `vet_has_active_access`
+  - Validação E2E (8 testes via curl, todos OK):
+    - T1 POST upload retorna 201 com download_url/view_url · T2 GET list traz o anexo · T3 GET view inline retorna conteúdo · T4 GET download tem Content-Disposition: attachment · T5 outro tutor → 404 · T6 DELETE 204 · T7 GET após delete → 404 · T8 cleanup
+
 - ✅ **Fase 6.2** — Web: aba "Histórico de alterações" no ClinicalView:
   - Tipos novos em `types.ts`: `AuditAction`, `AuditEntry`, `PaginatedResponse<T>`
   - Componente `<AuditTimeline>`: lê `/pets/<id>/audit/?page_size=100`, mostra cada entrada com:
