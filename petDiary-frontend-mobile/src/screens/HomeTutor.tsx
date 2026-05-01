@@ -11,6 +11,7 @@ import {
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import api from "../services/api";
 import { useAppStore } from "../store/useAppStore";
+import { PetFormModal } from "../components/PetFormModal";
 import type { RootStackParamList } from "../navigation/AppNavigator";
 import type { Pet } from "../types";
 import { colors, radii, spacing, fontSize, fontWeight } from "../theme";
@@ -32,6 +33,7 @@ export function HomeTutor({ navigation }: Props) {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState("");
+  const [petModal, setPetModal] = useState(false);
 
   const load = useCallback(async (isRefresh = false) => {
     if (isRefresh) setRefreshing(true);
@@ -85,6 +87,13 @@ export function HomeTutor({ navigation }: Props) {
           <Text style={styles.subtitle}>Selecione um pet para gerenciar</Text>
         </View>
         <TouchableOpacity
+          onPress={() => setPetModal(true)}
+          style={styles.headerBtnAccent}
+          accessibilityLabel="Adicionar pet"
+        >
+          <Text style={styles.headerBtnAccentText}>+ Pet</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
           onPress={() => navigation.navigate("AccountSettings")}
           style={styles.logoutBtn}
           accessibilityLabel="Abrir conta"
@@ -109,9 +118,15 @@ export function HomeTutor({ navigation }: Props) {
           <Text style={styles.emptyEmoji}>🐾</Text>
           <Text style={styles.emptyTitle}>Você ainda não tem pets</Text>
           <Text style={styles.emptyText}>
-            Cadastre seu primeiro pet pelo portal web em
-            {"\n"}http://localhost:5173/tutor
+            Toque em <Text style={{ fontWeight: fontWeight.bold }}>+ Pet</Text>{" "}
+            no topo para cadastrar o primeiro.
           </Text>
+          <TouchableOpacity
+            onPress={() => setPetModal(true)}
+            style={styles.retryBtn}
+          >
+            <Text style={styles.btnText}>+ Adicionar pet</Text>
+          </TouchableOpacity>
         </View>
       ) : (
         <FlatList
@@ -125,6 +140,12 @@ export function HomeTutor({ navigation }: Props) {
           }
         />
       )}
+
+      <PetFormModal
+        visible={petModal}
+        onClose={() => setPetModal(false)}
+        onCreated={(p) => setPets((prev) => [p, ...prev])}
+      />
     </View>
   );
 }
@@ -155,8 +176,20 @@ const styles = StyleSheet.create({
     paddingVertical: spacing[2],
     borderRadius: radii.md,
     backgroundColor: "#f4f4f4",
+    marginLeft: spacing[2],
   },
   logoutText: { color: colors.text.secondary, fontSize: 22 },
+  headerBtnAccent: {
+    paddingHorizontal: spacing[3],
+    paddingVertical: spacing[2],
+    borderRadius: radii.pill,
+    backgroundColor: colors.brand.teal,
+  },
+  headerBtnAccentText: {
+    color: "#fff",
+    fontWeight: fontWeight.semibold,
+    fontSize: fontSize.sm,
+  },
   list: { padding: spacing[4], gap: spacing[3] },
   card: {
     flexDirection: "row",

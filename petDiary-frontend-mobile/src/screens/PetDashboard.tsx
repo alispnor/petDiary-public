@@ -18,6 +18,8 @@ import type { RootStackParamList } from "../navigation/AppNavigator";
 import type { HealthRecord, RecordType, VetAccessToken } from "../types";
 import { RecordFormModal } from "../components/RecordFormModal";
 import { AttachmentsList } from "../components/AttachmentsList";
+import { VetAccessModal } from "../components/VetAccessModal";
+import { MembersModal } from "../components/MembersModal";
 import { colors, radii, spacing, fontSize, fontWeight } from "../theme";
 
 type Props = NativeStackScreenProps<RootStackParamList, "PetDashboard">;
@@ -48,6 +50,8 @@ export function PetDashboard({ route }: Props) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const [recordModal, setRecordModal] = useState(false);
+  const [vetsModal, setVetsModal] = useState(false);
+  const [membersModal, setMembersModal] = useState(false);
 
   const [generatingPin, setGeneratingPin] = useState(false);
   const [pinResult, setPinResult] = useState<VetAccessToken | null>(null);
@@ -130,6 +134,21 @@ export function PetDashboard({ route }: Props) {
             <Text style={styles.btnText}>
               {generatingPin ? "Gerando…" : "🔑 Gerar PIN"}
             </Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.secondaryActions}>
+          <TouchableOpacity
+            style={styles.btnSecondary}
+            onPress={() => setVetsModal(true)}
+          >
+            <Text style={styles.btnSecondaryText}>🩺 Vets</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.btnSecondary}
+            onPress={() => setMembersModal(true)}
+          >
+            <Text style={styles.btnSecondaryText}>👨‍👩‍👧 Familiares</Text>
           </TouchableOpacity>
         </View>
 
@@ -217,6 +236,18 @@ export function PetDashboard({ route }: Props) {
         onCreated={handleRecordCreated}
       />
 
+      <VetAccessModal
+        visible={vetsModal}
+        petId={pet.id}
+        onClose={() => setVetsModal(false)}
+      />
+
+      <MembersModal
+        visible={membersModal}
+        petId={pet.id}
+        onClose={() => setMembersModal(false)}
+      />
+
       {/* PIN Modal */}
       <Modal
         visible={!!pinResult}
@@ -286,6 +317,26 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: fontWeight.semibold,
     fontSize: fontSize.base,
+  },
+  secondaryActions: {
+    flexDirection: "row",
+    paddingHorizontal: spacing[4],
+    gap: spacing[3],
+    marginTop: spacing[3],
+  },
+  btnSecondary: {
+    flex: 1,
+    backgroundColor: colors.bg.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    paddingVertical: spacing[3],
+    borderRadius: radii.pill,
+    alignItems: "center",
+  },
+  btnSecondaryText: {
+    color: colors.text.primary,
+    fontWeight: fontWeight.semibold,
+    fontSize: fontSize.sm,
   },
   timelineHeader: {
     flexDirection: "row",

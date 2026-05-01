@@ -56,6 +56,48 @@ export interface VetAccessToken {
   created_at: string;
 }
 
+export type MemberRole = "OWNER" | "CARETAKER";
+
+export interface MemberUser {
+  id: string;
+  username: string;
+  full_name: string;
+  email: string;
+  phone: string;
+}
+
+export interface PetMember {
+  id: string;
+  user: MemberUser;
+  role: MemberRole;
+  added_at: string;
+}
+
+export interface VetSummary {
+  id: string;
+  full_name: string;
+  email: string;
+  phone: string;
+  crmv: string;
+  clinic_name: string;
+}
+
+export interface PetSummary {
+  id: string;
+  name: string;
+  species: Species;
+  breed: string;
+}
+
+export interface ActiveAccess {
+  id: string;
+  pet: PetSummary;
+  vet: VetSummary;
+  claimed_at: string;
+  expires_at: string;
+  last_visit: string | null;
+}
+
 export interface Attachment {
   id: string;
   file_name: string;
