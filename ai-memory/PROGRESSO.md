@@ -1,7 +1,7 @@
 # 📊 PROGRESSO — petDiary
 
 > **Arquivo vivo.** Atualize a cada sessão de trabalho.
-> Última atualização: **2026-05-01 (sessão 1.2 — web do tutor + fluxo PIN funcional + logo atualizado)**
+> Última atualização: **2026-05-01 (sessão 1.3 — push de 9 commits para origin/master)**
 
 ---
 
@@ -246,11 +246,31 @@ Nasce como **Prontuário Médico Inteligente** (Fase 1) e evolui para **Rede Soc
   1. Tutor `joao` se cadastra → 2. login → 3. /me retorna role TUTOR → 4. cria pet "Bidu" → 5. gera PIN sem `expires_at` (default funciona) → 6. Vet `drvet` se cadastra → 7. login → 8. usa PIN com `{access_code}` → 9. vê pet → 10. adiciona nota → 11. tutor vê a nota
 - 🎯 **Marco:** Web está pronto para testar manualmente no browser
 
+### 2026-05-01 — Sessão 1.3 (commits + push para origin)
+- ✅ `.gitignore` criado (cobre envs, deps, builds, exports gerados, IDE)
+- ✅ `.env.local`/`.env.dev` removidos do tracking (continham secrets dev)
+- ✅ `.ai-pickup.md` removido do staging (uso local)
+- ✅ Logo dark adicionado pelo Ali (`logotipo/petDiaryLogoDark.png`)
+- ✅ `generate-icons.py` estendido para suportar variante dark opcional → gera `icon-dark`, `splash-dark`, `logo-dark-{192,512}` quando arquivo dark existe
+- ✅ TutorDashboard ganhou botão "📋 Ver prontuário" linkando para `/clinical/<petId>` — fecha o ciclo do tutor
+- ✅ **9 commits separados por fase** organizados e pushed para `origin/master`:
+  1. `chore: add .gitignore for monorepo`
+  2. `docs(ai-memory): add project knowledge base`
+  3. `feat(infra): unified docker compose at root with profiles`
+  4. `fix(backend): CORS + alinhar contratos do PIN e health-records`
+  5. `feat(web): tutor dashboard + login universal + fluxo PIN E2E`
+  6. `feat(mobile): theme oficial + assets atualizados`
+  7. `feat(web): tutor pode abrir prontuário do próprio pet`
+  8. `chore(brand): logos source + script de geração com variante dark`
+  9. `chore(mobile): regerar splash com bg da paleta oficial`
+- ❌ **Não commitados** (ficaram untracked): `CLAUDE.md` e `frontend-guidelines.md` — são templates do projeto Guep CRM que o Ali deixou como referência, não fazem parte do petDiary
+
 ### Próxima sessão — TODO
 - Testar manualmente no browser (criar conta, fluxo completo) e ajustar UX se algo travar
 - Migrar mobile para o novo padrão (Login → API real → MOCK_PETS substituído)
 - Padronizar `EXPO_PUBLIC_API_URL` (bug #10)
 - Endpoint `POST /access/<id>/revoke/` (tutor revoga PIN)
+- Decidir se `CLAUDE.md` e `frontend-guidelines.md` devem ser removidos da raiz ou movidos para `ai-memory/refs/`
 
 ---
 
