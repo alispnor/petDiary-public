@@ -1,7 +1,7 @@
 # 📊 PROGRESSO — petDiary
 
 > **Arquivo vivo.** Atualize a cada sessão de trabalho.
-> Última atualização: **2026-05-01 (sessão 3 — Fase 2.1 storage dinâmico + 4 specs futuras salvas)**
+> Última atualização: **2026-05-01 (sessão 3 — Fases 2 completa + 3.1 backend de acessos)**
 
 ---
 
@@ -304,10 +304,24 @@ Decisões do Ali registradas em memory: email+phone obrigatórios, CPF opcional,
   - `setKeepLogged(checked)` chamado ANTES do login para que o storage decida onde escrever desde o primeiro byte
   - Hint discreto "ⓘ Sua sessão será encerrada ao fechar o navegador" quando desmarcado
   - Estilo neutro com checkbox accent-brand-teal
+- ✅ **Fase 2 — completa** (validação no browser delegada ao Ali — ele escolheu Opção A: pular validação manual e seguir pra Fase 3)
+- ✅ **Fase 3.1** — Backend: ciclo de vida de acesso vet ↔ pet:
+  - `VetAccessToken` ganhou `claimed_at` (DateTimeField). Migration 0003 aplicada.
+  - `ClaimAccessView` agora seta `claimed_at = now()` no momento do claim
+  - 3 endpoints novos:
+    - `POST /access/tokens/<id>/revoke/` (tutor revoga; soft-delete: `is_active=False, deleted_at=now`)
+    - `GET /access/active/` (tutor: lista vets ativos com info de clínica + último contato + last_visit)
+    - `GET /access/history/` (vet: lista pets visitados com status computed: ACTIVE/EXPIRED/REVOKED)
+  - `last_visit` = MAX(health_records.created_at WHERE author=vet AND pet=this) com fallback `claimed_at`
+  - Validado E2E (12 testes via curl):
+    1. ✅ pet criado · 2. ✅ PIN gerado · 3. ✅ claim seta claimed_at · 4. ✅ tutor vê vet ativo · 5. ✅ nota criada · 6. ✅ vet vê status ACTIVE · 7. ✅ tutor revoga · 8. ✅ active fica vazio · 9. ✅ history mostra REVOKED · 10. ✅ vet 404 no pet revogado · 11. ✅ nota do vet preservada (auditoria) · 12. ✅ vet não pode revogar (403)
 
 ### Próxima sessão — TODO
-- Fase 2.3: validar persist (fechar/reabrir aba mantém logado) e session (desmarcado → cai ao fechar) + commit + push
-- Fase 3+: continuar plano consolidado
+- Fase 3.2: Web Tutor — seção "Vets com acesso" no card de pet + modal de revogação
+- Fase 3.3: Web Vet — sidebar split com pets visitados + status badge
+- Fases 4-7: login único vet, co-tutores, auditoria, uploads
+- Fases 8-10 (specs salvas): assinaturas/suporte/deleção LGPD
+- Etapa final: produção
 
 ---
 

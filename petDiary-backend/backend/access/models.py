@@ -34,6 +34,10 @@ class VetAccessToken(models.Model):
     expires_at = models.DateTimeField(_("expira em"))
     is_active = models.BooleanField(_("ativo"), default=True)
     is_used = models.BooleanField(_("utilizado"), default=False)
+    claimed_at = models.DateTimeField(
+        _("usado em"), null=True, blank=True,
+        help_text=_("Quando o veterinário fez o claim do PIN."),
+    )
     deleted_at = models.DateTimeField(_("excluído em"), null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
