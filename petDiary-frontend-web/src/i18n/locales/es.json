@@ -223,5 +223,138 @@
     "success": "✓ ¡Contraseña cambiada! Redirigiendo al inicio de sesión…",
     "error_generic": "Error al cambiar la contraseña. Inténtalo de nuevo.",
     "login_notice": "Contraseña cambiada con éxito. Inicia sesión nuevamente."
+  },
+  "account": {
+    "title": "Mi Cuenta",
+    "tabs": {
+      "profile": "👤 Perfil",
+      "family": "👨‍👩‍👧 Familia",
+      "subscription": "💳 Suscripción",
+      "security": "🔐 Seguridad"
+    },
+    "profile": {
+      "title": "Datos personales",
+      "address_title": "Dirección",
+      "save": "Guardar cambios",
+      "saving": "Guardando…",
+      "success": "✓ Datos actualizados con éxito",
+      "error": "Error al guardar."
+    },
+    "family": {
+      "title": "Familiares con acceso a tus mascotas",
+      "subtitle": "Añade miembros de la familia para que puedan ver y añadir registros al historial.",
+      "shared_pro": "✨ Los familiares invitados comparten tu suscripción PRO sin pagar por separado.",
+      "permissions_note": "Cada familiar tendrá su propio inicio de sesión y podrá ver/añadir registros, pero no podrá generar PIN ni revocar accesos veterinarios.",
+      "no_pets": "Aún no tienes mascotas registradas. Registra una mascota para invitar a familiares."
+    },
+    "subscription": {
+      "title": "Plan actual",
+      "status_label": "Estado",
+      "cancel_scheduled": "⚠ Cancelación programada para el final del período pagado",
+      "next_billing": "Próxima cobranza",
+      "pro_title": "PetDiary PRO",
+      "pro_features": {
+        "ocr": "✅ OCR automático de recetas y exámenes",
+        "whisper": "✅ Transcripción de audio (diario hablado)",
+        "summary": "✅ Resumen inteligente del historial",
+        "storage": "✅ Almacenamiento ilimitado para adjuntos"
+      },
+      "subscribe": "🚀 Suscribirse a PRO",
+      "cancel": "Cancelar suscripción",
+      "confirm_cancel_title": "¿Cancelar suscripción?",
+      "confirm_cancel_text": "Seguirás con acceso PRO hasta el final del período pagado.",
+      "confirm_cancel_note": "✓ Puedes reactivar en cualquier momento antes del vencimiento.",
+      "go_back": "Volver",
+      "confirm_btn": "Confirmar cancelación",
+      "canceling": "Cancelando…",
+      "not_found": "Suscripción no encontrada."
+    },
+    "security": {
+      "change_password_title": "Cambiar contraseña",
+      "change_password_text": "Necesitarás proporcionar tu contraseña actual.",
+      "change_password_btn": "🔑 Cambiar contraseña",
+      "delete_title": "Eliminar mi cuenta",
+      "delete_subtitle": "Esta acción anonimiza tus datos personales conforme a LGPD. No se puede deshacer.",
+      "delete_btn": "🗑 Eliminar mi cuenta",
+      "warn_title": "⚠ ¿Estás seguro?",
+      "warn_items": {
+        "1": "• Tu acceso será cerrado inmediatamente",
+        "2": "• Tus datos personales serán anonimizados (LGPD)",
+        "3": "• Mascotas donde eres único tutor tendrán acceso transferido a un familiar (cuidador más antiguo)",
+        "4": "• Los registros clínicos de las mascotas se preservan para auditoría",
+        "5": "• Tu suscripción PRO (si la hay) será cancelada",
+        "6": "• Esta acción no se puede deshacer"
+      },
+      "continue": "Continuar",
+      "final_title": "Confirmación final",
+      "final_text": "Para confirmar, escribe ELIMINAR y proporciona tu contraseña actual:",
+      "type_excluir": "Escribe ELIMINAR",
+      "your_password": "Tu contraseña",
+      "delete_definitively": "🗑 Eliminar definitivamente",
+      "deleting": "Eliminando…",
+      "error_password": "Contraseña incorrecta.",
+      "error_delete": "Error al eliminar la cuenta.",
+      "error_type_excluir": "Escribe ELIMINAR para confirmar.",
+      "error_no_password": "Ingresa tu contraseña."
+    }
+  },
+  "admin": {
+    "sidebar_label": "Admin",
+    "menu": {
+      "dashboard": "📊 Resumen",
+      "users": "👥 Usuarios",
+      "coupons": "💰 Cupones",
+      "tickets": "💬 Soporte"
+    },
+    "dashboard": {
+      "title": "📊 Resumen",
+      "mrr": "MRR mensual",
+      "total_users": "Usuarios totales",
+      "new_30d": "+{{count}} en los últimos 30d",
+      "pro_active": "Suscriptores PRO",
+      "churn": "Churn 30d",
+      "cancellations": "{{count}} cancelaciones",
+      "tickets_pending": "💬 Tickets pendientes",
+      "tickets_note": "Spec 03 (soporte) se implementará."
+    },
+    "users": {
+      "title": "👥 Usuarios",
+      "search_placeholder": "Buscar nombre, email, usuario…",
+      "th_name": "Nombre",
+      "th_email": "Email",
+      "th_role": "Rol",
+      "th_plan": "Plan",
+      "th_status": "Estado",
+      "th_joined": "Registrado"
+    },
+    "coupons": {
+      "title": "💰 Cupones",
+      "create_title": "+ Crear cupón",
+      "code_placeholder": "Código (ej.: NAVIDAD30)",
+      "discount_placeholder": "% descuento",
+      "max_uses_placeholder": "Límite de usos",
+      "create_btn": "Crear cupón",
+      "creating": "Creando…",
+      "th_code": "Código",
+      "th_discount": "Descuento",
+      "th_uses": "Usos",
+      "th_valid": "Válido hasta",
+      "th_status": "Estado",
+      "th_actions": "Acciones",
+      "active": "Activo",
+      "inactive": "Inactivo",
+      "deactivate": "Desactivar",
+      "empty": "Aún no se han creado cupones."
+    },
+    "tickets": {
+      "title": "💬 Soporte",
+      "wip_title": "En construcción",
+      "wip_text": "El modelo SupportTicket de la Spec 03 aún no fue implementado en el backend.",
+      "wip_note": "Cuando esté listo, esta pantalla mostrará la lista de tickets de los usuarios (Duda, Queja, Idea) con chat de respuesta en formato dividido."
+    }
+  },
+  "clinical_extra": {
+    "back": "← Volver",
+    "header_title": "Historial"
   }
 }

@@ -223,5 +223,138 @@
     "success": "✓ Password changed! Redirecting to login…",
     "error_generic": "Error changing password. Please try again.",
     "login_notice": "Password changed successfully. Please sign in again."
+  },
+  "account": {
+    "title": "My Account",
+    "tabs": {
+      "profile": "👤 Profile",
+      "family": "👨‍👩‍👧 Family",
+      "subscription": "💳 Subscription",
+      "security": "🔐 Security"
+    },
+    "profile": {
+      "title": "Personal data",
+      "address_title": "Address",
+      "save": "Save changes",
+      "saving": "Saving…",
+      "success": "✓ Data updated successfully",
+      "error": "Error saving."
+    },
+    "family": {
+      "title": "Family members with access to your pets",
+      "subtitle": "Add family members so they can view and add records to the pet's medical history.",
+      "shared_pro": "✨ Invited family members share your PRO subscription without paying separately.",
+      "permissions_note": "Each family member will have their own login and can view/add records, but cannot generate a PIN or revoke vet access.",
+      "no_pets": "You don't have any pets registered yet. Register a pet to invite family members."
+    },
+    "subscription": {
+      "title": "Current plan",
+      "status_label": "Status",
+      "cancel_scheduled": "⚠ Cancellation scheduled for the end of the paid period",
+      "next_billing": "Next billing",
+      "pro_title": "PetDiary PRO",
+      "pro_features": {
+        "ocr": "✅ Automatic OCR of prescriptions and exams",
+        "whisper": "✅ Audio transcription (spoken diary)",
+        "summary": "✅ Smart medical record summary",
+        "storage": "✅ Unlimited storage for attachments"
+      },
+      "subscribe": "🚀 Subscribe to PRO",
+      "cancel": "Cancel subscription",
+      "confirm_cancel_title": "Cancel subscription?",
+      "confirm_cancel_text": "You will continue to have PRO access until the end of the paid period.",
+      "confirm_cancel_note": "✓ You can reactivate anytime before expiration.",
+      "go_back": "Go back",
+      "confirm_btn": "Confirm cancellation",
+      "canceling": "Cancelling…",
+      "not_found": "Subscription not found."
+    },
+    "security": {
+      "change_password_title": "Change password",
+      "change_password_text": "You will need to provide your current password.",
+      "change_password_btn": "🔑 Change password",
+      "delete_title": "Delete my account",
+      "delete_subtitle": "This action anonymizes your personal data per LGPD. Cannot be undone.",
+      "delete_btn": "🗑 Delete my account",
+      "warn_title": "⚠ Are you sure?",
+      "warn_items": {
+        "1": "• Your access will be terminated immediately",
+        "2": "• Your personal data will be anonymized (LGPD)",
+        "3": "• Pets where you are the sole tutor will have access transferred to a family member (oldest caretaker)",
+        "4": "• The pets' medical records are preserved for audit",
+        "5": "• Your PRO subscription (if any) will be cancelled",
+        "6": "• This action cannot be undone"
+      },
+      "continue": "Continue",
+      "final_title": "Final confirmation",
+      "final_text": "To confirm, type DELETE and provide your current password:",
+      "type_excluir": "Type DELETE",
+      "your_password": "Your password",
+      "delete_definitively": "🗑 Delete permanently",
+      "deleting": "Deleting…",
+      "error_password": "Wrong password.",
+      "error_delete": "Error deleting account.",
+      "error_type_excluir": "Type DELETE to confirm.",
+      "error_no_password": "Please enter your password."
+    }
+  },
+  "admin": {
+    "sidebar_label": "Admin",
+    "menu": {
+      "dashboard": "📊 Overview",
+      "users": "👥 Users",
+      "coupons": "💰 Coupons",
+      "tickets": "💬 Support"
+    },
+    "dashboard": {
+      "title": "📊 Overview",
+      "mrr": "Monthly MRR",
+      "total_users": "Total users",
+      "new_30d": "+{{count}} in the last 30d",
+      "pro_active": "PRO subscribers",
+      "churn": "30d churn",
+      "cancellations": "{{count}} cancellations",
+      "tickets_pending": "💬 Pending tickets",
+      "tickets_note": "Spec 03 (support) will be implemented."
+    },
+    "users": {
+      "title": "👥 Users",
+      "search_placeholder": "Search name, email, username…",
+      "th_name": "Name",
+      "th_email": "Email",
+      "th_role": "Role",
+      "th_plan": "Plan",
+      "th_status": "Status",
+      "th_joined": "Joined"
+    },
+    "coupons": {
+      "title": "💰 Coupons",
+      "create_title": "+ Create coupon",
+      "code_placeholder": "Code (e.g. CHRISTMAS30)",
+      "discount_placeholder": "% discount",
+      "max_uses_placeholder": "Max uses",
+      "create_btn": "Create coupon",
+      "creating": "Creating…",
+      "th_code": "Code",
+      "th_discount": "Discount",
+      "th_uses": "Uses",
+      "th_valid": "Valid until",
+      "th_status": "Status",
+      "th_actions": "Actions",
+      "active": "Active",
+      "inactive": "Inactive",
+      "deactivate": "Deactivate",
+      "empty": "No coupons created yet."
+    },
+    "tickets": {
+      "title": "💬 Support",
+      "wip_title": "Under construction",
+      "wip_text": "The SupportTicket model from Spec 03 has not yet been implemented in the backend.",
+      "wip_note": "When ready, this screen will show user tickets (Question, Complaint, Idea) with reply chat in split layout."
+    }
+  },
+  "clinical_extra": {
+    "back": "← Back",
+    "header_title": "Records"
   }
 }

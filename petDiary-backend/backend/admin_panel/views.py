@@ -120,3 +120,39 @@ class AdminTicketReplyView(APIView):
             {"detail": "Spec 03 (suporte) ainda não implementada"},
             status=status.HTTP_501_NOT_IMPLEMENTED,
         )
+
+
+class AdminCouponRedemptionsView(APIView):
+    """Relatório de uso de um cupom específico — quem usou, quando, com qual desconto."""
+    permission_classes = [permissions.IsAuthenticated, IsAdminRole]
+
+    def get(self, request, pk):
+        from billing.coupon_models import Coupon, CouponRedemption
+        coupon = get_object_or_404(Coupon, pk=pk)
+        items = (
+            CouponRedemption.objects
+            .filter(coupon=coupon)
+            .order_by("-redeemed_at")[:200]
+        )
+        return Response({
+            "coupon": {
+                "id": str(coupon.id),
+                "code": coupon.code,
+                "discount_percent": coupon.discount_percent,
+                "max_uses": coupon.max_uses,
+                "current_uses": coupon.current_uses,
+                "max_per_user": coupon.max_per_user,
+            },
+            "redemptions": [
+                {
+                    "id": str(r.id),
+                    "user_id": str(r.user_id) if r.user_id else None,
+                    "user_name": r.user_name_snapshot,
+                    "user_email": r.user_email_snapshot,
+                    "discount_percent": r.discount_percent,
+                    "final_price_brl": str(r.final_price_brl),
+                    "redeemed_at": r.redeemed_at.isoformat(),
+                }
+                for r in items
+            ],
+        })

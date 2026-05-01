@@ -32,7 +32,7 @@ class CouponSerializer(serializers.ModelSerializer):
         model = Coupon
         fields = (
             "id", "code", "discount_percent", "valid_until",
-            "max_uses", "current_uses", "is_active", "is_valid",
+            "max_uses", "max_per_user", "current_uses", "is_active", "is_valid",
             "created_at",
         )
         read_only_fields = ("id", "current_uses", "is_valid", "created_at")

@@ -1,9 +1,7 @@
 """Endpoints de Billing (Subscription + Coupon + Webhook)."""
 import json
 
-from django.conf import settings
 from django.db import transaction
-from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from rest_framework import permissions, status
 from rest_framework.response import Response
@@ -12,6 +10,7 @@ from rest_framework.views import APIView
 
 from audit.helpers import log_action
 
+from .coupon_models import CouponRedemption
 from .models import Coupon, Subscription
 from .serializers import (
     ApplyCouponSerializer, CouponSerializer, SubscribeSerializer, SubscriptionSerializer,
@@ -19,13 +18,11 @@ from .serializers import (
 from .services.gateway import calculate_pro_price, get_gateway
 
 
-# ─────────── Subscription ───────────
-
 class SubscriptionView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
-        sub, _created = Subscription.objects.get_or_create(
+        sub, _ = Subscription.objects.get_or_create(
             user=request.user,
             defaults={"plan_type": Subscription.Plan.FREE},
         )
@@ -33,11 +30,6 @@ class SubscriptionView(APIView):
 
 
 class SubscribeView(APIView):
-    """POST /billing/subscribe/ — cria checkout (PIX ou cartão).
-
-    Em modo mock retorna PIX/transaction_token fake; em produção usa Asaas/MP.
-    O caller pode passar `coupon_code` opcional.
-    """
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
@@ -47,7 +39,6 @@ class SubscribeView(APIView):
         card_token = ser.validated_data.get("card_token", "")
         coupon_code = ser.validated_data.get("coupon_code", "").strip().upper()
 
-        # Aplicar cupom (race-safe)
         coupon_discount = 0
         coupon = None
         if coupon_code:
@@ -61,9 +52,13 @@ class SubscribeView(APIView):
                         {"detail": _("Cupom inválido ou expirado.")},
                         status=status.HTTP_404_NOT_FOUND,
                     )
+                if not coupon.can_be_used_by(request.user):
+                    return Response(
+                        {"detail": _("Você já atingiu o limite de uso deste cupom.")},
+                        status=status.HTTP_403_FORBIDDEN,
+                    )
                 coupon_discount = coupon.discount_percent
-                # Incrementa uso (commit do atomic)
-                coupon.current_uses = coupon.current_uses + 1
+                coupon.current_uses += 1
                 coupon.save(update_fields=["current_uses"])
 
         gateway = get_gateway()
@@ -74,15 +69,27 @@ class SubscribeView(APIView):
             coupon_discount_percent=coupon_discount,
         )
 
-        # Atualizar Subscription local
         sub, _ = Subscription.objects.get_or_create(user=request.user)
         sub.gateway_subscription_id = result.gateway_subscription_id
         if result.status == "CONFIRMED":
             sub.plan_type = Subscription.Plan.PRO
             sub.status = Subscription.Status.ACTIVE
         else:
-            sub.status = Subscription.Status.TRIALING  # aguardando confirmação
+            sub.status = Subscription.Status.TRIALING
         sub.save()
+
+        prices = calculate_pro_price(coupon_discount)
+
+        # Registrar redemption no relatório (apenas se cupom foi aplicado)
+        if coupon:
+            CouponRedemption.objects.create(
+                coupon=coupon,
+                user=request.user,
+                user_name_snapshot=request.user.full_name or request.user.username,
+                user_email_snapshot=request.user.email,
+                discount_percent=coupon_discount,
+                final_price_brl=prices["final_price"],
+            )
 
         log_action(
             actor=request.user, action="CREATE",
@@ -91,7 +98,6 @@ class SubscribeView(APIView):
             request=request,
         )
 
-        prices = calculate_pro_price(coupon_discount)
         return Response({
             "subscription": SubscriptionSerializer(sub).data,
             "checkout": {
@@ -116,33 +122,23 @@ class CancelView(APIView):
                 {"detail": _("Você não tem assinatura ativa para cancelar.")},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        # Avisa o gateway
         if sub.gateway_subscription_id:
             try:
                 get_gateway().cancel_subscription(sub.gateway_subscription_id)
             except NotImplementedError:
-                pass  # mock ou stub — apenas marca local
+                pass
         sub.cancel_at_period_end = True
         sub.save(update_fields=["cancel_at_period_end", "updated_at"])
-        log_action(
-            actor=request.user, action="UPDATE",
-            entity_type="Subscription", entity_id=sub.id,
-            description="Cancelou renovação automática",
-            request=request,
-        )
         return Response(SubscriptionSerializer(sub).data)
 
 
-# ─────────── Cupom ───────────
-
 class ApplyCouponView(APIView):
-    """POST /billing/apply-coupon/ — apenas valida o cupom + retorna preço com desconto.
+    """POST /billing/apply-coupon/ — VALIDA cupom (sem consumir).
 
-    Não consome o cupom (current_uses só é incrementado quando o user finaliza
-    o checkout em /subscribe/).
+    Checa também se o user atual ainda pode usar (max_per_user).
     """
     permission_classes = [permissions.IsAuthenticated]
-    throttle_classes = [UserRateThrottle]  # anti-bruteforce
+    throttle_classes = [UserRateThrottle]
 
     def post(self, request):
         ser = ApplyCouponSerializer(data=request.data)
@@ -155,6 +151,11 @@ class ApplyCouponView(APIView):
                 {"detail": _("Cupom inválido ou expirado.")},
                 status=status.HTTP_404_NOT_FOUND,
             )
+        if not coupon.can_be_used_by(request.user):
+            return Response(
+                {"detail": _("Você já atingiu o limite de uso deste cupom.")},
+                status=status.HTTP_403_FORBIDDEN,
+            )
 
         prices = calculate_pro_price(coupon.discount_percent)
         return Response({
@@ -164,10 +165,7 @@ class ApplyCouponView(APIView):
         })
 
 
-# ─────────── Webhook ───────────
-
 class GatewayWebhookView(APIView):
-    """POST /webhooks/gateway/ — recebe eventos do gateway (sem auth JWT)."""
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
@@ -193,7 +191,6 @@ class GatewayWebhookView(APIView):
         if not sub:
             return Response({"detail": "Subscription not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        # Roteamento mínimo de eventos
         if event_type in ("payment.confirmed", "subscription.activated"):
             sub.plan_type = Subscription.Plan.PRO
             sub.status = Subscription.Status.ACTIVE

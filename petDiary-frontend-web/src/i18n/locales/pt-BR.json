@@ -223,5 +223,138 @@
     "success": "✓ Senha alterada! Redirecionando para o login…",
     "error_generic": "Erro ao trocar a senha. Tente novamente.",
     "login_notice": "Senha alterada com sucesso. Faça login novamente."
+  },
+  "account": {
+    "title": "Minha Conta",
+    "tabs": {
+      "profile": "👤 Perfil",
+      "family": "👨‍👩‍👧 Familiares",
+      "subscription": "💳 Assinatura",
+      "security": "🔐 Segurança"
+    },
+    "profile": {
+      "title": "Dados pessoais",
+      "address_title": "Endereço",
+      "save": "Salvar alterações",
+      "saving": "Salvando…",
+      "success": "✓ Dados atualizados com sucesso",
+      "error": "Erro ao salvar."
+    },
+    "family": {
+      "title": "Familiares com acesso aos seus pets",
+      "subtitle": "Adicione membros da família para que possam ver e adicionar registros aos prontuários.",
+      "shared_pro": "✨ Familiares convidados compartilham sua assinatura PRO sem pagar separado.",
+      "permissions_note": "Cada familiar terá login próprio e poderá ver/adicionar registros, mas não poderá gerar PIN nem revogar acessos vet.",
+      "no_pets": "Você não tem pets cadastrados ainda. Cadastre um pet para poder convidar familiares."
+    },
+    "subscription": {
+      "title": "Plano atual",
+      "status_label": "Status",
+      "cancel_scheduled": "⚠ Cancelamento agendado para o fim do período pago",
+      "next_billing": "Próxima cobrança",
+      "pro_title": "PetDiary PRO",
+      "pro_features": {
+        "ocr": "✅ OCR automático de receitas e exames",
+        "whisper": "✅ Transcrição de áudio (diário falado)",
+        "summary": "✅ Resumo inteligente de prontuário",
+        "storage": "✅ Storage ilimitado para anexos"
+      },
+      "subscribe": "🚀 Assinar PRO",
+      "cancel": "Cancelar assinatura",
+      "confirm_cancel_title": "Cancelar assinatura?",
+      "confirm_cancel_text": "Você continuará com acesso PRO até o final do período já pago.",
+      "confirm_cancel_note": "✓ Pode reativar a qualquer momento antes do vencimento.",
+      "go_back": "Voltar",
+      "confirm_btn": "Confirmar cancelamento",
+      "canceling": "Cancelando…",
+      "not_found": "Assinatura não encontrada."
+    },
+    "security": {
+      "change_password_title": "Alterar senha",
+      "change_password_text": "Você precisará informar sua senha atual.",
+      "change_password_btn": "🔑 Trocar senha",
+      "delete_title": "Excluir minha conta",
+      "delete_subtitle": "Esta ação anonimiza seus dados pessoais conforme a LGPD. Não pode ser desfeita.",
+      "delete_btn": "🗑 Excluir minha conta",
+      "warn_title": "⚠ Você tem certeza?",
+      "warn_items": {
+        "1": "• Seu acesso será encerrado imediatamente",
+        "2": "• Seus dados pessoais serão anonimizados (LGPD)",
+        "3": "• Pets onde você é único tutor terão acesso transferido para um familiar (caretaker mais antigo)",
+        "4": "• Os registros clínicos dos pets são preservados para auditoria",
+        "5": "• Sua assinatura PRO (se houver) será cancelada",
+        "6": "• Esta ação não pode ser desfeita"
+      },
+      "continue": "Continuar",
+      "final_title": "Confirmação final",
+      "final_text": "Para confirmar, digite EXCLUIR e informe sua senha atual:",
+      "type_excluir": "Digite EXCLUIR",
+      "your_password": "Sua senha",
+      "delete_definitively": "🗑 Excluir definitivamente",
+      "deleting": "Excluindo…",
+      "error_password": "Senha incorreta.",
+      "error_delete": "Erro ao excluir conta.",
+      "error_type_excluir": "Digite EXCLUIR para confirmar.",
+      "error_no_password": "Informe sua senha."
+    }
+  },
+  "admin": {
+    "sidebar_label": "Admin",
+    "menu": {
+      "dashboard": "📊 Resumo",
+      "users": "👥 Usuários",
+      "coupons": "💰 Cupons",
+      "tickets": "💬 Suporte"
+    },
+    "dashboard": {
+      "title": "📊 Resumo",
+      "mrr": "MRR mensal",
+      "total_users": "Usuários totais",
+      "new_30d": "+{{count}} nos últimos 30d",
+      "pro_active": "Assinantes PRO",
+      "churn": "Churn 30d",
+      "cancellations": "{{count}} cancelamentos",
+      "tickets_pending": "💬 Tickets pendentes",
+      "tickets_note": "Spec 03 (suporte) ainda será implementada."
+    },
+    "users": {
+      "title": "👥 Usuários",
+      "search_placeholder": "Buscar nome, email, username…",
+      "th_name": "Nome",
+      "th_email": "Email",
+      "th_role": "Role",
+      "th_plan": "Plano",
+      "th_status": "Status",
+      "th_joined": "Cadastrado"
+    },
+    "coupons": {
+      "title": "💰 Cupons",
+      "create_title": "+ Criar cupom",
+      "code_placeholder": "Código (ex: NATAL30)",
+      "discount_placeholder": "% desconto",
+      "max_uses_placeholder": "Limite de usos",
+      "create_btn": "Criar cupom",
+      "creating": "Criando…",
+      "th_code": "Código",
+      "th_discount": "Desconto",
+      "th_uses": "Usos",
+      "th_valid": "Válido até",
+      "th_status": "Status",
+      "th_actions": "Ações",
+      "active": "Ativo",
+      "inactive": "Inativo",
+      "deactivate": "Desativar",
+      "empty": "Nenhum cupom criado ainda."
+    },
+    "tickets": {
+      "title": "💬 Suporte",
+      "wip_title": "Em construção",
+      "wip_text": "O modelo SupportTicket da Spec 03 ainda não foi implementado no backend.",
+      "wip_note": "Quando estiver pronto, esta tela mostrará a lista de tickets dos usuários (Dúvida, Reclamação, Ideia) com chat de resposta em layout split."
+    }
+  },
+  "clinical_extra": {
+    "back": "← Voltar",
+    "header_title": "Prontuário"
   }
 }
