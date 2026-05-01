@@ -1,7 +1,7 @@
 # 📊 PROGRESSO — petDiary
 
 > **Arquivo vivo.** Atualize a cada sessão de trabalho.
-> Última atualização: **2026-05-01 (sessão 3 — Fases 3 e 4 completas)**
+> Última atualização: **2026-05-01 (sessão 3 — Fases 3, 4 completas + 5.1 OWNER/CARETAKER)**
 
 ---
 
@@ -346,6 +346,12 @@ Decisões do Ali registradas em memory: email+phone obrigatórios, CPF opcional,
     4. ✅ refresh A retorna `{"detail": "Token está na blacklist", "code": "token_not_valid"}` ✓✓
     5. ✅ refresh B funciona normalmente
     6-8. ✅ tutor luiza com sessões X e Y simultâneas — refresh X continua funcionando
+- ✅ **Fase 5.1** — Backend: modelo PetMember + data migration:
+  - Novo `pets.PetMember` (pet, user, role OWNER/CARETAKER, added_by, added_at, unique_together pet+user)
+  - Pet helpers: `is_owner(user)`, `has_member(user)`
+  - Migration 0002 (estrutural) + 0003 (data: cada Pet existente vira PetMember OWNER com user=tutor)
+  - Admin: PetMemberInline em Pet + PetMemberAdmin standalone
+  - Verificado: 4 Pets → 4 PetMembers role=OWNER criados pra tutores corretos
 
 ### Próxima sessão — TODO
 - Fase 5: Co-tutores / família (PetMember CARETAKER, sem permissão de gerar PIN)
