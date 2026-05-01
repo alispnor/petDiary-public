@@ -7,7 +7,6 @@ import {
   StyleSheet,
   RefreshControl,
   ActivityIndicator,
-  Alert,
 } from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import api from "../services/api";
@@ -27,7 +26,6 @@ const SPECIES_EMOJI: Record<Pet["species"], string> = {
 
 export function HomeTutor({ navigation }: Props) {
   const setActivePet = useAppStore((s) => s.setActivePet);
-  const logout = useAppStore((s) => s.logout);
   const user = useAppStore((s) => s.user);
 
   const [pets, setPets] = useState<Pet[]>([]);
@@ -59,13 +57,6 @@ export function HomeTutor({ navigation }: Props) {
     navigation.navigate("PetDashboard", { pet });
   };
 
-  const handleLogout = () => {
-    Alert.alert("Sair", "Deseja realmente sair?", [
-      { text: "Cancelar", style: "cancel" },
-      { text: "Sair", style: "destructive", onPress: () => logout() },
-    ]);
-  };
-
   const renderPet = ({ item }: { item: Pet }) => (
     <TouchableOpacity
       style={styles.card}
@@ -93,8 +84,12 @@ export function HomeTutor({ navigation }: Props) {
           <Text style={styles.greet}>Olá, {user?.full_name?.split(" ")[0]}!</Text>
           <Text style={styles.subtitle}>Selecione um pet para gerenciar</Text>
         </View>
-        <TouchableOpacity onPress={handleLogout} style={styles.logoutBtn}>
-          <Text style={styles.logoutText}>Sair</Text>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("AccountSettings")}
+          style={styles.logoutBtn}
+          accessibilityLabel="Abrir conta"
+        >
+          <Text style={styles.logoutText}>⚙</Text>
         </TouchableOpacity>
       </View>
 
@@ -161,7 +156,7 @@ const styles = StyleSheet.create({
     borderRadius: radii.md,
     backgroundColor: "#f4f4f4",
   },
-  logoutText: { color: colors.text.secondary, fontSize: fontSize.sm },
+  logoutText: { color: colors.text.secondary, fontSize: 22 },
   list: { padding: spacing[4], gap: spacing[3] },
   card: {
     flexDirection: "row",

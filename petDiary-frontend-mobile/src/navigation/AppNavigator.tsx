@@ -5,12 +5,18 @@ import { useAppStore } from "../store/useAppStore";
 import { LoginScreen } from "../screens/Login";
 import { HomeTutor } from "../screens/HomeTutor";
 import { PetDashboard } from "../screens/PetDashboard";
+import { AccountSettings } from "../screens/AccountSettings";
+import { SubscriptionDashboard } from "../screens/SubscriptionDashboard";
+import { HelpCenter } from "../screens/HelpCenter";
 import type { Pet } from "../types";
 
 export type RootStackParamList = {
   Login: undefined;
   HomeTutor: undefined;
   PetDashboard: { pet: Pet };
+  AccountSettings: undefined;
+  SubscriptionDashboard: undefined;
+  HelpCenter: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -47,6 +53,21 @@ export function AppNavigator() {
               name="PetDashboard"
               component={PetDashboard}
               options={({ route }) => ({ title: route.params.pet.name })}
+            />
+            <Stack.Screen
+              name="AccountSettings"
+              component={AccountSettings}
+              options={{ title: "Minha conta" }}
+            />
+            <Stack.Screen
+              name="SubscriptionDashboard"
+              component={SubscriptionDashboard}
+              options={{ title: "Assinatura" }}
+            />
+            <Stack.Screen
+              name="HelpCenter"
+              component={HelpCenter}
+              options={{ title: "Ajuda" }}
             />
           </>
         )}
