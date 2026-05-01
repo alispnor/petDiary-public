@@ -56,6 +56,17 @@ export interface VetAccessToken {
   created_at: string;
 }
 
+export interface Attachment {
+  id: string;
+  file_name: string;
+  mime_type: string;
+  file_size: number;
+  view_url: string;
+  download_url: string;
+  uploaded_at: string;
+  uploader_name?: string;
+}
+
 export type Language = "pt-BR" | "en-US" | "es-ES";
 
 export interface AppState {

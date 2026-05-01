@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import {
   View,
   Text,
-  FlatList,
+  ScrollView,
   TouchableOpacity,
   StyleSheet,
   Alert,
@@ -10,11 +10,14 @@ import {
   Modal,
   Clipboard,
   Platform,
+  RefreshControl,
 } from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import api from "../services/api";
 import type { RootStackParamList } from "../navigation/AppNavigator";
 import type { HealthRecord, RecordType, VetAccessToken } from "../types";
+import { RecordFormModal } from "../components/RecordFormModal";
+import { AttachmentsList } from "../components/AttachmentsList";
 import { colors, radii, spacing, fontSize, fontWeight } from "../theme";
 
 type Props = NativeStackScreenProps<RootStackParamList, "PetDashboard">;
@@ -40,13 +43,16 @@ export function PetDashboard({ route }: Props) {
 
   const [records, setRecords] = useState<HealthRecord[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState("");
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+
+  const [recordModal, setRecordModal] = useState(false);
 
   const [generatingPin, setGeneratingPin] = useState(false);
   const [pinResult, setPinResult] = useState<VetAccessToken | null>(null);
 
   const loadRecords = useCallback(async () => {
-    setLoading(true);
     setError("");
     try {
       const { data } = await api.get<HealthRecord[]>(
@@ -57,10 +63,12 @@ export function PetDashboard({ route }: Props) {
       setError("Não foi possível carregar os registros.");
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   }, [pet.id]);
 
   useEffect(() => {
+    setLoading(true);
     loadRecords();
   }, [loadRecords]);
 
@@ -85,71 +93,129 @@ export function PetDashboard({ route }: Props) {
     }
   };
 
-  const renderRecord = ({ item }: { item: HealthRecord }) => (
-    <View style={styles.timelineItem}>
-      <View style={styles.timelineDot}>
-        <Text style={styles.timelineIcon}>{TYPE_ICONS[item.record_type]}</Text>
-      </View>
-      <View style={styles.timelineContent}>
-        <Text style={styles.timelineDate}>{item.date_occurred}</Text>
-        <Text style={styles.timelineTitle}>
-          {TYPE_LABELS[item.record_type]} · {item.title}
-        </Text>
-        {item.description ? (
-          <Text style={styles.timelineDesc}>{item.description}</Text>
-        ) : null}
-      </View>
-    </View>
-  );
+  const handleRecordCreated = (rec: HealthRecord) => {
+    setRecords((prev) => [rec, ...prev]);
+    setExpandedId(rec.id);
+  };
 
   return (
     <View style={styles.container}>
-      <View style={styles.petCard}>
-        <Text style={styles.petName}>{pet.name}</Text>
-        <Text style={styles.petDetail}>
-          {pet.breed || "—"}
-          {pet.weight_kg ? ` · ${pet.weight_kg} kg` : ""}
-        </Text>
-      </View>
-
-      <View style={styles.actions}>
-        <TouchableOpacity
-          style={styles.btnPin}
-          onPress={handleGeneratePin}
-          disabled={generatingPin}
-        >
-          <Text style={styles.btnText}>
-            {generatingPin ? "Gerando…" : "🔑 Gerar PIN"}
+      <ScrollView
+        contentContainerStyle={{ paddingBottom: spacing[16] }}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={() => {
+              setRefreshing(true);
+              loadRecords();
+            }}
+            tintColor={colors.brand.teal}
+          />
+        }
+      >
+        <View style={styles.petCard}>
+          <Text style={styles.petName}>{pet.name}</Text>
+          <Text style={styles.petDetail}>
+            {pet.breed || "—"}
+            {pet.weight_kg ? ` · ${pet.weight_kg} kg` : ""}
           </Text>
-        </TouchableOpacity>
-      </View>
+        </View>
 
-      <Text style={styles.sectionTitle}>Histórico Clínico</Text>
-
-      {loading ? (
-        <ActivityIndicator size="large" color={colors.brand.teal} style={{ marginTop: 32 }} />
-      ) : error ? (
-        <View style={styles.center}>
-          <Text style={styles.errorText}>{error}</Text>
-          <TouchableOpacity onPress={loadRecords} style={styles.retryBtn}>
-            <Text style={styles.btnText}>Tentar novamente</Text>
+        <View style={styles.actions}>
+          <TouchableOpacity
+            style={styles.btnPin}
+            onPress={handleGeneratePin}
+            disabled={generatingPin}
+          >
+            <Text style={styles.btnText}>
+              {generatingPin ? "Gerando…" : "🔑 Gerar PIN"}
+            </Text>
           </TouchableOpacity>
         </View>
-      ) : records.length === 0 ? (
-        <View style={styles.center}>
-          <Text style={styles.emptyText}>
-            Nenhum registro ainda.{"\n"}Adicione pelo portal web.
-          </Text>
+
+        <View style={styles.timelineHeader}>
+          <Text style={styles.sectionTitle}>Histórico Clínico</Text>
+          <TouchableOpacity
+            style={styles.btnAdd}
+            onPress={() => setRecordModal(true)}
+          >
+            <Text style={styles.btnAddText}>+ Novo</Text>
+          </TouchableOpacity>
         </View>
-      ) : (
-        <FlatList
-          data={records}
-          keyExtractor={(item) => item.id}
-          renderItem={renderRecord}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.timeline}
-        />
-      )}
+
+        {loading ? (
+          <ActivityIndicator
+            size="large"
+            color={colors.brand.teal}
+            style={{ marginTop: 32 }}
+          />
+        ) : error ? (
+          <View style={styles.center}>
+            <Text style={styles.errorText}>{error}</Text>
+            <TouchableOpacity onPress={loadRecords} style={styles.retryBtn}>
+              <Text style={styles.btnText}>Tentar novamente</Text>
+            </TouchableOpacity>
+          </View>
+        ) : records.length === 0 ? (
+          <View style={styles.center}>
+            <Text style={styles.emptyText}>
+              Nenhum registro ainda.{"\n"}Toque em{" "}
+              <Text style={{ fontWeight: fontWeight.bold }}>+ Novo</Text> para
+              adicionar.
+            </Text>
+          </View>
+        ) : (
+          <View style={styles.timeline}>
+            {records.map((item) => {
+              const isExpanded = expandedId === item.id;
+              return (
+                <View key={item.id} style={styles.timelineItem}>
+                  <TouchableOpacity
+                    style={styles.timelineRow}
+                    onPress={() =>
+                      setExpandedId(isExpanded ? null : item.id)
+                    }
+                    activeOpacity={0.8}
+                  >
+                    <View style={styles.timelineDot}>
+                      <Text style={styles.timelineIcon}>
+                        {TYPE_ICONS[item.record_type]}
+                      </Text>
+                    </View>
+                    <View style={styles.timelineContent}>
+                      <Text style={styles.timelineDate}>
+                        {item.date_occurred}
+                      </Text>
+                      <Text style={styles.timelineTitle}>
+                        {TYPE_LABELS[item.record_type]} · {item.title}
+                      </Text>
+                      {item.description ? (
+                        <Text style={styles.timelineDesc}>
+                          {item.description}
+                        </Text>
+                      ) : null}
+                      <Text style={styles.expandHint}>
+                        {isExpanded ? "▾ Ocultar anexos" : "▸ Ver anexos"}
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+
+                  {isExpanded && (
+                    <AttachmentsList petId={pet.id} recordId={item.id} />
+                  )}
+                </View>
+              );
+            })}
+          </View>
+        )}
+      </ScrollView>
+
+      <RecordFormModal
+        visible={recordModal}
+        petId={pet.id}
+        onClose={() => setRecordModal(false)}
+        onCreated={handleRecordCreated}
+      />
 
       {/* PIN Modal */}
       <Modal
@@ -194,9 +260,21 @@ const styles = StyleSheet.create({
     borderRadius: radii.lg,
     padding: spacing[5],
   },
-  petName: { fontSize: fontSize["2xl"], fontWeight: fontWeight.bold, color: "#fff" },
-  petDetail: { fontSize: fontSize.sm, color: "rgba(255,255,255,0.85)", marginTop: 4 },
-  actions: { flexDirection: "row", paddingHorizontal: spacing[4], gap: spacing[3] },
+  petName: {
+    fontSize: fontSize["2xl"],
+    fontWeight: fontWeight.bold,
+    color: "#fff",
+  },
+  petDetail: {
+    fontSize: fontSize.sm,
+    color: "rgba(255,255,255,0.85)",
+    marginTop: 4,
+  },
+  actions: {
+    flexDirection: "row",
+    paddingHorizontal: spacing[4],
+    gap: spacing[3],
+  },
   btnPin: {
     flex: 1,
     backgroundColor: colors.brand.orange,
@@ -204,17 +282,38 @@ const styles = StyleSheet.create({
     borderRadius: radii.pill,
     alignItems: "center",
   },
-  btnText: { color: "#fff", fontWeight: fontWeight.semibold, fontSize: fontSize.base },
-  sectionTitle: {
-    fontSize: fontSize.lg,
-    fontWeight: fontWeight.bold,
-    color: colors.text.primary,
+  btnText: {
+    color: "#fff",
+    fontWeight: fontWeight.semibold,
+    fontSize: fontSize.base,
+  },
+  timelineHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginHorizontal: spacing[4],
     marginTop: spacing[6],
     marginBottom: spacing[3],
   },
-  timeline: { paddingHorizontal: spacing[4], paddingBottom: spacing[10] },
-  timelineItem: { flexDirection: "row", marginBottom: spacing[4] },
+  sectionTitle: {
+    fontSize: fontSize.lg,
+    fontWeight: fontWeight.bold,
+    color: colors.text.primary,
+  },
+  btnAdd: {
+    backgroundColor: colors.brand.teal,
+    paddingHorizontal: spacing[3],
+    paddingVertical: spacing[2],
+    borderRadius: radii.pill,
+  },
+  btnAddText: {
+    color: "#fff",
+    fontWeight: fontWeight.semibold,
+    fontSize: fontSize.sm,
+  },
+  timeline: { paddingHorizontal: spacing[4] },
+  timelineItem: { marginBottom: spacing[3] },
+  timelineRow: { flexDirection: "row" },
   timelineDot: {
     width: 40,
     height: 40,
@@ -243,7 +342,17 @@ const styles = StyleSheet.create({
     color: colors.text.primary,
     marginTop: 2,
   },
-  timelineDesc: { fontSize: fontSize.sm, color: colors.text.secondary, marginTop: 4 },
+  timelineDesc: {
+    fontSize: fontSize.sm,
+    color: colors.text.secondary,
+    marginTop: 4,
+  },
+  expandHint: {
+    fontSize: fontSize.xs,
+    color: colors.brand.teal,
+    marginTop: spacing[2],
+    fontWeight: fontWeight.semibold,
+  },
   center: { padding: spacing[8], alignItems: "center" },
   emptyText: { color: colors.text.secondary, textAlign: "center" },
   errorText: { color: "#c00", textAlign: "center", marginBottom: spacing[3] },
@@ -295,7 +404,10 @@ const styles = StyleSheet.create({
     fontWeight: fontWeight.extraBold,
     letterSpacing: 8,
     color: colors.brand.teal,
-    fontFamily: Platform.select({ ios: "Courier", android: "monospace" }) as any,
+    fontFamily: Platform.select({
+      ios: "Courier",
+      android: "monospace",
+    }) as any,
   },
   modalActions: { flexDirection: "row", gap: spacing[3], width: "100%" },
   btnCopy: {
@@ -306,7 +418,10 @@ const styles = StyleSheet.create({
     borderRadius: radii.pill,
     alignItems: "center",
   },
-  btnCopyText: { color: colors.brand.teal, fontWeight: fontWeight.semibold },
+  btnCopyText: {
+    color: colors.brand.teal,
+    fontWeight: fontWeight.semibold,
+  },
   btnClose: {
     flex: 1,
     backgroundColor: colors.brand.teal,
