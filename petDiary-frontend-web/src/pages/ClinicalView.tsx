@@ -5,6 +5,7 @@ import { useAuthStore } from "../store/authStore";
 import type { HealthRecord, Pet, RecordType } from "../types";
 import RevokedModal from "../components/RevokedModal";
 import AuditTimeline from "../components/AuditTimeline";
+import AttachmentsList from "../components/AttachmentsList";
 
 const SPECIES_LABEL: Record<string, string> = {
   DOG: "Cachorro",
@@ -202,6 +203,9 @@ export default function ClinicalView() {
                           </div>
                           {r.description && (
                             <p className="text-sm text-gray-600">{r.description}</p>
+                          )}
+                          {pet && (
+                            <AttachmentsList petId={pet.id} recordId={r.id} />
                           )}
                         </div>
                       </li>
