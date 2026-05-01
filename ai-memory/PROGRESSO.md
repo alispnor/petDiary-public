@@ -1,7 +1,7 @@
 # 📊 PROGRESSO — petDiary
 
 > **Arquivo vivo.** Atualize a cada sessão de trabalho.
-> Última atualização: **2026-05-01 (sessão 3 — Fase 5.5 web /change-password com auto-redirect)**
+> Última atualização: **2026-05-01 (sessão 3 — Fase 5 inteira completa, especs 12/13 salvas)**
 
 ---
 
@@ -304,7 +304,14 @@ Decisões do Ali registradas em memory: email+phone obrigatórios, CPF opcional,
   - `setKeepLogged(checked)` chamado ANTES do login para que o storage decida onde escrever desde o primeiro byte
   - Hint discreto "ⓘ Sua sessão será encerrada ao fechar o navegador" quando desmarcado
   - Estilo neutro com checkbox accent-brand-teal
-- ✅ **Fase 2 — completa** (validação no browser delegada ao Ali — ele escolheu Opção A: pular validação manual e seguir pra Fase 3)
+- ✅ **Fase 2 — completa**
+- ✅ **Fase 5.6** — Web: seção Familiares + modal de convite:
+  - Tipos novos em `types.ts`: MemberRole, MemberUser, PetMember, InviteMemberPayload
+  - `<InviteMemberModal>`: form 2 colunas com nome/username (validação ao vivo)/email/phone (máscara)/CPF opcional/senha temp + endereço opcional via ViaCEP
+  - `<MembersSection>`: collapse "👨‍👩‍👧 N familiares com acesso", lista CARETAKERs com badge "🤝 Familiar", botão remover (só OWNER), modal credenciais geradas com botão copiar, modal de confirmação de remoção
+  - Integrado em TutorDashboard via `<MembersSection>` em cada card
+- ✅ **Fase 5 — completa** (5.1+5.2+5.3+5.4 backend + 5.5+5.6 web)
+- ✅ **Specs 12 (Cupons) e 13 (Admin Dashboard)** salvas em `ai-memory/specs/`
 - ✅ **Fase 3.1** — Backend: ciclo de vida de acesso vet ↔ pet:
   - `VetAccessToken` ganhou `claimed_at` (DateTimeField). Migration 0003 aplicada.
   - `ClaimAccessView` agora seta `claimed_at = now()` no momento do claim
