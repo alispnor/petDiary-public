@@ -1,7 +1,7 @@
 # 📊 PROGRESSO — petDiary
 
 > **Arquivo vivo.** Atualize a cada sessão de trabalho.
-> Última atualização: **2026-05-01 (sessão 3 — Fases 3, 4 + 5.1 + 5.2 — change-password)**
+> Última atualização: **2026-05-01 (sessão 3 — Fases 3, 4 + 5.1/5.2/5.3 OWNER+CARETAKER funciona)**
 
 ---
 
@@ -352,6 +352,16 @@ Decisões do Ali registradas em memory: email+phone obrigatórios, CPF opcional,
   - Migration 0002 (estrutural) + 0003 (data: cada Pet existente vira PetMember OWNER com user=tutor)
   - Admin: PetMemberInline em Pet + PetMemberAdmin standalone
   - Verificado: 4 Pets → 4 PetMembers role=OWNER criados pra tutores corretos
+- ✅ **Fase 5.3** — Backend: IsPetMemberOrHasVetAccess + queryset Pet:
+  - `pets/permissions.py`: novo `IsPetMemberOrHasVetAccess` substitui o antigo `IsTutorOrHasVetAccess` (alias de compat mantido)
+  - Tutor agora é **OWNER ou CARETAKER**: `pet.has_member(user)` (filtra via PetMember)
+  - Vet: helper `vet_has_active_access(user, pet)` extraído (reusado em outras fases)
+  - `PetViewSet.get_queryset` agora `Pet.objects.filter(members__user=user).distinct()` em vez de `tutor=user`
+  - `HealthRecordViewSet` usa nova permission
+  - `PetSerializer.create` cria automaticamente PetMember(OWNER) ao criar pet (mantém pet.tutor por compat)
+  - Validação E2E (8 testes via curl, todos OK):
+    - T1 luiza vê Mel · T2 criar Pipoca cria PetMember(OWNER) automático · T3 carlos vira CARETAKER do Mel · T4 carlos vê Mel · T5 carlos GET health-records 200 · T6 carlos CRIA nota (CARETAKER pode adicionar) · T7 joao não vê Mel (isolamento) · T8 cleanup
+
 - ✅ **Fase 5.2** — Backend: must_change_password + change-password endpoint:
   - User ganha `must_change_password` (BooleanField, default False) — caretakers convidados terão True até trocarem
   - `UserSerializer` expõe o campo (read-only — só muda via fluxo dedicado)

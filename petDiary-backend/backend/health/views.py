@@ -4,7 +4,7 @@ from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from pets.permissions import IsTutorOrHasVetAccess
+from pets.permissions import IsPetMemberOrHasVetAccess
 
 from .models import HealthRecord
 from .serializers import HealthRecordSerializer, UploadURLSerializer
@@ -12,7 +12,7 @@ from .serializers import HealthRecordSerializer, UploadURLSerializer
 
 class HealthRecordViewSet(viewsets.ModelViewSet):
     serializer_class = HealthRecordSerializer
-    permission_classes = [IsTutorOrHasVetAccess]
+    permission_classes = [IsPetMemberOrHasVetAccess]
 
     def get_queryset(self):
         return HealthRecord.objects.filter(

@@ -5,18 +5,19 @@ from access.models import VetAccessToken
 from accounts.models import User
 
 from .models import Pet
-from .permissions import IsTutorOrHasVetAccess
+from .permissions import IsPetMemberOrHasVetAccess
 from .serializers import PetSerializer
 
 
 class PetViewSet(viewsets.ModelViewSet):
     serializer_class = PetSerializer
-    permission_classes = [IsTutorOrHasVetAccess]
+    permission_classes = [IsPetMemberOrHasVetAccess]
 
     def get_queryset(self):
         user = self.request.user
         if user.role == User.Role.TUTOR:
-            return Pet.objects.filter(tutor=user)
+            # OWNER ou CARETAKER (qualquer membro) acessa o pet
+            return Pet.objects.filter(members__user=user).distinct()
         if user.role == User.Role.VET:
             pet_ids = VetAccessToken.objects.filter(
                 vet=user,
