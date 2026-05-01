@@ -139,3 +139,18 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-neumorphic);
 }
+
+/* ============================================
+   RTL — árabe / hebraico / farsi / urdu
+   ============================================
+   applyDir() no i18n/index.ts seta dir="rtl" no <html>.
+   Tailwind 4 trata text-left/right como logical no modo RTL.
+   As regras aqui cobrem casos pontuais. */
+html[dir="rtl"] body {
+  text-align: right;
+}
+
+/* Flip horizontal pontual (use class="rtl-flip" em ícones direcionais) */
+html[dir="rtl"] .rtl-flip {
+  transform: scaleX(-1);
+}

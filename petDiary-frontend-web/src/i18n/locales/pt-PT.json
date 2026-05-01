@@ -1,0 +1,394 @@
+{
+  "common": {
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "back": "Voltar",
+    "loading": "A carregar…",
+    "search": "Procurar",
+    "logout": "Sair",
+    "yes": "Sim",
+    "no": "Não",
+    "confirm": "Confirmar",
+    "close": "Fechar",
+    "copy": "Copiar"
+  },
+  "auth": {
+    "login": {
+      "title": "PetDiary",
+      "subtitle": "Aceda à sua conta de tutor ou veterinário",
+      "username": "Utilizador",
+      "password": "Palavra-passe",
+      "submit": "Entrar",
+      "submitting": "A entrar…",
+      "keep_logged": "Manter-me ligado neste dispositivo",
+      "session_warning": "ⓘ A sua sessão será encerrada ao fechar o navegador",
+      "no_account": "Não tem conta?",
+      "register_link": "Registar-se",
+      "forgot_link": "Esqueci-me da palavra-passe"
+    },
+    "register": {
+      "title": "Crie a sua conta",
+      "subtitle": "Tutor ou veterinário — escolha abaixo.",
+      "as_tutor": "🐾 Sou Tutor",
+      "as_vet": "🩺 Sou Veterinário",
+      "identity": "Identidade",
+      "contact": "Contacto",
+      "address": "Morada (opcional)",
+      "submit": "Criar conta",
+      "submitting": "A registar…",
+      "already_have": "Já tem conta?",
+      "login_link": "Entrar"
+    },
+    "errors": {
+      "invalid_credentials": "Utilizador ou palavra-passe inválidos.",
+      "generic": "Erro ao iniciar sessão. Tente novamente.",
+      "register_generic": "Erro ao registar. Verifique os dados.",
+      "fields_required": "Preencha os campos obrigatórios corretamente."
+    },
+    "forgot": {
+      "title": "Recuperar palavra-passe",
+      "subtitle": "Indique o e-mail da sua conta — vamos enviar uma ligação para criar uma nova palavra-passe.",
+      "email_placeholder": "seu@email.com",
+      "submit": "Enviar ligação",
+      "submitting": "A enviar…",
+      "success": "Se este e-mail estiver registado, irá receber uma ligação em instantes. Verifique a caixa de entrada e a pasta de spam.",
+      "back_to_login": "← Voltar ao início de sessão"
+    },
+    "reset": {
+      "title": "Criar nova palavra-passe",
+      "subtitle": "Defina a sua nova palavra-passe. A ligação expira em 30 minutos.",
+      "new_password": "Nova palavra-passe",
+      "confirm_password": "Confirme a nova palavra-passe",
+      "submit": "Redefinir palavra-passe",
+      "submitting": "A guardar…",
+      "success": "Palavra-passe redefinida com sucesso. Inicie sessão com a nova.",
+      "go_to_login": "Ir para o início de sessão →",
+      "errors": {
+        "mismatch": "As palavras-passe não coincidem.",
+        "min_length": "A palavra-passe tem de ter, pelo menos, 8 caracteres.",
+        "invalid_or_expired": "Ligação inválida ou expirada. Solicite uma nova.",
+        "generic": "Não foi possível redefinir a palavra-passe. Tente novamente."
+      }
+    }
+  },
+  "fields": {
+    "full_name": "Nome completo",
+    "username": "Nome de utilizador",
+    "email": "E-mail",
+    "phone": "Telemóvel/telefone",
+    "document_optional": "NIF (opcional)",
+    "crmv": "Cédula profissional (ex: OMV-1234)",
+    "clinic_name": "Nome do consultório/clínica",
+    "password_min": "Palavra-passe (mín. 8 caracteres)",
+    "whatsapp_label": "Este número aceita mensagens via WhatsApp",
+    "zip": "Código postal",
+    "search_zip": "Procurar",
+    "searching": "a procurar…",
+    "street": "Rua/Avenida",
+    "number": "Número",
+    "complement": "Complemento",
+    "district": "Freguesia",
+    "city": "Cidade",
+    "uf": "Distrito"
+  },
+  "username_check": {
+    "checking": "a verificar…",
+    "available": "✓ disponível",
+    "taken": "✗ já em uso",
+    "too_short": "mínimo 3 caracteres"
+  },
+  "tutor": {
+    "header_role": "Tutor",
+    "greeting": "Olá",
+    "my_pets": "Os meus animais",
+    "new_pet": "+ Novo animal",
+    "register_pet": "Registar animal",
+    "pet_name": "Nome do animal",
+    "breed": "Raça",
+    "weight_kg": "Peso (kg)",
+    "saving": "A guardar…",
+    "register_btn": "Registar",
+    "no_pets": "Ainda não registou nenhum animal. Clique em + Novo animal.",
+    "view_records": "📋 Ver ficha clínica",
+    "generate_pin": "🔑 Gerar PIN para o veterinário",
+    "generating": "A gerar…",
+    "errors": {
+      "load": "Não foi possível carregar os seus dados.",
+      "create_pet": "Erro ao criar animal.",
+      "generate_pin": "Erro ao gerar PIN."
+    }
+  },
+  "pin_modal": {
+    "title": "PIN gerado",
+    "subtitle": "Partilhe este código com o veterinário. Válido por 1 hora.",
+    "copy": "Copiar"
+  },
+  "vet_section": {
+    "with_access_one": "{{count}} veterinário com acesso",
+    "with_access_other": "{{count}} veterinários com acesso",
+    "none": "🩺 Nenhum veterinário com acesso ativo",
+    "last_visit": "Última visita: {{date}}",
+    "revoke": "🚫 Revogar",
+    "confirm_title": "Revogar acesso?",
+    "confirm_text": "{{name}} deixará de conseguir ver a ficha do seu animal.",
+    "confirm_note": "✓ Os registos que adicionou continuam no histórico.",
+    "revoking": "A revogar…",
+    "confirm_btn": "Confirmar revogação"
+  },
+  "members_section": {
+    "with_access_one": "{{count}} familiar com acesso",
+    "with_access_other": "{{count}} familiares com acesso",
+    "no_caretakers": "Nenhum familiar adicionado. Convide alguém para ajudar a cuidar do {{petName}}.",
+    "added_at": "Adicionado em {{date}}",
+    "remove": "🚫 Remover",
+    "invite_btn": "+ Convidar familiar",
+    "confirm_title": "Remover familiar?",
+    "confirm_text": "{{name}} deixará de conseguir aceder à ficha do {{petName}}.",
+    "confirm_note": "✓ Os registos que adicionou continuam no histórico.",
+    "removing": "A remover…",
+    "confirm_btn": "Confirmar remoção"
+  },
+  "vet": {
+    "header_role": "Veterinário",
+    "title": "Insira o PIN do paciente",
+    "subtitle": "O tutor gerou um PIN de 6 dígitos na aplicação. Introduza abaixo para aceder à ficha clínica.",
+    "validate": "A verificar…",
+    "submit": "Aceder à ficha",
+    "errors": {
+      "invalid_pin": "PIN inválido ou expirado.",
+      "generic": "Erro ao validar o PIN. Tente novamente."
+    },
+    "history": {
+      "title": "Animais consultados",
+      "subtitle": "Histórico dos PINs que utilizou",
+      "empty": "Ainda não consultou nenhum animal. Use um PIN ao lado para começar.",
+      "tutor_label": "Tutor: {{name}}",
+      "status_active": "Ativo",
+      "status_expired": "Expirado",
+      "status_revoked": "Revogado",
+      "alert_revoked": "O tutor revogou o seu acesso a este animal.",
+      "alert_expired": "O seu acesso a este animal expirou. Peça um novo PIN ao tutor."
+    }
+  },
+  "clinical": {
+    "title": "Ficha clínica",
+    "tab_clinical": "📋 Histórico clínico",
+    "tab_audit": "📜 Histórico de alterações",
+    "loading": "A carregar a ficha…",
+    "load_error": "Não foi possível carregar a ficha.",
+    "no_records": "Ainda sem registos. Adicione o primeiro à direita.",
+    "add_record_title": "Adicionar registo",
+    "fields": {
+      "title": "Título",
+      "description": "Descrição (opcional)"
+    },
+    "submit": "Adicionar",
+    "submitting": "A guardar…",
+    "submit_error": "Erro ao adicionar registo."
+  },
+  "record_types": {
+    "VACCINE": "💉 Vacina",
+    "EXAM": "🔬 Exame",
+    "PRESCRIPTION": "💊 Receita",
+    "SURGERY": "🏥 Cirurgia",
+    "NOTE": "📝 Nota"
+  },
+  "attachments": {
+    "count_one": "{{count}} anexo",
+    "count_other": "{{count}} anexos",
+    "upload": "+ Anexar ficheiro",
+    "uploading": "A enviar…",
+    "view_title": "Visualizar",
+    "download_title": "Transferir",
+    "print_title": "Imprimir",
+    "delete_title": "Remover",
+    "confirm_delete": "Remover \"{{name}}\"?",
+    "errors": {
+      "load": "Não foi possível carregar os anexos.",
+      "upload": "Erro ao enviar o ficheiro.",
+      "open": "Erro ao abrir o ficheiro.",
+      "delete": "Erro ao remover."
+    }
+  },
+  "audit": {
+    "loading": "A carregar histórico…",
+    "load_error": "Não foi possível carregar o histórico.",
+    "empty": "Ainda sem alterações registadas.",
+    "actions": {
+      "CREATE": "Criou",
+      "UPDATE": "Atualizou",
+      "DELETE": "Eliminou",
+      "REVOKE": "Revogou",
+      "CLAIM": "Acedeu"
+    },
+    "roles": {
+      "TUTOR": "Tutor",
+      "VET": "Veterinário",
+      "SYSTEM": "Sistema"
+    },
+    "relative": {
+      "now": "agora",
+      "minutes": "há {{count}} min",
+      "hours": "há {{count}} h",
+      "days": "há {{count}} dias"
+    }
+  },
+  "change_password": {
+    "title_forced": "Defina a sua palavra-passe",
+    "title_normal": "Alterar palavra-passe",
+    "subtitle_forced": "Olá, {{name}}! Foi convidado(a) por um familiar. Crie uma palavra-passe pessoal para continuar.",
+    "current": "Palavra-passe atual",
+    "new": "Nova palavra-passe (mín. 8 caracteres)",
+    "confirm": "Confirme a nova palavra-passe",
+    "mismatch": "As palavras-passe não coincidem.",
+    "submit_forced": "Definir palavra-passe",
+    "submit_normal": "Alterar palavra-passe",
+    "submitting": "A guardar…",
+    "success": "✓ Palavra-passe alterada! A redirecionar para o início de sessão…",
+    "error_generic": "Erro ao alterar a palavra-passe. Tente novamente.",
+    "login_notice": "Palavra-passe alterada com sucesso. Inicie sessão novamente."
+  },
+  "account": {
+    "title": "A minha conta",
+    "tabs": {
+      "profile": "👤 Perfil",
+      "family": "👨‍👩‍👧 Familiares",
+      "subscription": "💳 Assinatura",
+      "notifications": "Notificações",
+      "security": "🔐 Segurança"
+    },
+    "profile": {
+      "title": "Dados pessoais",
+      "address_title": "Morada",
+      "save": "Guardar alterações",
+      "saving": "A guardar…",
+      "success": "✓ Dados atualizados com sucesso",
+      "error": "Erro ao guardar."
+    },
+    "family": {
+      "title": "Familiares com acesso aos seus animais",
+      "subtitle": "Adicione membros da família para que possam ver e adicionar registos às fichas clínicas.",
+      "shared_pro": "✨ Familiares convidados partilham a sua subscrição PRO sem pagar à parte.",
+      "permissions_note": "Cada familiar terá início de sessão próprio e poderá ver/adicionar registos, mas não poderá gerar PIN nem revogar acessos do veterinário.",
+      "no_pets": "Ainda não tem animais registados. Registe um animal para poder convidar familiares."
+    },
+    "subscription": {
+      "title": "Plano atual",
+      "status_label": "Estado",
+      "cancel_scheduled": "⚠ Cancelamento agendado para o fim do período pago",
+      "next_billing": "Próxima cobrança",
+      "pro_title": "PetDiary PRO",
+      "pro_features": {
+        "ocr": "✅ OCR automático de receitas e exames",
+        "whisper": "✅ Transcrição de áudio (diário falado)",
+        "summary": "✅ Resumo inteligente da ficha",
+        "storage": "✅ Armazenamento ilimitado para anexos"
+      },
+      "subscribe": "🚀 Assinar PRO",
+      "cancel": "Cancelar subscrição",
+      "confirm_cancel_title": "Cancelar subscrição?",
+      "confirm_cancel_text": "Continuará com acesso PRO até ao final do período já pago.",
+      "confirm_cancel_note": "✓ Pode reativar a qualquer altura antes do vencimento.",
+      "go_back": "Voltar",
+      "confirm_btn": "Confirmar cancelamento",
+      "canceling": "A cancelar…",
+      "not_found": "Subscrição não encontrada."
+    },
+    "security": {
+      "change_password_title": "Alterar palavra-passe",
+      "change_password_text": "Terá de indicar a sua palavra-passe atual.",
+      "change_password_btn": "🔑 Alterar palavra-passe",
+      "delete_title": "Eliminar a minha conta",
+      "delete_subtitle": "Esta ação anonimiza os seus dados pessoais conforme o RGPD. Não pode ser anulada.",
+      "delete_btn": "🗑 Eliminar a minha conta",
+      "warn_title": "⚠ Tem a certeza?",
+      "warn_items": {
+        "1": "• O seu acesso será encerrado de imediato",
+        "2": "• Os seus dados pessoais serão anonimizados (RGPD)",
+        "3": "• Animais em que é o único tutor terão acesso transferido para um familiar (caretaker mais antigo)",
+        "4": "• Os registos clínicos dos animais são preservados para auditoria",
+        "5": "• A sua subscrição PRO (se existir) será cancelada",
+        "6": "• Esta ação não pode ser anulada"
+      },
+      "continue": "Continuar",
+      "final_title": "Confirmação final",
+      "final_text": "Para confirmar, escreva ELIMINAR e indique a sua palavra-passe atual:",
+      "type_excluir": "Escreva ELIMINAR",
+      "your_password": "A sua palavra-passe",
+      "delete_definitively": "🗑 Eliminar definitivamente",
+      "deleting": "A eliminar…",
+      "error_password": "Palavra-passe incorreta.",
+      "error_delete": "Erro ao eliminar a conta.",
+      "error_type_excluir": "Escreva ELIMINAR para confirmar.",
+      "error_no_password": "Indique a sua palavra-passe."
+    }
+  },
+  "admin": {
+    "sidebar_label": "Admin",
+    "menu": {
+      "dashboard": "📊 Resumo",
+      "users": "👥 Utilizadores",
+      "coupons": "💰 Cupões",
+      "tickets": "💬 Suporte"
+    },
+    "dashboard": {
+      "title": "📊 Resumo",
+      "mrr": "MRR mensal",
+      "total_users": "Utilizadores totais",
+      "new_30d": "+{{count}} nos últimos 30d",
+      "pro_active": "Assinantes PRO",
+      "churn": "Churn 30d",
+      "cancellations": "{{count}} cancelamentos",
+      "tickets_pending": "💬 Tickets pendentes",
+      "tickets_note": "Spec 03 (suporte) ainda será implementada."
+    },
+    "users": {
+      "title": "👥 Utilizadores",
+      "search_placeholder": "Procurar nome, e-mail, utilizador…",
+      "th_name": "Nome",
+      "th_email": "E-mail",
+      "th_role": "Papel",
+      "th_plan": "Plano",
+      "th_status": "Estado",
+      "th_joined": "Registado"
+    },
+    "coupons": {
+      "title": "💰 Cupões",
+      "create_title": "+ Criar cupão",
+      "code_placeholder": "Código (ex: NATAL30)",
+      "discount_placeholder": "% desconto",
+      "max_uses_placeholder": "Limite de utilizações",
+      "create_btn": "Criar cupão",
+      "creating": "A criar…",
+      "th_code": "Código",
+      "th_discount": "Desconto",
+      "th_uses": "Utilizações",
+      "th_valid": "Válido até",
+      "th_status": "Estado",
+      "th_actions": "Ações",
+      "active": "Ativo",
+      "inactive": "Inativo",
+      "deactivate": "Desativar",
+      "empty": "Ainda não foi criado nenhum cupão."
+    },
+    "tickets": {
+      "title": "💬 Suporte",
+      "wip_title": "Em construção",
+      "wip_text": "O modelo SupportTicket da Spec 03 ainda não foi implementado no backend.",
+      "wip_note": "Quando estiver pronto, este ecrã mostrará a lista de tickets dos utilizadores (Dúvida, Reclamação, Ideia) com chat de resposta em layout dividido."
+    }
+  },
+  "clinical_extra": {
+    "back": "← Voltar",
+    "header_title": "Ficha clínica"
+  },
+  "notifications": {
+    "title": "Notificações",
+    "mark_all": "Marcar todas como lidas",
+    "clear_all": "Limpar tudo",
+    "empty_title": "Sem notificações",
+    "empty_text": "Verá aqui lembretes de vacinas, retornos ao veterinário, vencimentos de pagamento e quando algum veterinário aceder à ficha clínica."
+  }
+}

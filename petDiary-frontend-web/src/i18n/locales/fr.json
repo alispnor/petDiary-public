@@ -1,0 +1,394 @@
+{
+  "common": {
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "back": "Retour",
+    "loading": "Chargement…",
+    "search": "Rechercher",
+    "logout": "Déconnexion",
+    "yes": "Oui",
+    "no": "Non",
+    "confirm": "Confirmer",
+    "close": "Fermer",
+    "copy": "Copier"
+  },
+  "auth": {
+    "login": {
+      "title": "PetDiary",
+      "subtitle": "Accédez à votre compte tuteur ou vétérinaire",
+      "username": "Identifiant",
+      "password": "Mot de passe",
+      "submit": "Connexion",
+      "submitting": "Connexion…",
+      "keep_logged": "Garder ma session sur cet appareil",
+      "session_warning": "ⓘ Votre session sera fermée à la fermeture du navigateur",
+      "no_account": "Pas de compte ?",
+      "register_link": "S'inscrire",
+      "forgot_link": "Mot de passe oublié"
+    },
+    "register": {
+      "title": "Créez votre compte",
+      "subtitle": "Tuteur ou vétérinaire — choisissez ci-dessous.",
+      "as_tutor": "🐾 Je suis Tuteur",
+      "as_vet": "🩺 Je suis Vétérinaire",
+      "identity": "Identité",
+      "contact": "Contact",
+      "address": "Adresse (facultatif)",
+      "submit": "Créer le compte",
+      "submitting": "Inscription…",
+      "already_have": "Déjà un compte ?",
+      "login_link": "Connexion"
+    },
+    "errors": {
+      "invalid_credentials": "Identifiant ou mot de passe invalide.",
+      "generic": "Erreur de connexion. Réessayez.",
+      "register_generic": "Erreur d'inscription. Vérifiez les données.",
+      "fields_required": "Remplissez correctement les champs obligatoires."
+    },
+    "forgot": {
+      "title": "Récupérer le mot de passe",
+      "subtitle": "Indiquez l'e-mail de votre compte — nous enverrons un lien pour créer un nouveau mot de passe.",
+      "email_placeholder": "vous@exemple.com",
+      "submit": "Envoyer le lien",
+      "submitting": "Envoi…",
+      "success": "Si cet e-mail est enregistré, vous recevrez un lien dans quelques instants. Vérifiez votre boîte de réception et le dossier spam.",
+      "back_to_login": "← Retour à la connexion"
+    },
+    "reset": {
+      "title": "Créer un nouveau mot de passe",
+      "subtitle": "Définissez votre nouveau mot de passe. Le lien expire dans 30 minutes.",
+      "new_password": "Nouveau mot de passe",
+      "confirm_password": "Confirmer le mot de passe",
+      "submit": "Réinitialiser",
+      "submitting": "Enregistrement…",
+      "success": "Mot de passe réinitialisé. Connectez-vous avec le nouveau.",
+      "go_to_login": "Aller à la connexion →",
+      "errors": {
+        "mismatch": "Les mots de passe ne correspondent pas.",
+        "min_length": "Le mot de passe doit contenir au moins 8 caractères.",
+        "invalid_or_expired": "Lien invalide ou expiré. Demandez-en un nouveau.",
+        "generic": "Impossible de réinitialiser le mot de passe. Réessayez."
+      }
+    }
+  },
+  "fields": {
+    "full_name": "Nom complet",
+    "username": "Nom d'utilisateur",
+    "email": "E-mail",
+    "phone": "Téléphone",
+    "document_optional": "Document (facultatif)",
+    "crmv": "Numéro d'ordre vétérinaire",
+    "clinic_name": "Nom du cabinet/clinique",
+    "password_min": "Mot de passe (min. 8 caractères)",
+    "whatsapp_label": "Ce numéro accepte les messages WhatsApp",
+    "zip": "Code postal",
+    "search_zip": "Rechercher",
+    "searching": "recherche…",
+    "street": "Rue",
+    "number": "Numéro",
+    "complement": "Complément",
+    "district": "Quartier",
+    "city": "Ville",
+    "uf": "Région"
+  },
+  "username_check": {
+    "checking": "vérification…",
+    "available": "✓ disponible",
+    "taken": "✗ déjà pris",
+    "too_short": "minimum 3 caractères"
+  },
+  "tutor": {
+    "header_role": "Tuteur",
+    "greeting": "Bonjour",
+    "my_pets": "Mes animaux",
+    "new_pet": "+ Nouvel animal",
+    "register_pet": "Enregistrer un animal",
+    "pet_name": "Nom de l'animal",
+    "breed": "Race",
+    "weight_kg": "Poids (kg)",
+    "saving": "Enregistrement…",
+    "register_btn": "Enregistrer",
+    "no_pets": "Vous n'avez encore enregistré aucun animal. Cliquez sur + Nouvel animal.",
+    "view_records": "📋 Voir le dossier",
+    "generate_pin": "🔑 Générer un PIN pour le vétérinaire",
+    "generating": "Génération…",
+    "errors": {
+      "load": "Impossible de charger vos données.",
+      "create_pet": "Erreur lors de la création de l'animal.",
+      "generate_pin": "Erreur lors de la génération du PIN."
+    }
+  },
+  "pin_modal": {
+    "title": "PIN généré",
+    "subtitle": "Partagez ce code avec le vétérinaire. Valable 1 heure.",
+    "copy": "Copier"
+  },
+  "vet_section": {
+    "with_access_one": "{{count}} vétérinaire avec accès",
+    "with_access_other": "{{count}} vétérinaires avec accès",
+    "none": "🩺 Aucun vétérinaire avec accès actif",
+    "last_visit": "Dernière visite : {{date}}",
+    "revoke": "🚫 Révoquer",
+    "confirm_title": "Révoquer l'accès ?",
+    "confirm_text": "{{name}} ne pourra plus consulter le dossier de votre animal.",
+    "confirm_note": "✓ Les enregistrements déjà ajoutés restent dans l'historique.",
+    "revoking": "Révocation…",
+    "confirm_btn": "Confirmer la révocation"
+  },
+  "members_section": {
+    "with_access_one": "{{count}} proche avec accès",
+    "with_access_other": "{{count}} proches avec accès",
+    "no_caretakers": "Aucun proche ajouté. Invitez quelqu'un à aider à prendre soin de {{petName}}.",
+    "added_at": "Ajouté le {{date}}",
+    "remove": "🚫 Retirer",
+    "invite_btn": "+ Inviter un proche",
+    "confirm_title": "Retirer ce proche ?",
+    "confirm_text": "{{name}} ne pourra plus accéder au dossier de {{petName}}.",
+    "confirm_note": "✓ Les enregistrements déjà ajoutés restent dans l'historique.",
+    "removing": "Suppression…",
+    "confirm_btn": "Confirmer la suppression"
+  },
+  "vet": {
+    "header_role": "Vétérinaire",
+    "title": "Saisissez le PIN du patient",
+    "subtitle": "Le tuteur a généré un PIN à 6 chiffres dans l'application. Saisissez-le ci-dessous pour accéder au dossier.",
+    "validate": "Vérification…",
+    "submit": "Accéder au dossier",
+    "errors": {
+      "invalid_pin": "PIN invalide ou expiré.",
+      "generic": "Erreur de validation du PIN. Réessayez."
+    },
+    "history": {
+      "title": "Animaux consultés",
+      "subtitle": "Historique des PIN utilisés",
+      "empty": "Aucun animal consulté pour le moment. Utilisez un PIN pour commencer.",
+      "tutor_label": "Tuteur : {{name}}",
+      "status_active": "Actif",
+      "status_expired": "Expiré",
+      "status_revoked": "Révoqué",
+      "alert_revoked": "Le tuteur a révoqué votre accès à cet animal.",
+      "alert_expired": "Votre accès à cet animal a expiré. Demandez un nouveau PIN au tuteur."
+    }
+  },
+  "clinical": {
+    "title": "Dossier",
+    "tab_clinical": "📋 Historique clinique",
+    "tab_audit": "📜 Historique des modifications",
+    "loading": "Chargement du dossier…",
+    "load_error": "Impossible de charger le dossier.",
+    "no_records": "Aucun enregistrement. Ajoutez le premier à droite.",
+    "add_record_title": "Ajouter un enregistrement",
+    "fields": {
+      "title": "Titre",
+      "description": "Description (facultatif)"
+    },
+    "submit": "Ajouter",
+    "submitting": "Enregistrement…",
+    "submit_error": "Erreur lors de l'ajout."
+  },
+  "record_types": {
+    "VACCINE": "💉 Vaccin",
+    "EXAM": "🔬 Examen",
+    "PRESCRIPTION": "💊 Ordonnance",
+    "SURGERY": "🏥 Chirurgie",
+    "NOTE": "📝 Note"
+  },
+  "attachments": {
+    "count_one": "{{count}} pièce jointe",
+    "count_other": "{{count}} pièces jointes",
+    "upload": "+ Joindre un fichier",
+    "uploading": "Envoi…",
+    "view_title": "Voir",
+    "download_title": "Télécharger",
+    "print_title": "Imprimer",
+    "delete_title": "Supprimer",
+    "confirm_delete": "Supprimer \"{{name}}\" ?",
+    "errors": {
+      "load": "Impossible de charger les pièces jointes.",
+      "upload": "Erreur lors de l'envoi du fichier.",
+      "open": "Erreur lors de l'ouverture du fichier.",
+      "delete": "Erreur lors de la suppression."
+    }
+  },
+  "audit": {
+    "loading": "Chargement de l'historique…",
+    "load_error": "Impossible de charger l'historique.",
+    "empty": "Aucune modification enregistrée.",
+    "actions": {
+      "CREATE": "A créé",
+      "UPDATE": "A mis à jour",
+      "DELETE": "A supprimé",
+      "REVOKE": "A révoqué",
+      "CLAIM": "A consulté"
+    },
+    "roles": {
+      "TUTOR": "Tuteur",
+      "VET": "Vétérinaire",
+      "SYSTEM": "Système"
+    },
+    "relative": {
+      "now": "à l'instant",
+      "minutes": "il y a {{count}} min",
+      "hours": "il y a {{count}} h",
+      "days": "il y a {{count}} jours"
+    }
+  },
+  "change_password": {
+    "title_forced": "Définissez votre mot de passe",
+    "title_normal": "Modifier le mot de passe",
+    "subtitle_forced": "Bonjour {{name}} ! Vous avez été invité(e) par un proche. Créez un mot de passe personnel pour continuer.",
+    "current": "Mot de passe actuel",
+    "new": "Nouveau mot de passe (min. 8 caractères)",
+    "confirm": "Confirmer le mot de passe",
+    "mismatch": "Les mots de passe ne correspondent pas.",
+    "submit_forced": "Définir le mot de passe",
+    "submit_normal": "Modifier le mot de passe",
+    "submitting": "Enregistrement…",
+    "success": "✓ Mot de passe modifié ! Redirection vers la connexion…",
+    "error_generic": "Erreur lors du changement de mot de passe. Réessayez.",
+    "login_notice": "Mot de passe modifié avec succès. Reconnectez-vous."
+  },
+  "account": {
+    "title": "Mon compte",
+    "tabs": {
+      "profile": "👤 Profil",
+      "family": "👨‍👩‍👧 Famille",
+      "subscription": "💳 Abonnement",
+      "notifications": "Notifications",
+      "security": "🔐 Sécurité"
+    },
+    "profile": {
+      "title": "Données personnelles",
+      "address_title": "Adresse",
+      "save": "Enregistrer les modifications",
+      "saving": "Enregistrement…",
+      "success": "✓ Données mises à jour avec succès",
+      "error": "Erreur d'enregistrement."
+    },
+    "family": {
+      "title": "Proches avec accès à vos animaux",
+      "subtitle": "Ajoutez des membres de la famille pour qu'ils puissent voir et ajouter des enregistrements aux dossiers.",
+      "shared_pro": "✨ Les proches invités partagent votre abonnement PRO sans payer séparément.",
+      "permissions_note": "Chaque proche aura sa propre connexion et pourra voir/ajouter des enregistrements, mais ne pourra pas générer de PIN ni révoquer les accès vétérinaires.",
+      "no_pets": "Vous n'avez pas encore d'animaux enregistrés. Enregistrez un animal pour pouvoir inviter des proches."
+    },
+    "subscription": {
+      "title": "Plan actuel",
+      "status_label": "Statut",
+      "cancel_scheduled": "⚠ Annulation prévue à la fin de la période payée",
+      "next_billing": "Prochaine facturation",
+      "pro_title": "PetDiary PRO",
+      "pro_features": {
+        "ocr": "✅ OCR automatique des ordonnances et examens",
+        "whisper": "✅ Transcription audio (journal parlé)",
+        "summary": "✅ Résumé intelligent du dossier",
+        "storage": "✅ Stockage illimité pour les pièces jointes"
+      },
+      "subscribe": "🚀 Souscrire à PRO",
+      "cancel": "Annuler l'abonnement",
+      "confirm_cancel_title": "Annuler l'abonnement ?",
+      "confirm_cancel_text": "Vous gardez l'accès PRO jusqu'à la fin de la période déjà payée.",
+      "confirm_cancel_note": "✓ Vous pouvez réactiver à tout moment avant l'échéance.",
+      "go_back": "Retour",
+      "confirm_btn": "Confirmer l'annulation",
+      "canceling": "Annulation…",
+      "not_found": "Abonnement introuvable."
+    },
+    "security": {
+      "change_password_title": "Modifier le mot de passe",
+      "change_password_text": "Vous devrez indiquer votre mot de passe actuel.",
+      "change_password_btn": "🔑 Changer le mot de passe",
+      "delete_title": "Supprimer mon compte",
+      "delete_subtitle": "Cette action anonymise vos données personnelles conformément au RGPD. Elle est irréversible.",
+      "delete_btn": "🗑 Supprimer mon compte",
+      "warn_title": "⚠ Êtes-vous sûr(e) ?",
+      "warn_items": {
+        "1": "• Votre accès sera fermé immédiatement",
+        "2": "• Vos données personnelles seront anonymisées (RGPD)",
+        "3": "• Les animaux dont vous êtes l'unique tuteur verront l'accès transféré à un proche (caretaker le plus ancien)",
+        "4": "• Les enregistrements cliniques des animaux sont conservés pour audit",
+        "5": "• Votre abonnement PRO (s'il existe) sera annulé",
+        "6": "• Cette action ne peut pas être annulée"
+      },
+      "continue": "Continuer",
+      "final_title": "Confirmation finale",
+      "final_text": "Pour confirmer, écrivez SUPPRIMER et indiquez votre mot de passe actuel :",
+      "type_excluir": "Écrivez SUPPRIMER",
+      "your_password": "Votre mot de passe",
+      "delete_definitively": "🗑 Supprimer définitivement",
+      "deleting": "Suppression…",
+      "error_password": "Mot de passe incorrect.",
+      "error_delete": "Erreur lors de la suppression du compte.",
+      "error_type_excluir": "Écrivez SUPPRIMER pour confirmer.",
+      "error_no_password": "Indiquez votre mot de passe."
+    }
+  },
+  "admin": {
+    "sidebar_label": "Admin",
+    "menu": {
+      "dashboard": "📊 Résumé",
+      "users": "👥 Utilisateurs",
+      "coupons": "💰 Bons",
+      "tickets": "💬 Support"
+    },
+    "dashboard": {
+      "title": "📊 Résumé",
+      "mrr": "MRR mensuel",
+      "total_users": "Utilisateurs au total",
+      "new_30d": "+{{count}} sur les 30 derniers jours",
+      "pro_active": "Abonnés PRO",
+      "churn": "Churn 30j",
+      "cancellations": "{{count}} annulations",
+      "tickets_pending": "💬 Tickets en attente",
+      "tickets_note": "Spec 03 (support) sera implémentée."
+    },
+    "users": {
+      "title": "👥 Utilisateurs",
+      "search_placeholder": "Rechercher nom, e-mail, identifiant…",
+      "th_name": "Nom",
+      "th_email": "E-mail",
+      "th_role": "Rôle",
+      "th_plan": "Plan",
+      "th_status": "Statut",
+      "th_joined": "Inscrit"
+    },
+    "coupons": {
+      "title": "💰 Bons",
+      "create_title": "+ Créer un bon",
+      "code_placeholder": "Code (ex : NOEL30)",
+      "discount_placeholder": "% de réduction",
+      "max_uses_placeholder": "Limite d'utilisations",
+      "create_btn": "Créer le bon",
+      "creating": "Création…",
+      "th_code": "Code",
+      "th_discount": "Réduction",
+      "th_uses": "Utilisations",
+      "th_valid": "Valide jusqu'au",
+      "th_status": "Statut",
+      "th_actions": "Actions",
+      "active": "Actif",
+      "inactive": "Inactif",
+      "deactivate": "Désactiver",
+      "empty": "Aucun bon créé pour le moment."
+    },
+    "tickets": {
+      "title": "💬 Support",
+      "wip_title": "En construction",
+      "wip_text": "Le modèle SupportTicket de la Spec 03 n'est pas encore implémenté.",
+      "wip_note": "Quand il sera prêt, cet écran affichera la liste des tickets utilisateurs (Question, Réclamation, Idée) avec un chat de réponse en disposition divisée."
+    }
+  },
+  "clinical_extra": {
+    "back": "← Retour",
+    "header_title": "Dossier"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "mark_all": "Tout marquer comme lu",
+    "clear_all": "Tout effacer",
+    "empty_title": "Aucune notification",
+    "empty_text": "Vous verrez ici les rappels de vaccins, retours chez le vétérinaire, échéances de paiement et accès des vétérinaires au dossier."
+  }
+}
