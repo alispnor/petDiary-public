@@ -48,6 +48,12 @@ class HealthRecord(models.Model):
         verbose_name = _("registro de saúde")
         verbose_name_plural = _("registros de saúde")
         ordering = ["-date_occurred"]
+        indexes = [
+            # Listagem da timeline: filtra por pet ordenando por data.
+            models.Index(fields=["pet", "-date_occurred"]),
+            # Filtros por tipo (ex.: só vacinas) na admin/relatórios.
+            models.Index(fields=["record_type"]),
+        ]
 
     def __str__(self):
         return f"{self.title} ({self.pet.name})"
@@ -88,6 +94,10 @@ class HealthRecordAttachment(models.Model):
         verbose_name = _("anexo")
         verbose_name_plural = _("anexos")
         ordering = ["-created_at"]
+        indexes = [
+            # record.attachments.all() é a listagem mais quente
+            models.Index(fields=["record"]),
+        ]
 
     def __str__(self):
         return f"{self.file_name} ({self.record.title})"

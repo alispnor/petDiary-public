@@ -27,7 +27,10 @@ class NotificationListView(generics.ListAPIView):
     pagination_class = _Pagination
 
     def get_queryset(self):
-        return Notification.objects.filter(user=self.request.user)
+        # select_related("user") evita N+1 caso o serializer acesse user em
+        # alguma chave futura. Hoje o NotificationSerializer não expõe user
+        # explicitamente, mas a relação está lá e é segura prefetchar.
+        return Notification.objects.filter(user=self.request.user).select_related("user")
 
 
 class UnreadCountView(APIView):

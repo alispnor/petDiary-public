@@ -103,6 +103,13 @@ class VetAccessToken(models.Model):
                 name="uniq_active_access_code",
             ),
         ]
+        indexes = [
+            # ClaimAccessView faz lookup por access_code + filtros de
+            # estado a cada request; sem índice, full-table scan.
+            models.Index(fields=["access_code"]),
+            # vet_has_active_access(user, pet): filtra por pet+vet+is_active
+            models.Index(fields=["pet", "vet", "is_active"]),
+        ]
 
     def __str__(self):
         return f"PIN {self.access_code} → {self.pet.name}"

@@ -18,7 +18,8 @@ from pets.permissions import vet_has_active_access
 from accounts.models import User
 
 from .models import HealthRecord, HealthRecordAttachment
-from .services.storage import get_storage, make_storage_key
+from .services.storage import get_storage
+from .services.upload_validator import safe_storage_key, validate_upload
 
 
 # ─────────────────── Serializers ───────────────────
@@ -88,16 +89,24 @@ class RecordAttachmentListCreateView(APIView):
         custom_name = (ser.validated_data.get("file_name") or "").strip()
         description = (ser.validated_data.get("description") or "").strip()
 
-        original = upload.name
-        # Sanitização básica do nome
-        display_name = custom_name or original
-        display_name = display_name[:255]
+        # Validação de segurança: tamanho + MIME whitelist + magic bytes +
+        # filename sanitizado. Levanta ValidationError se algo falha.
+        declared_mime = (
+            upload.content_type
+            or mimetypes.guess_type(upload.name or "")[0]
+            or ""
+        )
+        mime_type, ext, safe_name = validate_upload(upload, declared_mime)
 
-        mime_type = upload.content_type or mimetypes.guess_type(original)[0] or "application/octet-stream"
-        size = upload.size or 0
+        # Display name: se o user passou custom_name use-o (sanitizado);
+        # caso contrário, usa o nome seguro derivado do conteúdo.
+        if custom_name:
+            display_name = custom_name[:255]
+        else:
+            display_name = safe_name
 
-        # Geração de chave única (anti-conflito) com extensão preservada
-        key = make_storage_key(record.pet_id, record.id, original)
+        # Storage key com UUID + extensão validada (não a do user)
+        key = safe_storage_key(record.pet_id, record.id, ext)
         storage = get_storage()
         storage.save(key, upload, mime_type)
 
@@ -107,7 +116,7 @@ class RecordAttachmentListCreateView(APIView):
             file_name=display_name,
             description=description,
             mime_type=mime_type,
-            file_size=size,
+            file_size=upload.size or 0,
             uploaded_by=request.user,
         )
 

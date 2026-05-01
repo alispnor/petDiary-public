@@ -45,6 +45,10 @@ class Pet(models.Model):
         verbose_name = _("pet")
         verbose_name_plural = _("pets")
         ordering = ["name"]
+        indexes = [
+            # Filtragem frequente por tutor (Pet.objects.filter(tutor=user))
+            models.Index(fields=["tutor"]),
+        ]
 
     def __str__(self):
         return self.name
@@ -105,6 +109,15 @@ class PetMember(models.Model):
         verbose_name_plural = _("membros do pet")
         unique_together = (("pet", "user"),)
         ordering = ["pet", "-added_at"]
+        indexes = [
+            # PetMember.objects.filter(pet=..., role=OWNER) — usado para
+            # listar OWNERs em hooks de notify e para checagens de
+            # permissão (apenas OWNER pode revogar/convidar).
+            models.Index(fields=["pet", "role"]),
+            # PetMember.objects.filter(user=...).select_related("pet") —
+            # listagem dos pets em que o user é membro.
+            models.Index(fields=["user"]),
+        ]
 
     def __str__(self):
         return f"{self.user} ({self.get_role_display()}) → {self.pet}"
