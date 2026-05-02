@@ -11,6 +11,7 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
+  Image,
 } from "react-native";
 import { useTranslation } from "react-i18next";
 import api from "../services/api";
@@ -255,9 +256,16 @@ export function RemindersModal({ visible, petId, petName, onClose }: Props) {
               style={{ marginTop: 24 }}
             />
           ) : items.length === 0 ? (
-            <Text style={styles.empty}>
-              {t("reminders.empty", { name: petName })}
-            </Text>
+            <View style={styles.emptyWrap}>
+              <Image
+                source={require("../../assets/reminders-icon.png")}
+                style={styles.emptyIcon}
+                resizeMode="contain"
+              />
+              <Text style={styles.empty}>
+                {t("reminders.empty", { name: petName })}
+              </Text>
+            </View>
           ) : (
             items.map((r) => {
               const meta = TYPE_META.find((m) => m.code === r.type);
@@ -398,12 +406,22 @@ const styles = StyleSheet.create({
     fontSize: fontSize.base,
   },
   disabled: { opacity: 0.5 },
+  emptyWrap: {
+    alignItems: "center",
+    paddingVertical: spacing[6],
+  },
+  emptyIcon: {
+    width: 96,
+    height: 96,
+    marginBottom: spacing[3],
+    opacity: 0.9,
+  },
   empty: {
     fontSize: fontSize.sm,
     color: colors.text.secondary,
     textAlign: "center",
-    paddingVertical: spacing[8],
     lineHeight: 22,
+    paddingHorizontal: spacing[4],
   },
   card: {
     flexDirection: "row",
