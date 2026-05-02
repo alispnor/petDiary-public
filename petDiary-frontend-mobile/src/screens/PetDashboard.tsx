@@ -53,6 +53,7 @@ export function PetDashboard({ route }: Props) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const [recordModal, setRecordModal] = useState(false);
+  const [editingRecord, setEditingRecord] = useState<HealthRecord | null>(null);
   const [vetsModal, setVetsModal] = useState(false);
   const [membersModal, setMembersModal] = useState(false);
   const [remindersModal, setRemindersModal] = useState(false);
@@ -101,9 +102,48 @@ export function PetDashboard({ route }: Props) {
     }
   };
 
-  const handleRecordCreated = (rec: HealthRecord) => {
-    setRecords((prev) => [rec, ...prev]);
+  const handleRecordSaved = (rec: HealthRecord) => {
+    setRecords((prev) => {
+      const exists = prev.some((r) => r.id === rec.id);
+      return exists
+        ? prev.map((r) => (r.id === rec.id ? rec : r))
+        : [rec, ...prev];
+    });
     setExpandedId(rec.id);
+    setEditingRecord(null);
+  };
+
+  const handleEditRecord = (rec: HealthRecord) => {
+    setEditingRecord(rec);
+    setRecordModal(true);
+  };
+
+  const handleDeleteRecord = (rec: HealthRecord) => {
+    Alert.alert(
+      t("records.confirm_delete_title"),
+      t("records.confirm_delete_msg"),
+      [
+        { text: t("common.cancel"), style: "cancel" },
+        {
+          text: t("common.delete"),
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await api.delete(`/pets/${pet.id}/health-records/${rec.id}/`);
+              setRecords((prev) => prev.filter((r) => r.id !== rec.id));
+              if (expandedId === rec.id) setExpandedId(null);
+            } catch {
+              Alert.alert(t("common.error"), t("records.delete_failed"));
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const handleCloseRecordModal = () => {
+    setRecordModal(false);
+    setEditingRecord(null);
   };
 
   return (
@@ -232,7 +272,35 @@ export function PetDashboard({ route }: Props) {
                   </TouchableOpacity>
 
                   {isExpanded && (
-                    <AttachmentsList petId={pet.id} recordId={item.id} />
+                    <View>
+                      <View style={styles.recordActions}>
+                        <TouchableOpacity
+                          style={styles.recordActionBtn}
+                          onPress={() => handleEditRecord(item)}
+                        >
+                          <Text style={styles.recordActionText}>
+                            ✏️ {t("common.edit")}
+                          </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          style={[
+                            styles.recordActionBtn,
+                            styles.recordActionDanger,
+                          ]}
+                          onPress={() => handleDeleteRecord(item)}
+                        >
+                          <Text
+                            style={[
+                              styles.recordActionText,
+                              styles.recordActionDangerText,
+                            ]}
+                          >
+                            🗑 {t("common.delete")}
+                          </Text>
+                        </TouchableOpacity>
+                      </View>
+                      <AttachmentsList petId={pet.id} recordId={item.id} />
+                    </View>
                   )}
                 </View>
               );
@@ -244,8 +312,9 @@ export function PetDashboard({ route }: Props) {
       <RecordFormModal
         visible={recordModal}
         petId={pet.id}
-        onClose={() => setRecordModal(false)}
-        onCreated={handleRecordCreated}
+        record={editingRecord}
+        onClose={handleCloseRecordModal}
+        onSaved={handleRecordSaved}
       />
 
       <VetAccessModal
@@ -385,6 +454,30 @@ const styles = StyleSheet.create({
   },
   timeline: { paddingHorizontal: spacing[4] },
   timelineItem: { marginBottom: spacing[3] },
+  recordActions: {
+    flexDirection: "row",
+    gap: spacing[2],
+    marginTop: spacing[2],
+    marginLeft: 52, // alinha com timelineContent (40 dot + 12 gap)
+  },
+  recordActionBtn: {
+    paddingHorizontal: spacing[3],
+    paddingVertical: spacing[1],
+    borderRadius: radii.pill,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.bg.surface,
+  },
+  recordActionDanger: {
+    borderColor: "#fca5a5",
+    backgroundColor: "#fef2f2",
+  },
+  recordActionText: {
+    fontSize: fontSize.xs,
+    color: colors.text.secondary,
+    fontWeight: fontWeight.semibold,
+  },
+  recordActionDangerText: { color: "#dc2626" },
   timelineRow: { flexDirection: "row" },
   timelineDot: {
     width: 40,

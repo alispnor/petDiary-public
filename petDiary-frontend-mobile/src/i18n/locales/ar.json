@@ -25,7 +25,6 @@
     "required": "*",
     "optional": "(اختياري)"
   },
-
   "auth": {
     "app_subtitle": "ادخل إلى حسابك لإدارة صحة حيوانك الأليف",
     "username": "اسم المستخدم",
@@ -38,7 +37,6 @@
     "forgot": "نسيت كلمة المرور",
     "no_account": "لا تملك حسابًا؟",
     "register_cta": "سجّل الآن",
-
     "register_title": "إنشاء حساب",
     "register_subtitle": "تسجيل المالك — لإدارة صحة حيوانك الأليف",
     "full_name": "الاسم الكامل",
@@ -56,7 +54,6 @@
     "register_failed": "تعذر إكمال التسجيل.",
     "have_account": "لديك حساب بالفعل؟",
     "login_link": "دخول",
-
     "forgot_title": "استعادة كلمة المرور",
     "forgot_subtitle": "أدخل بريدك الإلكتروني المسجل. سنرسل لك رابطًا لإنشاء كلمة مرور جديدة.",
     "forgot_email_placeholder": "you@email.com",
@@ -66,7 +63,6 @@
     "forgot_back_login": "العودة لتسجيل الدخول",
     "remembered": "تذكرت كلمة المرور؟"
   },
-
   "home": {
     "greeting": "مرحبًا، {{name}}!",
     "greeting_no_name": "مرحبًا!",
@@ -80,7 +76,6 @@
     "add_pet_a11y": "إضافة حيوان",
     "notifications_a11y": "الإشعارات"
   },
-
   "pet": {
     "form_title": "حيوان جديد",
     "species": "النوع",
@@ -97,7 +92,6 @@
     "name_required": "أدخل اسم الحيوان.",
     "weight_invalid": "وزن غير صالح (استخدم النقطة، مثال: 12.5).",
     "create_failed": "تعذر إنشاء الحيوان.",
-
     "dashboard_pin_loading": "جارٍ الإنشاء…",
     "dashboard_pin_btn": "🔑 إنشاء PIN",
     "dashboard_pin_failed": "تعذر إنشاء PIN.",
@@ -114,14 +108,12 @@
     "dashboard_show_attachments": "▸ عرض المرفقات",
     "dashboard_hide_attachments": "▾ إخفاء المرفقات"
   },
-
   "records": {
     "type_vaccine": "لقاح",
     "type_exam": "فحص",
     "type_prescription": "وصفة",
     "type_surgery": "جراحة",
     "type_note": "ملاحظة",
-
     "form_title": "سجل جديد",
     "type_label": "النوع",
     "title_label": "العنوان",
@@ -132,9 +124,13 @@
     "title_required": "أدخل عنوانًا للسجل.",
     "date_invalid": "يجب أن يكون التاريخ بالتنسيق YYYY-MM-DD.",
     "create_failed": "تعذر إنشاء السجل.",
-    "after_save_hint": "بعد الحفظ، يمكنك إرفاق صور ومستندات وتقارير بهذا السجل."
+    "after_save_hint": "بعد الحفظ، يمكنك إرفاق صور ومستندات وتقارير بهذا السجل.",
+    "form_title_edit": "تعديل السجل",
+    "update_failed": "تعذر تحديث السجل.",
+    "confirm_delete_title": "حذف السجل",
+    "confirm_delete_msg": "هل تريد إزالة هذا السجل من السجل الطبي؟ سيتم حذف المرفقات أيضًا.",
+    "delete_failed": "تعذر حذف السجل."
   },
-
   "attachments": {
     "title_count": "📎 المرفقات ({{count}})",
     "add_btn": "+ إرفاق",
@@ -154,7 +150,6 @@
     "delete_failed": "تعذرت الإزالة.",
     "open_failed": "تعذر فتح الملف."
   },
-
   "vets": {
     "modal_title": "🩺 الأطباء البيطريون مع الوصول",
     "loading": "جارٍ التحميل…",
@@ -167,7 +162,6 @@
     "revoke_confirm_text": "{{name}} ({{crmv}}) لن يتمكن من الوصول إلى السجل. السجلات المضافة سابقًا تبقى في التاريخ.",
     "revoke_failed": "تعذر إلغاء الوصول."
   },
-
   "members": {
     "modal_title": "👨‍👩‍👧 العائلة",
     "invite_toggle_open": "+ دعوة",
@@ -197,7 +191,6 @@
     "credentials_copied": "تم نسخ بيانات الاعتماد.",
     "credentials_copy_hint": "تفضّل بزيارة petdiary.com.br"
   },
-
   "reminders": {
     "modal_title": "🔔 التذكيرات",
     "type_vaccine": "لقاح",
@@ -226,7 +219,6 @@
     "delete_failed": "تعذر الحذف.",
     "new_btn": "+ جديد"
   },
-
   "notifications": {
     "title": "الإشعارات",
     "mark_all": "✓ تعليم الكل كمقروء",
@@ -239,7 +231,6 @@
     "delete_failed": "تعذر الحذف.",
     "empty_title": "لا توجد إشعارات",
     "empty_text": "ستظهر هنا تذكيرات اللقاحات، المتابعات البيطرية، استحقاقات الدفع، ومتى يصل الطبيب البيطري إلى السجل.",
-
     "prefs_section": "تلقي إشعارات عن",
     "prefs_save_failed": "تعذر الحفظ.",
     "prefs_load_failed": "تعذر تحميل تفضيلاتك.",
@@ -249,7 +240,6 @@
     "prefs_permission_ok": "تم تفعيل الإشعارات على هذا الجهاز.",
     "prefs_permission_denied_title": "تم رفض الإذن",
     "prefs_permission_denied_text": "لقد عطلت إشعارات هذا التطبيق على مستوى النظام. اذهب إلى إعدادات iPhone/Android لإعادة التفعيل.",
-
     "type_vaccine_label": "التطعيمات",
     "type_vaccine_hint": "تذكيرات لقاحات قريبة أو متأخرة",
     "type_vet_return_label": "متابعة بيطرية",
@@ -265,11 +255,9 @@
     "type_system_label": "إشعارات النظام",
     "type_system_hint": "صيانة، أخبار، وتغييرات مهمة"
   },
-
   "account": {
     "header_title": "حسابي",
     "user_meta": "@{{username}} · {{role}}",
-
     "section_profile": "الملف الشخصي",
     "field_full_name": "الاسم الكامل",
     "field_full_name_placeholder": "اسمك",
@@ -281,7 +269,6 @@
     "saving_profile": "جارٍ الحفظ…",
     "profile_saved": "تم تحديث الملف الشخصي.",
     "profile_failed": "تعذر الحفظ. حاول مرة أخرى.",
-
     "section_language": "اللغة",
     "section_more": "المزيد",
     "menu_subscription": "الاشتراك",
@@ -291,7 +278,6 @@
     "section_session": "الجلسة",
     "logout_btn": "تسجيل الخروج",
     "logout_confirm": "هل ترغب فعلاً في تسجيل الخروج؟",
-
     "delete_btn": "🗑 حذف حسابي",
     "delete_hint": "ستُخفى البيانات الشخصية وفقًا لقوانين حماية البيانات. إجراء لا يمكن التراجع عنه.",
     "delete_modal_title": "حذف الحساب",
@@ -304,7 +290,6 @@
     "delete_done_text": "تم إخفاء بياناتك وفقًا لقوانين حماية البيانات.",
     "delete_password_wrong": "كلمة المرور غير صحيحة.",
     "delete_failed": "تعذر حذف الحساب.",
-
     "change_password_title": "تغيير كلمة المرور",
     "current_password": "كلمة المرور الحالية",
     "new_password": "كلمة المرور الجديدة (8 على الأقل)",
@@ -314,7 +299,6 @@
     "change_password_current_wrong": "كلمة المرور الحالية غير صحيحة.",
     "change_password_failed": "تعذر تغيير كلمة المرور."
   },
-
   "subscription": {
     "load_failed": "تعذر تحميل الاشتراك.",
     "header_pro": "PRO 🎉",
@@ -358,7 +342,6 @@
     "pix_copied": "تم نسخ رمز PIX.",
     "pix_copy_native_hint": "اضغط مطولاً على الرمز أدناه لتحديده ونسخه."
   },
-
   "help": {
     "header_title": "مركز المساعدة",
     "hero_title": "كيف يمكننا مساعدتك؟",
@@ -389,11 +372,9 @@
     "faq_a7": "نعم. يمكن تعديل أي استخراج للذكاء الاصطناعي يدويًا في السجل. الذكاء الاصطناعي يسرّع إدخال البيانات، لكنك أنت مصدر الحقيقة.",
     "footer_version": "PetDiary · v1.0"
   },
-
   "preferences": {
     "save_failed": "تعذر الحفظ."
   },
-
   "username_check": {
     "checking": "جارٍ التحقق…",
     "available": "✓ متاح",

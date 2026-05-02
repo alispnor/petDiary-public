@@ -25,7 +25,6 @@
     "required": "*",
     "optional": "(optional)"
   },
-
   "auth": {
     "app_subtitle": "Sign in to manage your pet's health",
     "username": "Username",
@@ -38,7 +37,6 @@
     "forgot": "Forgot my password",
     "no_account": "Don't have an account?",
     "register_cta": "Sign up",
-
     "register_title": "Create account",
     "register_subtitle": "Tutor sign-up — manage your pet's health",
     "full_name": "Full name",
@@ -56,7 +54,6 @@
     "register_failed": "Could not complete sign-up.",
     "have_account": "Already have an account?",
     "login_link": "Sign in",
-
     "forgot_title": "Reset password",
     "forgot_subtitle": "Enter your registered email. We'll send a link so you can create a new password.",
     "forgot_email_placeholder": "you@email.com",
@@ -66,7 +63,6 @@
     "forgot_back_login": "Back to sign in",
     "remembered": "Remembered your password?"
   },
-
   "home": {
     "greeting": "Hi, {{name}}!",
     "greeting_no_name": "Hi!",
@@ -80,7 +76,6 @@
     "add_pet_a11y": "Add pet",
     "notifications_a11y": "Notifications"
   },
-
   "pet": {
     "form_title": "New pet",
     "species": "Species",
@@ -97,7 +92,6 @@
     "name_required": "Enter the pet's name.",
     "weight_invalid": "Invalid weight (use dot, e.g. 12.5).",
     "create_failed": "Could not create the pet.",
-
     "dashboard_pin_loading": "Generating…",
     "dashboard_pin_btn": "🔑 Generate PIN",
     "dashboard_pin_failed": "Could not generate the PIN.",
@@ -114,14 +108,12 @@
     "dashboard_show_attachments": "▸ Show attachments",
     "dashboard_hide_attachments": "▾ Hide attachments"
   },
-
   "records": {
     "type_vaccine": "Vaccine",
     "type_exam": "Exam",
     "type_prescription": "Prescription",
     "type_surgery": "Surgery",
     "type_note": "Note",
-
     "form_title": "New record",
     "type_label": "Type",
     "title_label": "Title",
@@ -132,9 +124,13 @@
     "title_required": "Enter a title for the record.",
     "date_invalid": "Date must be in YYYY-MM-DD format.",
     "create_failed": "Could not create the record.",
-    "after_save_hint": "After saving, you can attach photos, documents and reports to this record."
+    "after_save_hint": "After saving, you can attach photos, documents and reports to this record.",
+    "form_title_edit": "Edit record",
+    "update_failed": "Couldn't update the record.",
+    "confirm_delete_title": "Delete record",
+    "confirm_delete_msg": "Remove this record from the chart? Attachments will also be deleted.",
+    "delete_failed": "Couldn't delete the record."
   },
-
   "attachments": {
     "title_count": "📎 Attachments ({{count}})",
     "add_btn": "+ Attach",
@@ -154,7 +150,6 @@
     "delete_failed": "Could not remove.",
     "open_failed": "Could not open the file."
   },
-
   "vets": {
     "modal_title": "🩺 Vets with access",
     "loading": "Loading…",
@@ -167,7 +162,6 @@
     "revoke_confirm_text": "{{name}} ({{crmv}}) will lose access to the medical record. Records already added stay in history.",
     "revoke_failed": "Could not revoke access."
   },
-
   "members": {
     "modal_title": "👨‍👩‍👧 Family",
     "invite_toggle_open": "+ Invite",
@@ -197,7 +191,6 @@
     "credentials_copied": "Credentials copied.",
     "credentials_copy_hint": "Visit petdiary.com.br"
   },
-
   "reminders": {
     "modal_title": "🔔 Reminders",
     "type_vaccine": "Vaccine",
@@ -226,7 +219,6 @@
     "delete_failed": "Could not delete.",
     "new_btn": "+ New"
   },
-
   "notifications": {
     "title": "Notifications",
     "mark_all": "✓ Mark all as read",
@@ -239,7 +231,6 @@
     "delete_failed": "Could not delete.",
     "empty_title": "No notifications",
     "empty_text": "You'll see vaccine reminders, vet follow-ups, payment due dates and when a vet opens the medical record here.",
-
     "prefs_section": "Get notifications about",
     "prefs_save_failed": "Could not save.",
     "prefs_load_failed": "Could not load your preferences.",
@@ -249,7 +240,6 @@
     "prefs_permission_ok": "Notifications enabled on this device.",
     "prefs_permission_denied_title": "Permission denied",
     "prefs_permission_denied_text": "You disabled notifications for this app at the OS level. Go to iPhone/Android Settings to re-enable.",
-
     "type_vaccine_label": "Vaccination",
     "type_vaccine_hint": "Reminders for upcoming or overdue vaccines",
     "type_vet_return_label": "Vet follow-up",
@@ -265,11 +255,9 @@
     "type_system_label": "System notices",
     "type_system_hint": "Maintenance, news and important changes"
   },
-
   "account": {
     "header_title": "My account",
     "user_meta": "@{{username}} · {{role}}",
-
     "section_profile": "Profile",
     "field_full_name": "Full name",
     "field_full_name_placeholder": "Your name",
@@ -281,7 +269,6 @@
     "saving_profile": "Saving…",
     "profile_saved": "Profile updated.",
     "profile_failed": "Could not save. Try again.",
-
     "section_language": "Language",
     "section_more": "More",
     "menu_subscription": "Subscription",
@@ -291,7 +278,6 @@
     "section_session": "Session",
     "logout_btn": "Sign out",
     "logout_confirm": "Do you really want to sign out?",
-
     "delete_btn": "🗑 Delete my account",
     "delete_hint": "Personal data will be anonymized per GDPR. This action cannot be undone.",
     "delete_modal_title": "Delete account",
@@ -304,7 +290,6 @@
     "delete_done_text": "Your data has been anonymized per GDPR.",
     "delete_password_wrong": "Incorrect password.",
     "delete_failed": "Could not delete the account.",
-
     "change_password_title": "Change password",
     "current_password": "Current password",
     "new_password": "New password (min. 8)",
@@ -314,7 +299,6 @@
     "change_password_current_wrong": "Incorrect current password.",
     "change_password_failed": "Could not change the password."
   },
-
   "subscription": {
     "load_failed": "Could not load subscription.",
     "header_pro": "PRO 🎉",
@@ -358,7 +342,6 @@
     "pix_copied": "PIX code copied.",
     "pix_copy_native_hint": "Long-press the code below to select and copy."
   },
-
   "help": {
     "header_title": "Help center",
     "hero_title": "How can we help?",
@@ -389,11 +372,9 @@
     "faq_a7": "Yes. Every AI extraction can be edited manually in the record. The AI speeds up data entry, but you are the source of truth.",
     "footer_version": "PetDiary · v1.0"
   },
-
   "preferences": {
     "save_failed": "Could not save."
   },
-
   "username_check": {
     "checking": "checking…",
     "available": "✓ available",

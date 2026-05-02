@@ -25,7 +25,6 @@
     "required": "*",
     "optional": "(opcional)"
   },
-
   "auth": {
     "app_subtitle": "Aceda à sua conta para gerir a saúde do seu animal",
     "username": "Utilizador",
@@ -38,7 +37,6 @@
     "forgot": "Esqueci-me da palavra-passe",
     "no_account": "Ainda não tem conta?",
     "register_cta": "Registar-se",
-
     "register_title": "Criar conta",
     "register_subtitle": "Registo de tutor — gira a saúde do seu animal",
     "full_name": "Nome completo",
@@ -56,7 +54,6 @@
     "register_failed": "Não foi possível concluir o registo.",
     "have_account": "Já tem conta?",
     "login_link": "Entrar",
-
     "forgot_title": "Recuperar palavra-passe",
     "forgot_subtitle": "Indique o e-mail da sua conta. Vamos enviar uma ligação para criar uma nova palavra-passe.",
     "forgot_email_placeholder": "seu@email.com",
@@ -66,7 +63,6 @@
     "forgot_back_login": "Voltar ao início de sessão",
     "remembered": "Lembrou-se da palavra-passe?"
   },
-
   "home": {
     "greeting": "Olá, {{name}}!",
     "greeting_no_name": "Olá!",
@@ -80,7 +76,6 @@
     "add_pet_a11y": "Adicionar animal",
     "notifications_a11y": "Notificações"
   },
-
   "pet": {
     "form_title": "Novo animal",
     "species": "Espécie",
@@ -97,7 +92,6 @@
     "name_required": "Indique o nome do animal.",
     "weight_invalid": "Peso inválido (use ponto, ex.: 12.5).",
     "create_failed": "Não foi possível criar o animal.",
-
     "dashboard_pin_loading": "A gerar…",
     "dashboard_pin_btn": "🔑 Gerar PIN",
     "dashboard_pin_failed": "Não foi possível gerar o PIN.",
@@ -114,14 +108,12 @@
     "dashboard_show_attachments": "▸ Ver anexos",
     "dashboard_hide_attachments": "▾ Ocultar anexos"
   },
-
   "records": {
     "type_vaccine": "Vacina",
     "type_exam": "Exame",
     "type_prescription": "Receita",
     "type_surgery": "Cirurgia",
     "type_note": "Nota",
-
     "form_title": "Novo registo",
     "type_label": "Tipo",
     "title_label": "Título",
@@ -132,9 +124,13 @@
     "title_required": "Indique um título para o registo.",
     "date_invalid": "A data deve estar no formato AAAA-MM-DD.",
     "create_failed": "Não foi possível criar o registo.",
-    "after_save_hint": "Após guardar, poderá anexar fotos, documentos e relatórios a este registo."
+    "after_save_hint": "Após guardar, poderá anexar fotos, documentos e relatórios a este registo.",
+    "form_title_edit": "Editar registo",
+    "update_failed": "Não foi possível atualizar o registo.",
+    "confirm_delete_title": "Eliminar registo",
+    "confirm_delete_msg": "Apagar este registo do processo clínico? Os anexos também serão removidos.",
+    "delete_failed": "Não foi possível eliminar o registo."
   },
-
   "attachments": {
     "title_count": "📎 Anexos ({{count}})",
     "add_btn": "+ Anexar",
@@ -154,7 +150,6 @@
     "delete_failed": "Não foi possível remover.",
     "open_failed": "Não foi possível abrir o ficheiro."
   },
-
   "vets": {
     "modal_title": "🩺 Veterinários com acesso",
     "loading": "A carregar…",
@@ -167,7 +162,6 @@
     "revoke_confirm_text": "{{name}} ({{crmv}}) deixará de ter acesso à ficha. Os registos já adicionados continuam no histórico.",
     "revoke_failed": "Não foi possível revogar o acesso."
   },
-
   "members": {
     "modal_title": "👨‍👩‍👧 Familiares",
     "invite_toggle_open": "+ Convidar",
@@ -197,7 +191,6 @@
     "credentials_copied": "Credenciais copiadas.",
     "credentials_copy_hint": "Aceda a petdiary.com.br"
   },
-
   "reminders": {
     "modal_title": "🔔 Lembretes",
     "type_vaccine": "Vacina",
@@ -226,7 +219,6 @@
     "delete_failed": "Não foi possível eliminar.",
     "new_btn": "+ Novo"
   },
-
   "notifications": {
     "title": "Notificações",
     "mark_all": "✓ Marcar todas como lidas",
@@ -239,7 +231,6 @@
     "delete_failed": "Não foi possível eliminar.",
     "empty_title": "Sem notificações",
     "empty_text": "Verá aqui lembretes de vacinas, revisões, vencimentos de pagamento e quando algum veterinário aceder à ficha.",
-
     "prefs_section": "Receber notificações sobre",
     "prefs_save_failed": "Não foi possível guardar.",
     "prefs_load_failed": "Não foi possível carregar as suas preferências.",
@@ -249,7 +240,6 @@
     "prefs_permission_ok": "Notificações ativadas neste dispositivo.",
     "prefs_permission_denied_title": "Permissão negada",
     "prefs_permission_denied_text": "Desativou as notificações desta aplicação no sistema. Vá às Definições do iPhone/Android para reativar.",
-
     "type_vaccine_label": "Vacinação",
     "type_vaccine_hint": "Lembretes de vacinas próximas ou em atraso",
     "type_vet_return_label": "Revisão veterinária",
@@ -265,11 +255,9 @@
     "type_system_label": "Avisos do sistema",
     "type_system_hint": "Manutenções, novidades e alterações importantes"
   },
-
   "account": {
     "header_title": "A minha conta",
     "user_meta": "@{{username}} · {{role}}",
-
     "section_profile": "Perfil",
     "field_full_name": "Nome completo",
     "field_full_name_placeholder": "O seu nome",
@@ -281,7 +269,6 @@
     "saving_profile": "A guardar…",
     "profile_saved": "Perfil atualizado.",
     "profile_failed": "Não foi possível guardar. Tente novamente.",
-
     "section_language": "Idioma",
     "section_more": "Mais",
     "menu_subscription": "Subscrição",
@@ -291,7 +278,6 @@
     "section_session": "Sessão",
     "logout_btn": "Terminar sessão",
     "logout_confirm": "Tem a certeza que pretende sair?",
-
     "delete_btn": "🗑 Eliminar a minha conta",
     "delete_hint": "Os dados pessoais serão anonimizados conforme o RGPD. Ação irreversível.",
     "delete_modal_title": "Eliminar conta",
@@ -304,7 +290,6 @@
     "delete_done_text": "Os seus dados foram anonimizados conforme o RGPD.",
     "delete_password_wrong": "Palavra-passe incorreta.",
     "delete_failed": "Não foi possível eliminar a conta.",
-
     "change_password_title": "Alterar palavra-passe",
     "current_password": "Palavra-passe atual",
     "new_password": "Nova palavra-passe (mín. 8)",
@@ -314,7 +299,6 @@
     "change_password_current_wrong": "Palavra-passe atual incorreta.",
     "change_password_failed": "Não foi possível alterar a palavra-passe."
   },
-
   "subscription": {
     "load_failed": "Não foi possível carregar a subscrição.",
     "header_pro": "PRO 🎉",
@@ -358,7 +342,6 @@
     "pix_copied": "Código PIX copiado.",
     "pix_copy_native_hint": "Mantenha pressionado o código abaixo para selecionar e copiar."
   },
-
   "help": {
     "header_title": "Centro de ajuda",
     "hero_title": "Como podemos ajudar?",
@@ -389,11 +372,9 @@
     "faq_a7": "Sim. Toda a extração da IA pode ser editada manualmente no registo. A IA acelera a inserção de dados, mas é você a fonte da verdade.",
     "footer_version": "PetDiary · v1.0"
   },
-
   "preferences": {
     "save_failed": "Não foi possível guardar."
   },
-
   "username_check": {
     "checking": "a verificar…",
     "available": "✓ disponível",

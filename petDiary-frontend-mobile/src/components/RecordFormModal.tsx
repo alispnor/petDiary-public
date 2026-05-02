@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -32,23 +32,38 @@ type Props = {
   visible: boolean;
   petId: string;
   onClose: () => void;
-  onCreated: (record: HealthRecord) => void;
+  onSaved: (record: HealthRecord) => void;
+  record?: HealthRecord | null;
 };
 
-export function RecordFormModal({ visible, petId, onClose, onCreated }: Props) {
+export function RecordFormModal({
+  visible,
+  petId,
+  onClose,
+  onSaved,
+  record,
+}: Props) {
   const { t } = useTranslation();
+  const isEdit = !!record;
   const [type, setType] = useState<RecordType>("NOTE");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [dateOccurred, setDateOccurred] = useState(todayISO());
   const [saving, setSaving] = useState(false);
 
-  const reset = () => {
-    setType("NOTE");
-    setTitle("");
-    setDescription("");
-    setDateOccurred(todayISO());
-  };
+  useEffect(() => {
+    if (record) {
+      setType(record.record_type);
+      setTitle(record.title);
+      setDescription(record.description || "");
+      setDateOccurred(record.date_occurred);
+    } else {
+      setType("NOTE");
+      setTitle("");
+      setDescription("");
+      setDateOccurred(todayISO());
+    }
+  }, [record, visible]);
 
   const handleSubmit = async () => {
     if (!title.trim()) {
@@ -61,20 +76,28 @@ export function RecordFormModal({ visible, petId, onClose, onCreated }: Props) {
     }
     setSaving(true);
     try {
-      const { data } = await api.post<HealthRecord>(
-        `/pets/${petId}/health-records/`,
-        {
-          record_type: type,
-          title: title.trim(),
-          description: description.trim(),
-          date_occurred: dateOccurred,
-        }
-      );
-      onCreated(data);
-      reset();
+      const payload = {
+        record_type: type,
+        title: title.trim(),
+        description: description.trim(),
+        date_occurred: dateOccurred,
+      };
+      const { data } = isEdit
+        ? await api.patch<HealthRecord>(
+            `/pets/${petId}/health-records/${record!.id}/`,
+            payload
+          )
+        : await api.post<HealthRecord>(
+            `/pets/${petId}/health-records/`,
+            payload
+          );
+      onSaved(data);
       onClose();
     } catch {
-      Alert.alert(t("common.error"), t("records.create_failed"));
+      Alert.alert(
+        t("common.error"),
+        isEdit ? t("records.update_failed") : t("records.create_failed")
+      );
     } finally {
       setSaving(false);
     }
@@ -95,7 +118,9 @@ export function RecordFormModal({ visible, petId, onClose, onCreated }: Props) {
           <TouchableOpacity onPress={onClose}>
             <Text style={styles.cancelText}>{t("common.cancel")}</Text>
           </TouchableOpacity>
-          <Text style={styles.title}>{t("records.form_title")}</Text>
+          <Text style={styles.title}>
+            {t(isEdit ? "records.form_title_edit" : "records.form_title")}
+          </Text>
           <TouchableOpacity
             onPress={handleSubmit}
             disabled={saving || !title.trim()}
