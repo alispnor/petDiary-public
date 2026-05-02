@@ -276,6 +276,66 @@ Tudo em `PENDENCIAS-HUMANAS.md`:
 
 ---
 
+## 🟣 PRIORIDADE G — Spec 20: Deploy AWS / DevOps profissional (pedido Ali 2026-05-02)
+
+**Spec:** `ai-memory/specs/20-deploy-aws-producao.md`
+**Prompts originais:** `ai-memory/specs/20-prompts-originais.md`
+
+⚠️ Tarefas chegaram escritas para Node.js+BullMQ; petDiary é Django+Celery
+— spec já traz versão adaptada.
+
+### G1. Git Flow + Branch Protection + Conventional Commits (T3)
+- [ ] CONTRIBUTING.md com modelo híbrido (dev/master backend+web;
+      release/v* mobile)
+- [ ] Branch Protection master+dev no GitHub (1 aprovação, status checks
+      obrigatórios, bloquear push direto)
+- [ ] commitlint hook + release-please ou semantic-release p/ CHANGELOG
+**Custo:** zero. **Bloqueia:** nada. **Esforço:** 2-3h.
+
+### G2. CI/CD Mobile (Expo EAS) (T6)
+- [ ] `eas.json` com perfis preview (.apk) e production (.aab/.ipa)
+- [ ] Secrets GitHub: EXPO_TOKEN, APPLE_*, GOOGLE_PLAY_SERVICE_ACCOUNT_JSON
+- [ ] `.github/workflows/mobile-release.yml` (trigger por tag mobile-v*)
+- [ ] `appVersionSource: "remote"` para EAS gerenciar versionCode/buildNumber
+**Bloqueado por:** PENDENCIAS-HUMANAS itens 11-12 (Apple+Google enrollment).
+**Esforço:** 4-6h.
+
+### G3. DECISÃO HUMANA: Railway vs AWS ECS
+- [ ] Bater martelo (ver §Análise da Spec 20 — trade-off custo, tempo, escala)
+- Tudo de G4 em diante depende disto.
+
+### G4a. (Se Railway) Primeiro deploy homolog
+Ver PENDENCIAS-HUMANAS item 4. **1-2h.**
+
+### G4b. (Se AWS) Dockerfile produção Django+Celery (T1 adaptado)
+- [ ] Multi-stage Python 3.12-slim, mesmo image, CMD diferente p/
+      api/worker/beat
+- [ ] entrypoint.sh roda `manage.py migrate --noinput` antes de gunicorn
+- [ ] `docker-compose.prod.yml` com api+worker+beat (3 serviços, não 2)
+**Esforço:** 3-4h.
+
+### G5. (Se AWS) Terraform IaC (T2)
+- [ ] VPC + subnets pub/priv + NAT
+- [ ] RDS Postgres Multi-AZ + ElastiCache Redis
+- [ ] S3 bucket attachments + lifecycle
+- [ ] ECS Fargate cluster + ALB + 3 services (api/worker/beat)
+- [ ] SGs em camadas + IAM OIDC p/ GitHub Actions
+**Custo prod baixa carga:** ~US$ 165/mês. **Esforço:** 16-24h.
+
+### G6. (Se AWS) GitHub Actions backend deploy (T4)
+- [ ] OIDC AWS, build+push ECR (tag=SHA)
+- [ ] Standalone task pra `manage.py migrate`
+- [ ] Update Task Definitions + rolling deploy
+- [ ] Secrets Manager → env vars na task
+**Bloqueado por G5. Esforço:** 6-8h.
+
+### G7. (Se AWS) Web S3+CloudFront+ACM (T5)
+- [ ] Terraform bucket estático + CloudFront OAC + cert ACM us-east-1
+- [ ] `.github/workflows/deploy-web.yml` com s3 sync + invalidation
+**Esforço:** 4-6h. **Custo:** ~US$ 1-5/mês.
+
+---
+
 ## 📊 Como decidir o que fazer agora
 
 **Pergunta:** quer terminar o que começou, ou abrir uma frente nova?

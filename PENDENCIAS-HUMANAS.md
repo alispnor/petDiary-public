@@ -32,6 +32,24 @@ O código está pronto para produção do lado técnico. O que falta agora é
 
 ---
 
+## 0. Decisão estratégica: Railway vs AWS ECS (adicionado 2026-05-02)
+
+Antes do item 2 (hospedagem), bater martelo:
+
+- **Railway/Fly** (~US$ 30/mês): MVP em 1-2h, código já docker-ready,
+  zero curva de aprendizado. Bom até 10k usuários ativos.
+- **AWS ECS Fargate + Terraform** (~US$ 165/mês prod baixa carga):
+  3 dias de setup, mas Multi-AZ, vendor lock-in baixo, argumento "infra
+  séria" para entrar em B2B com clínicas.
+
+**Recomendação Claude:** começar Railway por 1-3 meses (até validar
+produto + resolver itens 5-9 desta lista), migrar para AWS quando
+houver tração ou cliente B2B com requisitos de compliance.
+
+Trade-offs detalhados em `ai-memory/specs/20-deploy-aws-producao.md`.
+
+---
+
 ## 1. Domínio
 
 ### O que fazer
