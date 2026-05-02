@@ -20,9 +20,11 @@ tamanhos são gerados a partir destes pelo script
 
 | Arquivo | Dimensão atual | Dimensão ideal | Tipo | Cor de fundo | Notas |
 |---|---|---|---|---|---|
-| `logotipo/petDiaryLogo.png` | 2048×2048 | **2048×2048** | PNG transparente | transparente | **Master CLARO** — logo principal sobre fundo claro |
+| `logotipo/petDiaryLogo.png` | 1033×1024 | **2048×2048** | PNG (fundo embutido com flares — idealmente transparente) | claro com flares azul/laranja | **Master CLARO** — logo principal sobre fundo claro. Fonte de 15+ derivadas via `generate-icons.py` |
 | `logotipo/petDiaryLogoDark.png` | 2048×2048 | **2048×2048** | PNG transparente | transparente | **Master ESCURO** — logo para fundos escuros |
 | `logotipo/petDiaryLogoicon.png` | 1024×1024 | **1024×1024** | PNG transparente | transparente | Versão "ícone" simplificada (sem texto, só símbolo) |
+| `logotipo/petdiary-reminders-icon.png` | 1024×1024 | **1024×1024** | PNG | claro com gradiente | **Ícone da feature Reminders** — calendário com patinha. Usado em empty states de RemindersSection (web) e RemindersModal (mobile), e na aba "🔔 Notificações" de /conta |
+| `logotipo/petdiary-backend-logo.png` | 600×600 | **1024×1024** | PNG | bege claro `#F5F1E9` | **Identidade visual da API/backend** — cruz médica + 2 patinhas + grafo. Usado no header do Swagger /api-docs/, banner do README do backend, e (futuro) header de emails transacionais Resend |
 
 **Recomendações para os masters:**
 - PNG-24 com canal alfa (transparente)
@@ -89,6 +91,25 @@ Empacotados pelo Expo no build do APK/IPA.
 - `splash.png` → `app.json` (`expo.splash.image`)
 - `favicon.png` → `app.json` (`expo.web.favicon`)
 - `adaptive-icon.png` → `app.json` (`expo.android.adaptiveIcon.foregroundImage`)
+
+### 🟢 2.5 Imagens contextuais por feature
+
+Diferente dos logos derivados (que são variantes do master), estas são imagens
+**próprias** com função específica.
+
+#### `petdiary-reminders-icon.png` — feature Reminders (Spec 17)
+
+| Caminho de runtime | Dimensão | Onde é renderizado |
+|---|---|---|
+| `petDiary-frontend-web/public/reminders-icon.png` | 256×256 (resized do master 1024×1024) | Empty state do `<RemindersSection />` em TutorDashboard; ícone do card "Reminders" na aba 🔔 Notificações em /conta |
+| `petDiary-frontend-mobile/assets/reminders-icon.png` | 512×512 | Empty state do `<RemindersModal />` no PetDashboard |
+
+#### `petdiary-backend-logo.png` — identidade da API
+
+| Caminho de runtime | Dimensão | Onde é renderizado |
+|---|---|---|
+| `petDiary-backend/backend/static/petdiary-backend-logo.png` | 512×512 (resized do master 600×600) | Header customizado do Swagger `/api-docs/`; banner do `petDiary-backend/README.md` |
+| (futuro) email template Resend | 200×200 | Header dos emails transacionais quando E3 for implementado |
 
 ### 🟢 3. Logos exportados (`logotipo/exports/`)
 
