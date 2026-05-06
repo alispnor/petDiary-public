@@ -1,4 +1,4 @@
-# ste projeto demonstra a orquestração de IA Generativa para aceleração do ciclo de desenvolvimento, com foco em padrões arquiteturais definidos por um desenvolvedor sênior
+# Este projeto demonstra a orquestração de IA Generativa para aceleração do ciclo de desenvolvimento, com foco em padrões arquiteturais definidos por um desenvolvedor sênior
 
 # PetDiary
 
