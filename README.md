@@ -1,3 +1,5 @@
+# ste projeto demonstra a orquestração de IA Generativa para aceleração do ciclo de desenvolvimento, com foco em padrões arquiteturais definidos por um desenvolvedor sênior
+
 # PetDiary
 
 O **PetDiary** e uma plataforma unificada que resolve a fragmentacao dos dados de saude dos animais de estimacao. Ele nasce como um **Prontuario Medico Inteligente**, utilizando Inteligencia Artificial para facilitar a entrada de dados, e evolui estrategicamente para se tornar uma **Rede Social Nichada e Segura**, estritamente focada em pets.
